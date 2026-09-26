@@ -70,7 +70,7 @@ Build (already run for the file on this branch; re-run only to reproduce):
 npm run pack:release
 ```
 
-`scripts/pack-release.sh` runs `git archive` of `HEAD` with a pinned mtime. The digest is stable when the only tree differences are `docs/CHECKSUMS.md` and `release/`.
+`scripts/pack-release.sh` runs `git archive` of `HEAD` with a pinned mtime. It then sets the zip comment to `hooksteel-0.1.0` (git archive would otherwise store the commit id, and the digest would change when this checksum file is committed). The digest is stable when the only tree differences are `docs/CHECKSUMS.md` and `release/`.
 
 ### Zip omit contract
 

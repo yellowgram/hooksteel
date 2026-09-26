@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Build release/hooksteel-<version>.zip from git archive of HEAD and write
 # docs/CHECKSUMS.md. The checksum file and the release/ directory are not
-# inside the zip, so committing them does not change the digest.
+# inside the zip. git archive stamps the commit id into the zip comment;
+# this script replaces that comment with hooksteel-<version> so committing
+# the checksum and the zip does not change the digest.
 set -euo pipefail
 
 root="$(git rev-parse --show-toplevel)"
@@ -54,11 +56,18 @@ from pathlib import Path
 
 zip_path, version, name, mtime = sys.argv[1:]
 prefix = f"hooksteel-{version}/"
+comment = f"hooksteel-{version}".encode()
+with zipfile.ZipFile(zip_path, "a") as zf:
+    zf.comment = comment
 blob = Path(zip_path).read_bytes()
 digest = hashlib.sha256(blob).hexdigest()
 
 with zipfile.ZipFile(zip_path) as zf:
     names = zf.namelist()
+    if zf.comment != comment:
+        print("zip comment was not pinned", file=sys.stderr)
+        Path(zip_path).unlink(missing_ok=True)
+        sys.exit(1)
 
 def base(path: str) -> str:
     return path.rstrip("/").split("/")[-1]
@@ -127,6 +136,7 @@ SHA-256 of the release zip. This file is not inside the zip. A hash stored insid
 - Version: `{version}` (`package.json`)
 - Repo path: `release/{name}`
 - Archive mtime pin: `{mtime}` (`git archive --mtime`)
+- Zip comment: `hooksteel-{version}` (replaces the git commit id `git archive` writes)
 - Omitted: `node_modules/`, `.env` and `.env.local` (`.env.example` stays), `.git/`, database dumps (`*.dump`, `*.backup`, `*.sql.gz`, `pg_dump*`), `release/`, and this file
 - Schema SQL under `migrations/` is included. It is not a database dump.
 

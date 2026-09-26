@@ -57,6 +57,21 @@ test('purchase refund window is 30 days on the policy surfaces', () => {
   assert.match(glossary, /not a refund/);
 });
 
+test('the 60s clip is one Stripe and Polar take, and Polar waits on distribution', () => {
+  const clip = 'CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post.';
+  const breath = 'use them for ingress; this is the outbox you keep';
+  for (const file of ['docs/DEMO_60S.md', 'docs/POLAR_DELIVERABLES.md', 'docs/STATUS.md', 'docs/LANDING.md']) {
+    const text = readFileSync(file, 'utf8');
+    assert.equal(text.includes(clip), true, file);
+    assert.equal(text.includes(breath), true, file);
+    assert.equal(text.includes('Hookdeck homepage'), true, file);
+  }
+  const demo = readFileSync('docs/DEMO_60S.md', 'utf8');
+  assert.match(demo, /One continuous take/);
+  assert.match(demo, /Not two provider demos/);
+  assert.match(demo, /npm run demo:60s/);
+});
+
 test('demo and pack scripts stay on the existing five chaos files', () => {
   const pkg = JSON.parse(readFileSync('package.json', 'utf8')) as {
     version: string;

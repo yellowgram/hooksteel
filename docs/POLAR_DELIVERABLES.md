@@ -2,7 +2,19 @@
 
 **Listing stays dark.** Do not publish. Do not start KYC. Do not open Checkout. Do not attach this zip to a live product. Org: **Suthirth solutions**. Repo: private `yellowgram/hooksteel`. Contact: hello@yellowgram.dev · https://www.yellowgram.dev
 
-The founder clears the ready gate later (60s demo filmed and approved, cover image approved). The purchase-refund window is locked at 30 days. This packet is the copy and the file handoff. It is not permission to publish.
+The purchase-refund window is locked at 30 days. Soft-WTP is off. This packet is the copy and the file handoff. It is not permission to publish.
+
+## Do not list
+
+CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post.
+
+Order locked:
+
+1. Founder-approved clip. One clip, not two provider demos. Same event four times → one side effect, rollback mid-fulfillment, Stripe and Polar in that same clip. Script: `docs/DEMO_60S.md`. If that clip cannot beat the Stripe docs and the Hookdeck homepage, do not list.
+2. Distribution post, where the burn already happened. Channels: a tight X thread, Show HN, and Stripe/Polar builder chats. Shape: "we double-provisioned after a 500." Same breath: use them for ingress; this is the outbox you keep.
+3. Only then is Polar the cash register. Not before.
+
+Missing the clip or the post means do not list. A cover image does not replace either one. Do not start KYC or Checkout from this packet.
 
 ## Product
 
@@ -22,7 +34,7 @@ No Lock product. No Audit product. Do not add those names as benefits or bumps.
 
 ## Paste-ready listing draft
 
-Do not paste this into a visible product until the founder says the listing may go light.
+Do not paste this into a visible product while the listing is dark, there is no founder-approved clip, and there is no distribution post.
 
 ---
 
@@ -156,11 +168,13 @@ Changelog: CHANGELOG.md
 Support: SUPPORT.md
 ```
 
-6. Stop. Do not upload the asset to a **visible** Polar product. Do not start KYC or Checkout. Listing stays dark until the founder says otherwise (demo filmed and approved, cover image approved). The purchase-refund window is already 30 days. Set the Polar refund toggle to 30 days before the listing goes light.
+6. Stop. Do not upload the asset to a **visible** Polar product. Do not start KYC or Checkout. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post. The purchase-refund window is already 30 days. Set the Polar refund toggle to 30 days before the listing goes light. Do not publish in order to set it.
 
 ## Still dark
 
 - Polar product visibility: dark / unpublished
+- No founder-approved 60s clip yet (one clip: Stripe and Polar, four deliveries, one side effect, rollback)
+- No distribution post yet (X, Hacker News, Stripe/Polar builder chats)
 - Checkout: off
 - KYC: not started from this packet
 - Soft-WTP: off

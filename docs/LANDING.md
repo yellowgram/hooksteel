@@ -35,15 +35,21 @@ Out of scope, and closed without debugging: a hosted gateway or yellowgram-opera
 5. Use both when Hookdeck sits in front and HookSteel sits inside. Optional. Not required.
 6. Do not buy HookSteel if you want yellowgram to host your webhooks.
 
+The line that ships with the clip and with the post: use them for ingress; this is the outbox you keep.
+
 ## Proof
 
-The filmed proof is still the founder's. The script is [DEMO_60S.md](./DEMO_60S.md): same event four times → one `grant_credit`, then a crash before `completed_at` that does not grant again. If that cannot beat "ask Cursor" on the rollback, do not list the product.
+The product is one clip, not two provider demos. The script is [DEMO_60S.md](./DEMO_60S.md). Same event four times → one side effect, rollback mid-fulfillment, Stripe and Polar in that same clip. If that clip cannot beat the Stripe docs and the Hookdeck homepage, do not list.
+
+## Distribution before Polar
+
+Founder-approved clip first. Then post where the burn already happened: a tight X thread, Show HN, and Stripe/Polar builder chats, in the shape of "we double-provisioned after a 500," with Hookdeck honesty in the same breath. Polar is the cash register after that post. Not before. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post.
 
 ## Call to action
 
 Polar checkout is **dark**. There is no purchase URL in this copy.
 
-`[CTA placeholder — Polar product URL, org Suthirth solutions. Do not publish. Listing stays dark until the founder clears the ready gate.]`
+`[CTA placeholder — Polar product URL, org Suthirth solutions. Do not publish. Listing stays dark until the founder-approved clip and the distribution post both exist.]`
 
 ## Support
 

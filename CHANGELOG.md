@@ -1,0 +1,29 @@
+# Changelog
+
+## 0.1.0 — 2026-09-26
+
+First baseline of the Billing Event Reliability Kit. `package.json` version is `0.1.0`. The GitHub Release tag `v0.1.0` is a CoS step (`docs/POLAR_DELIVERABLES.md`); this file does not mean the tag already exists. There is no older release to upgrade from.
+
+### Included
+
+- Stripe signed webhooks (`handle`) into `billing_events`, with outbox rows in the same transaction
+- Polar signed webhooks (`handlePolar`): two HMAC key eras, no Polar SDK
+- Outbox drain (`npm run outbox:drain`)
+- Replay CLI (`npm run replay:list`, `replay:dry-run`, `replay:execute`) — not a purchase refund
+- Exactly five Postgres chaos scenarios: duplicate delivery, out-of-order, signature fail, handler timeout, DB rollback mid-fulfillment. Polar cases live in those five files
+- Adapter stubs: `grant_credit`, `send_email`, `invite_github` (`invite_github` is opt-in)
+
+### Known limits
+
+- No hosted gateway. Soft-WTP is off. No Lock. No Audit.
+- Polar listing stays dark.
+- The Polar purchase-refund day count is TBD (founder flag).
+- `order.refunded` is stored as `ignored` and does not claw back credit.
+- The chaos set stays at five files. No fuzzing.
+- Single-app license only. Multi-app is not included.
+- The outbox does not certify PCI, charge correctness, or tax.
+- README "Known limits" still holds for Connect, stored PII, the Polar livemode declaration, and replay dry-run `$1` labels (CR2-A-P2-002 deferred).
+
+### Break notes
+
+None. First baseline. Buyers pin the zip named `hooksteel-0.1.0.zip` and the SHA-256 in `docs/CHECKSUMS.md`.

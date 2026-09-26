@@ -23,6 +23,8 @@
     "replay:list": "tsx scripts/replay-cli.ts list",
     "replay:dry-run": "tsx scripts/replay-cli.ts dry-run",
     "replay:execute": "tsx scripts/replay-cli.ts execute",
+    "demo:60s": "tsx --test --test-concurrency=1 tests/chaos/01-duplicate-delivery.test.ts tests/chaos/05-db-rollback-mid-fulfillment.test.ts",
+    "pack:release": "bash scripts/pack-release.sh",
     "test": "tsx --test --test-concurrency=1 tests/unit/*.test.ts tests/chaos/*.test.ts",
     "typecheck": "tsc --noEmit"
   },

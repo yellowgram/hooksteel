@@ -1,0 +1,103 @@
+name: Bug or support
+description: 60-day kit support. Repro required. No live secrets.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
+
+        Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the download and private GitHub access only.
+
+        If your request matches that out-of-scope sentence, do not open this Issue. Maintainer auto-reply (then close): the two paragraphs above. Full text: SUPPORT.md.
+
+        Chaos test names that count are listed in SUPPORT.md. Live-mode event ids and live secrets are not accepted.
+
+  - type: input
+    id: kit_pin
+    attributes:
+      label: Kit semver, tag, and checksum
+      description: Semver from package.json, git tag, and the SHA-256 in docs/CHECKSUMS.md.
+      placeholder: 0.1.0 / v0.1.0 / sha256…
+    validations:
+      required: true
+
+  - type: input
+    id: node
+    attributes:
+      label: Node version
+      description: Output of node -v. Engines require Node 20 or newer.
+      placeholder: v20.x.x
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: Ubuntu 24.04
+    validations:
+      required: true
+
+  - type: input
+    id: db
+    attributes:
+      label: Database engine
+      description: Postgres version. Ship path is Postgres 13 or newer. CI uses 16.
+      placeholder: Postgres 16
+    validations:
+      required: true
+
+  - type: textarea
+    id: failing
+    attributes:
+      label: Failing chaos test name or test-mode event id
+      description: Paste one chaos test name from SUPPORT.md, or a Stripe test-mode evt_ id, or a Polar test-mode webhook-id. Not a live-mode id.
+      placeholder: duplicate delivery: same signed event 4× concurrent yields one row and one invocation per adapter
+    validations:
+      required: true
+
+  - type: textarea
+    id: booleans
+    attributes:
+      label: Redacted environment booleans only
+      description: |
+        Values are true, false, or unset. Do not paste secret strings.
+        STRIPE_EXPECT_LIVEMODE
+        POLAR_EXPECT_LIVEMODE
+        ALLOW_DEMO_CONTROLS
+        ALLOW_CHAOS_INJECT
+        HOOKSTEEL_RECORD_INVOCATIONS
+        NODE_ENV
+      placeholder: |
+        STRIPE_EXPECT_LIVEMODE: false
+        POLAR_EXPECT_LIVEMODE: false
+        ALLOW_DEMO_CONTROLS: false
+        ALLOW_CHAOS_INJECT: false
+        HOOKSTEEL_RECORD_INVOCATIONS: unset
+        NODE_ENV: development
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: no_secrets
+    attributes:
+      label: Secrets
+      options:
+        - label: I did not paste live secrets, webhook secrets, API keys, DATABASE_URL, or a live-mode event id.
+          required: true
+
+  - type: checkboxes
+    id: in_scope
+    attributes:
+      label: Scope
+      options:
+        - label: This is not a request for a hosted gateway, Soft-WTP, Lock/Audit, live-key debugging, fuzz or chaos expansion, or Credit Ledger.
+          required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Optional. Redacted command output only. No webhook secrets, API keys, or DATABASE_URL.
+    validations:
+      required: false

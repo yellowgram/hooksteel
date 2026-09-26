@@ -25,7 +25,7 @@ Treat checklist items (offline fixtures, Postgres chaos CI, demo flags off, live
 8. **Org / license fit** — Single-app / one organization at launch; no resale as competing boilerplate. Multi-app $249 is optional later — do not assume Single-app covers unlimited products. If intent is to republish a starter, **do not buy**.
 9. **Support expectations calibrated** — 60 days GitHub Issues, best-effort, no SLA, ≤~2 h/week founder attention, repro required. Buyer who needs a call / Slack / implementation partner must obtain that elsewhere (not on this Polar SKU).
 10. **Pin target decision** — Keep the Polar zip / tag `v0.1.0` (and checksum when published) as the team’s pin. Floating “whatever email attachment” is a buyer failure mode.
-11. **Refund window awareness** — Kit purchase may allow **14–30 day** Polar refund (founder/CoS aligned). That is **not** the same as webhook replay. Decide purchase with the chaos demo / fixtures in mind.
+11. **Refund window awareness** — Kit purchase refund window is **30 days** (founder lock 2026-09-26). That is **not** the same as the replay CLI or a provider `order.refunded` webhook. `order.refunded` does not claw back credit. Decide purchase with the chaos demo / fixtures in mind.
 
 ### Unzip, prove, graduate off stubs
 

@@ -54,4 +54,4 @@ Paste this and close when the request is out of scope or has no repro:
 >
 > If you are inside 60 days and this is an in-scope kit bug, reopen with the template: kit semver, tag, and checksum; Node; OS; DB; a failing chaos test name or a test-mode event id; and redacted booleans only.
 
-Purchase refunds are not Issues. Replay is not a refund. See `docs/REFUND_GLOSSARY.md`. The refund day count is not set.
+Purchase refunds are not Issues. Replay is not a refund. The purchase-refund window is 30 days. See `docs/REFUND_GLOSSARY.md`. `order.refunded` stays ignored and does not claw back credit.

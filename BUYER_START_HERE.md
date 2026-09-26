@@ -10,7 +10,7 @@ HookSteel is a Node kit. Postgres is the ship path.
 6. `npm run outbox:drain -- --once` after webhooks have been accepted.
 7. Dead letters: `npm run replay:list`, then `npm run replay:dry-run -- <dead_letter_id>`, then `npm run replay:execute -- <dead_letter_id>`, then `npm run outbox:drain -- --once`. The drain runs the adapter. Replay is not a Polar purchase refund.
 
-**Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. **Replay is not a Polar purchase refund.** A Polar refund returns the money paid for this kit. The refund window is not chosen here. `order.refunded` stays ignored and does not claw back credit. Details: [docs/REFUND_GLOSSARY.md](./docs/REFUND_GLOSSARY.md).
+**Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. **Replay is not a Polar purchase refund.** A Polar refund returns the money paid for this kit. The purchase-refund window is 30 days. `order.refunded` stays ignored and does not claw back credit. Details: [docs/REFUND_GLOSSARY.md](./docs/REFUND_GLOSSARY.md).
 
 Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
 

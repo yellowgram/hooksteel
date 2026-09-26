@@ -35,20 +35,26 @@ test('support boundary text is identical where buyers and CoS read it', () => {
   }
 });
 
-test('refund day count stays unset in the ready-gate docs', () => {
+test('purchase refund window is 30 days on the policy surfaces', () => {
   const files = [
+    'README.md',
+    'BUYER_START_HERE.md',
     'docs/REFUND_GLOSSARY.md',
-    'docs/POLAR_DELIVERABLES.md',
-    'docs/LANDING.md',
-    'docs/DEMO_60S.md',
-    'CHANGELOG.md',
     'SUPPORT.md',
+    'docs/POLAR_DELIVERABLES.md',
+    'CHANGELOG.md',
+    'docs/STATUS.md',
   ];
   for (const file of files) {
     const text = readFileSync(file, 'utf8');
-    assert.doesNotMatch(text, /\b14\b/, file);
-    assert.doesNotMatch(text, /\b30\b/, file);
+    assert.equal(text.includes('30 days'), true, file);
+    assert.equal(text.includes('14 days'), false, file);
+    assert.equal(text.includes('14–30'), false, file);
   }
+  const glossary = readFileSync('docs/REFUND_GLOSSARY.md', 'utf8');
+  assert.match(glossary, /order\.refunded/);
+  assert.match(glossary, /does not claw back credit/);
+  assert.match(glossary, /not a refund/);
 });
 
 test('demo and pack scripts stay on the existing five chaos files', () => {

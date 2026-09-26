@@ -41,4 +41,4 @@
 - Ops/operator depth model: `/workspace/keel/MINIMUM_OPS_CHECKLIST.md`, `OPERATOR_NEEDS_BEYOND_CHECKLIST.md`
 - Product lock: `/workspace/income/digital-product-hunt/DECISION.md` §#1 HookSteel
 
-*Last updated: 2026-09-26 ET — Stripe path merged at f25f235; Polar path merged at 09c4f88; replay CLI implement merged at c6a4012. Ready-gate docs (support, demo script, landing, zip + SHA) are in progress. Listing dark. Refund days TBD.*
+*Last updated: 2026-09-26 ET — Stripe path merged at f25f235; Polar path merged at 09c4f88; replay CLI implement merged at c6a4012. Ready-gate docs (support, demo script, landing, zip + SHA) are in progress. Listing dark. Purchase-refund window 30 days.*

@@ -2,7 +2,7 @@
 
 **Listing stays dark.** Do not publish. Do not start KYC. Do not open Checkout. Do not attach this zip to a live product. Org: **Suthirth solutions**. Repo: private `yellowgram/hooksteel`. Contact: hello@yellowgram.dev · https://www.yellowgram.dev
 
-The founder clears the ready gate later (60s demo filmed and approved, refund day count named). This packet is the copy and the file handoff for that moment. It is not the moment.
+The founder clears the ready gate later (60s demo filmed and approved, cover image approved). The purchase-refund window is locked at 30 days. This packet is the copy and the file handoff. It is not permission to publish.
 
 ## Product
 
@@ -42,7 +42,7 @@ You get a private GitHub repository and a zip (`hooksteel-0.1.0.zip`). You run P
 
 **Not included:** Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the download and private GitHub access only.
 
-A Polar purchase refund, the replay CLI, and a provider `order.refunded` webhook are three different things. The purchase-refund window is not published on this draft.
+A Polar purchase refund, the replay CLI, and a provider `order.refunded` webhook are three different things. The purchase-refund window is 30 days. Replay is not that refund. `order.refunded` is stored and ignored and does not claw back credit.
 
 ---
 
@@ -121,7 +121,7 @@ Until that benefit is actually on, do not tell buyers it already works.
 
 ## Refund toggle
 
-**TBD. Founder flag.** Leave the Polar refund toggle unset. Do not pick a day count. Do not copy a rail default. When the founder names the number, update `docs/REFUND_GLOSSARY.md`, `README.md`, and this packet in the same change, then set the toggle to that number before the listing goes light. Not before.
+**30 days. Founder lock 2026-09-26.** Before the listing goes light, set the Polar refund toggle to 30 days. You may set that toggle on the unpublished product. Do not publish. Do not start KYC or Checkout. Do not leave a rail default that is not 30 days. Listing stays dark.
 
 Glossary: `docs/REFUND_GLOSSARY.md`.
 
@@ -148,6 +148,7 @@ HookSteel 0.1.0 — Billing Event Reliability Kit
 
 Stripe + Polar signed webhooks, same-transaction outbox, drain, replay CLI, five Postgres chaos scenarios.
 Single-app license. Not a hosted gateway. Soft-WTP off.
+Purchase-refund window: 30 days. That is not the replay CLI. `order.refunded` does not claw back credit.
 
 SHA-256 (hooksteel-0.1.0.zip): <paste docs/CHECKSUMS.md>
 
@@ -155,7 +156,7 @@ Changelog: CHANGELOG.md
 Support: SUPPORT.md
 ```
 
-6. Stop. Do not upload the asset to a **visible** Polar product. Do not start KYC or Checkout. Listing stays dark until the founder says otherwise (demo filmed and approved, refund days chosen, cover image approved).
+6. Stop. Do not upload the asset to a **visible** Polar product. Do not start KYC or Checkout. Listing stays dark until the founder says otherwise (demo filmed and approved, cover image approved). The purchase-refund window is already 30 days. Set the Polar refund toggle to 30 days before the listing goes light.
 
 ## Still dark
 

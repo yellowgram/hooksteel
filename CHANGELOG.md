@@ -17,7 +17,7 @@ First baseline of the Billing Event Reliability Kit. `package.json` version is `
 
 - No hosted gateway. Soft-WTP is off. No Lock. No Audit.
 - Polar listing stays dark.
-- The Polar purchase-refund day count is TBD (founder flag).
+- Purchase-refund window is 30 days (founder lock 2026-09-26). That is not the replay CLI.
 - `order.refunded` is stored as `ignored` and does not claw back credit.
 - The chaos set stays at five files. No fuzzing.
 - Single-app license only. Multi-app is not included.

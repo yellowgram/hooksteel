@@ -21,7 +21,7 @@
 
 ## Phase
 
-**Ready gate in progress. Replay CLI merged at `c6a4012`. Listing dark. Refund window TBD (founder flag).**
+**Ready gate in progress. Replay CLI merged at `c6a4012`. Listing dark. Purchase-refund window 30 days (founder lock 2026-09-26).**
 
 - Stripe path is on `main` at `f25f235` (`Stripe path: exactly-once webhook side effects + chaos suite`). PR: https://github.com/yellowgram/hooksteel/pull/1
 - Design contract for that slice remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Code-review packs: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md), [`COS_CODE_REVIEW_PR1.yaml`](./COS_CODE_REVIEW_PR1.yaml).
@@ -30,14 +30,14 @@
 - Replay CLI design is **greenlit**: [`DESIGN_REPLAY_CLI.md`](./DESIGN_REPLAY_CLI.md) §1 and §3. PQ1 locked: `replay:list`, `replay:dry-run`, `replay:execute` in one `scripts/replay-cli.ts` (tsx + dotenv, no bin, no inspect). PQ2 locked: execute stdout JSON (`deadLetterId`, `outboxId`, `adapter`) is the operator note. No `--operator`. No `replayed_by`.
 - Replay CLI **implement is merged**: https://github.com/yellowgram/hooksteel/pull/5 at `c6a4012dd25d1aff64f19223669453ffdec2058a` (`feat(replay): npm scripts list/dry-run/execute wrapping shipped mutation`). Polar path lineage stays `09c4f88` (PR #3). `src/outbox/replay.ts` was not edited. CR2-A-P2-002 stays deferred (README known limit). Listing stays dark.
 - RD1 and RD2 are README known limits. Do not edit `src/outbox/replay.ts`.
-- Refund window still deferred. Soft-WTP / Lock / Audit / hosted gateway still OFF. No Polar listing / KYC.
+- Purchase-refund window is **30 days** (founder lock 2026-09-26). CoS sets the Polar refund toggle to 30 days before the listing goes light. Do not publish to set it. Soft-WTP / Lock / Audit / hosted gateway still OFF. No Polar listing / KYC.
 - Ready-gate docs are in the tree: [SUPPORT.md](../SUPPORT.md), [DEMO_60S.md](./DEMO_60S.md) (script only; not filmed), [LANDING.md](./LANDING.md) (not a deployed site), [POLAR_DELIVERABLES.md](./POLAR_DELIVERABLES.md), [REFUND_GLOSSARY.md](./REFUND_GLOSSARY.md), [CHECKSUMS.md](./CHECKSUMS.md), [CHANGELOG.md](../CHANGELOG.md). Zip asset: `release/hooksteel-0.1.0.zip`, built by `npm run pack:release`. GitHub Release `v0.1.0` is not cut. CoS steps are in the Polar packet. Listing stays dark.
-- The purchase-refund day count is **TBD**. Do not set the Polar refund toggle. Do not write a day count. See [REFUND_GLOSSARY.md](./REFUND_GLOSSARY.md).
+- The purchase-refund window is **30 days**. See [REFUND_GLOSSARY.md](./REFUND_GLOSSARY.md). Replay CLI is not that refund. `order.refunded` stays ignored and does not claw back credit.
 
 ## Next
 
 1. Founder films and approves [DEMO_60S.md](./DEMO_60S.md). The file is the script. A recording is not in the repo.
-2. Founder names the purchase-refund day count. Until that number exists, CoS leaves the Polar refund toggle unset.
+2. CoS sets the Polar refund toggle to 30 days before the listing goes light. Do not publish the product to do that. See [POLAR_DELIVERABLES.md](./POLAR_DELIVERABLES.md).
 3. CoS follows [POLAR_DELIVERABLES.md](./POLAR_DELIVERABLES.md) to cut GitHub Release `v0.1.0` with `release/hooksteel-0.1.0.zip` and the SHA-256 from [CHECKSUMS.md](./CHECKSUMS.md). Do not publish the Polar product.
 4. Listing stays dark. No Checkout, no KYC, no Soft-WTP, no Lock/Audit, no hosted gateway. Polar lineage stays `09c4f88`.
 
@@ -49,4 +49,4 @@
 - Support &gt;2h/wk day 60  
 - Buyers demand hosted gateway → **stop**; do not pivot to services on Polar  
 
-*Stripe merged at f25f235. Polar merged at 09c4f88 (PR #3). Replay CLI implement merged at c6a4012 (PR #5, PQ1 three npm scripts, PQ2 terminal JSON only). Ready-gate docs in progress (support, demo script, landing copy, zip + SHA). Refund days TBD. Polar lineage stays 09c4f88. Soft-WTP OFF. Listing dark.*
+*Stripe merged at f25f235. Polar merged at 09c4f88 (PR #3). Replay CLI implement merged at c6a4012 (PR #5, PQ1 three npm scripts, PQ2 terminal JSON only). Ready-gate docs in progress (support, demo script, landing copy, zip + SHA). Purchase-refund window 30 days. Polar lineage stays 09c4f88. Soft-WTP OFF. Listing dark.*

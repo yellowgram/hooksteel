@@ -4,7 +4,7 @@
 **Owner:** yellowgram  
 **Contact:** hello@yellowgram.dev · www.yellowgram.dev  
 **Polar org (when ready):** Suthirth solutions (CoS owns listing)  
-**Private repo (README only until implement):** https://github.com/yellowgram/hooksteel  
+**Private repo:** https://github.com/yellowgram/hooksteel  
 **Date:** 2026-09-26 ET
 
 ---
@@ -17,14 +17,19 @@
 
 ## Phase
 
-**Stripe path design — cycle 2 locks merged; implement unlocked under 3 code-review passes. Next = implement on yellowgram/hooksteel.**
+**Stripe path PR #1 — code-review×3 done; halted for founder code review before merge.**
 
-Design pack: [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md) (cycle-1 3/3 adversarial design + cycle-2 CoS locks merged). Judgement: [`DESIGN_REVIEW_CYCLE2_JUDGEMENT.md`](./DESIGN_REVIEW_CYCLE2_JUDGEMENT.md). No application code in the design pass; no cloud-agent launch from this folder.
+- PR: https://github.com/yellowgram/hooksteel/pull/1 (`cursor/stripe-path-chaos-658e`)
+- Adversarial pack: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md) (Experts A/B/C)
+- CI: `chaos-postgres` green at review time
+- Verdict: **REQUEST CHANGES** (P0=0, P1=5, P2=12) — fix P1s (or founder-waive) then merge
+
+Design contract remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Soft-WTP / Lock / Audit / hosted gateway still OFF.
 
 ## Next
 
-1. **Implement** Stripe path in `yellowgram/hooksteel` under **3 code-review** adversarial passes (schema + signed webhook + same-txn outbox + minimal drain + 5 chaos on Postgres CI) per §1 locks.  
-2. Halt again for founder code-review pass after those 3 CRs.  
+1. **Founder** reads PR #1 + `CODE_REVIEW_STRIPE_PATH_PR1.md`; decide fix-P1s vs waive.  
+2. Land P1 follow-up on the PR branch (or waive in writing), then merge.  
 3. Then Polar path, polished replay CLI, ready-gate rest → Polar listing (CoS).
 
 ## Kill watch (from DECISION)
@@ -35,4 +40,4 @@ Design pack: [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md) (cycle-1 3/3 adv
 - Support &gt;2h/wk day 60  
 - Buyers demand hosted gateway → **stop**; do not pivot to services on Polar  
 
-*Cycle-2 design locks merged; implement unlocked on yellowgram/hooksteel under 3 code-review passes.*
+*Stripe path PR #1 — CR×3 done; halted for founder before merge.*

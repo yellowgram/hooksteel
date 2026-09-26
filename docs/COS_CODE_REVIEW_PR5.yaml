@@ -197,5 +197,68 @@ do_not:
   - start a Polar listing
 
 status_line: >
-  Replay CLI CR×3 APPROVE on c78f40b. P0 0, P1 0, P2 0. No product-code fix.
-  approve_merge false. Halt for founder. Do not merge from the review commit.
+  Replay CLI CR×3 APPROVE on c78f40b. P0 0, P1 0, P2 0. Independent review
+  APPROVE with no in-slice fixes. Founder authorized squash-merge 2026-09-26.
+  See independent_expert_review.
+
+# Separate reviewer. Did not treat the CR×3 packet as evidence.
+# Re-read DESIGN_REPLAY_CLI.md §1 and the PR diff from scratch.
+# Founder (yellowgram, 2026-09-26) authorized squash-merge after this pass.
+# That authority supersedes the CR×3 halt and "do not merge" lines above.
+# It does not reopen replay.ts, drain, verify, handlers, migrations, adapters,
+# LICENSE, a sixth chaos file, CR2-A-P2-002, the CR3 P2s, Soft-WTP, listing, or refund.
+independent_expert_review:
+  date: 2026-09-26
+  reviewer: independent
+  base_sha: b6dc333846cfc8ca3cc2e7bfd68824525ddeb216
+  reviewed_head: 8e9fca6cb70cef0a3d43a14bf7ef4cc399e59641
+  contract: docs/DESIGN_REPLAY_CLI.md §1
+  verdict: APPROVE
+  approve_merge: true
+  counts: {p0: 0, p1: 0, p2: 0}
+  findings_fixed: []
+  findings_deferred:
+    - id: IX-DEF-001
+      severity: n/a
+      kind: rejected
+      issue: >
+        A non-uuid token makes Postgres throw "invalid input syntax for type uuid"
+        instead of "dead letter not found".
+      why_deferred: >
+        §1.3 forbids a UUID regex. The lookup miss for a real uuid is already
+        "dead letter not found". Rewording the cast error would edit
+        src/outbox/replay.ts. List ids are uuids.
+    - id: IX-DEF-002
+      severity: n/a
+      kind: rejected
+      issue: >
+        npm run writes its script banner on stdout before the JSON document.
+      why_deferred: >
+        PQ1 locked npm run without --silent, the same runner as outbox:drain.
+        The tsx process stdout is one JSON document. A bin or a command-spelling
+        change is out of slice.
+    - id: IX-DEF-003
+      severity: n/a
+      kind: deferred
+      issue: CR2-A-P2-002 three $1 labels, and CR3-B-P2-001 / CR3-C-P2-001.
+      why_deferred: Founder standing constraints. Not this merge.
+  local_proof:
+    npm_test: pass
+    npm_test_count: 50
+    database: postgres 16
+    cli:
+      - empty list exits 0 with count 0 and rows []
+      - seeded list, dry-run, and execute match the §1.3 JSON shapes
+      - dry-run statements contain $1 and do not contain the dead-letter, outbox, or billing-event ids
+      - execute reopened the outbox (attempts 0, completed_at null), cleared processed_at, set replayed_at, and did not print a stack
+      - second execute stderr is exactly "dead letter already replayed", exit 1
+      - --force stderr is the usage line, exit 1, no new row
+      - missing uuid stderr is exactly "dead letter not found"
+      - success path returned in under a second after closePool
+  merge:
+    method: squash
+    authorized_by: yellowgram
+    authorized_on: 2026-09-26
+    pr_url: https://github.com/yellowgram/hooksteel/pull/5
+    # GitHub assigns the squash SHA at merge time. Filled on main after squash.
+    sha: pending_squash

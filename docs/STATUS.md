@@ -17,20 +17,19 @@
 
 ## Phase
 
-**Stripe path PR #1 — code-review×3 done; halted for founder code review before merge.**
+**Stripe path PR #1 — CR2 P1s fixed on the branch; halted for founder merge (no auto-merge).**
 
 - PR: https://github.com/yellowgram/hooksteel/pull/1 (`cursor/stripe-path-chaos-658e`)
-- Adversarial pack: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md) (Experts A/B/C)
-- CI: `chaos-postgres` green at review time
-- Verdict: **REQUEST CHANGES** (P0=0, P1=5, P2=12) — fix P1s (or founder-waive) then merge
-
-Design contract remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Soft-WTP / Lock / Audit / hosted gateway still OFF.
+- Adversarial pack: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md) (first CR×3) and [`COS_CODE_REVIEW_PR1.yaml`](./COS_CODE_REVIEW_PR1.yaml) (CR2)
+- First-review P1s and P2s stay fixed. This pass fixes only CR2-A-P1-001 (replay clears `processed_at`), CR2-A-P1-002 (`grant_credit` throws on missing money fields), and CR2-B-P1-001 (production ignores crash hooks).
+- Deferred known limits, not fixed this pass: CR2-A-P2-001, CR2-A-P2-002, CR2-B-P2-001, CR2-B-P2-002, CR2-C-P2-001, CR2-C-P2-002.
+- Design contract remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Soft-WTP / Lock / Audit / hosted gateway still OFF. No Polar.
+- Not in this tree: Polar verify, polished replay CLI, landing, Polar listing. Founder merges; no auto-merge.
 
 ## Next
 
-1. **Founder** reads PR #1 + `CODE_REVIEW_STRIPE_PATH_PR1.md`; decide fix-P1s vs waive.  
-2. Land P1 follow-up on the PR branch (or waive in writing), then merge.  
-3. Then Polar path, polished replay CLI, ready-gate rest → Polar listing (CoS).
+1. **Founder** reviews the fix commit on PR #1 and merges when satisfied.  
+2. Then Polar path, polished replay CLI, ready-gate rest → Polar listing (CoS).
 
 ## Kill watch (from DECISION)
 
@@ -40,4 +39,4 @@ Design contract remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Soft
 - Support &gt;2h/wk day 60  
 - Buyers demand hosted gateway → **stop**; do not pivot to services on Polar  
 
-*Stripe path PR #1 — CR×3 done; halted for founder before merge.*
+*Stripe path PR #1 — CR2 P1s fixed on the branch; halted for founder merge (no auto-merge).*

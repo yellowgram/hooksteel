@@ -5,11 +5,11 @@ export const grantCreditAdapter: FulfillmentAdapter = {
   name: 'grant_credit',
   async execute(ctx) {
     const payload = (ctx.payload ?? {}) as Record<string, unknown>;
-    const amount = payload.amount_total ?? payload.amount_paid ?? null;
-    const currency = payload.currency ?? null;
-    const customer = payload.customer ?? null;
+    const amount = payload.amount_total ?? payload.amount_paid;
+    const currency = payload.currency;
+    const customer = payload.customer;
     if (amount == null || currency == null || customer == null) {
-      // Stub still records one idempotent invocation when the test log is enabled.
+      throw new Error('grant_credit requires amount, currency, and customer');
     }
     await recordTestInvocation(ctx.idempotencyKey, grantCreditAdapter.name);
   },

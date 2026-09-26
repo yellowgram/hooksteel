@@ -45,6 +45,7 @@ async function lockDeadLetter(client: import('pg').PoolClient, deadLetterId: str
 function statementsFor(): string[] {
   return [
     'UPDATE outbox SET completed_at = NULL, last_error = NULL, available_at = now(), locked_at = NULL, locked_by = NULL, attempts = 0 WHERE id = $1',
+    'UPDATE billing_events SET processed_at = NULL WHERE id = $1',
     'UPDATE dead_letters SET replayed_at = now() WHERE id = $1 AND replayed_at IS NULL',
   ];
 }
@@ -108,6 +109,9 @@ export async function replayExecute(deadLetterId: string): Promise<{ outboxId: s
        WHERE id = $1`,
       [row.outbox_id],
     );
+    await client.query(`UPDATE billing_events SET processed_at = NULL WHERE id = $1`, [
+      row.billing_event_id,
+    ]);
     const updated = await client.query(
       `UPDATE dead_letters
        SET replayed_at = now()

@@ -17,14 +17,14 @@
 
 ## Phase
 
-**Stripe path PR #1 — CR×3 findings fixed on the branch; halted for founder before merge.**
+**Stripe path PR #1 — CR2 P1s fixed on the branch; halted for founder merge (no auto-merge).**
 
 - PR: https://github.com/yellowgram/hooksteel/pull/1 (`cursor/stripe-path-chaos-658e`)
-- Adversarial pack: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md) (Experts A/B/C)
-- Verdict was **REQUEST CHANGES** (P0=0, P1=5, P2=12). Founder asked for every P1 and every P2. None waived.
-- This branch now contains those fixes (processed_at race, idempotent dead letters, Express raw body, invocation gate, Next env, and the P2 list).
-- Design contract remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Soft-WTP / Lock / Audit / hosted gateway still OFF.
-- Not in this tree: Polar verify, polished replay CLI, landing, Polar listing.
+- Adversarial pack: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md) (first CR×3) and [`COS_CODE_REVIEW_PR1.yaml`](./COS_CODE_REVIEW_PR1.yaml) (CR2)
+- First-review P1s and P2s stay fixed. This pass fixes only CR2-A-P1-001 (replay clears `processed_at`), CR2-A-P1-002 (`grant_credit` throws on missing money fields), and CR2-B-P1-001 (production ignores crash hooks).
+- Deferred known limits, not fixed this pass: CR2-A-P2-001, CR2-A-P2-002, CR2-B-P2-001, CR2-B-P2-002, CR2-C-P2-001, CR2-C-P2-002.
+- Design contract remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Soft-WTP / Lock / Audit / hosted gateway still OFF. No Polar.
+- Not in this tree: Polar verify, polished replay CLI, landing, Polar listing. Founder merges; no auto-merge.
 
 ## Next
 
@@ -39,4 +39,4 @@
 - Support &gt;2h/wk day 60  
 - Buyers demand hosted gateway → **stop**; do not pivot to services on Polar  
 
-*Stripe path PR #1 — CR×3 P1s and P2s fixed on the branch; halted for founder before merge.*
+*Stripe path PR #1 — CR2 P1s fixed on the branch; halted for founder merge (no auto-merge).*

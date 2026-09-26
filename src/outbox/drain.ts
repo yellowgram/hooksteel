@@ -122,7 +122,7 @@ async function complete(
        WHERE id = $1`,
       [row.id, lastError],
     );
-    if (options?.beforeMarkProcessed) await options.beforeMarkProcessed();
+    if (honorChaosHooks() && options?.beforeMarkProcessed) await options.beforeMarkProcessed();
     await markProcessed(client, row.billing_event_id);
   });
 }
@@ -163,9 +163,15 @@ async function deadLetter(
        WHERE id = $1`,
       [row.id],
     );
-    if (options?.beforeMarkProcessed) await options.beforeMarkProcessed();
+    if (honorChaosHooks() && options?.beforeMarkProcessed) await options.beforeMarkProcessed();
     await markProcessed(client, row.billing_event_id);
   });
+}
+
+/** Production always wins, even when ALLOW_CHAOS_INJECT is set. */
+function honorChaosHooks(): boolean {
+  if (process.env.NODE_ENV === 'production') return false;
+  return process.env.NODE_ENV === 'test' || process.env.ALLOW_CHAOS_INJECT === 'true';
 }
 
 function skipped(result: AdapterResult): boolean {
@@ -206,7 +212,9 @@ export async function drainOne(options?: DrainOptions): Promise<boolean> {
       payload: claimed.payload,
       idempotencyKey: claimed.idempotency_key,
     });
-    if (options?.afterInvocation) await options.afterInvocation(claimed.idempotency_key);
+    if (honorChaosHooks() && options?.afterInvocation) {
+      await options.afterInvocation(claimed.idempotency_key);
+    }
     await complete(claimed, skipped(result) ? 'skipped_no_email' : null, options);
   } catch (err) {
     await backoff(claimed, errorMessage(err));

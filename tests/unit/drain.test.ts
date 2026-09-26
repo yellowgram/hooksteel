@@ -194,6 +194,139 @@ test('crash after dead_letters insert reclaims without a second open row', async
   assert.equal(row.rows[0]?.last_error, 'dead_lettered');
 });
 
+test('replay clears processed_at and the next drain sets it again', async () => {
+  process.env.OUTBOX_MAX_ATTEMPTS = '1';
+  await accept('evt_replay_processed');
+  const key = 'stripe|evt_replay_processed|grant_credit';
+  await getPool().query(
+    `UPDATE outbox SET completed_at = now(), locked_at = NULL, locked_by = NULL
+     WHERE idempotency_key = 'stripe|evt_replay_processed|send_email'`,
+  );
+  await getPool().query(
+    `UPDATE outbox SET attempts = 1, locked_at = NULL, locked_by = NULL, available_at = now()
+     WHERE idempotency_key = $1`,
+    [key],
+  );
+
+  await drainOnce();
+
+  const dead = await getPool().query<{ id: string; processed_at: Date | null }>(
+    `SELECT d.id, b.processed_at
+     FROM dead_letters d
+     JOIN outbox o ON o.id = d.outbox_id
+     JOIN billing_events b ON b.id = d.billing_event_id
+     WHERE o.idempotency_key = $1 AND d.replayed_at IS NULL`,
+    [key],
+  );
+  const deadId = dead.rows[0]?.id;
+  assert.ok(deadId);
+  assert.ok(dead.rows[0]?.processed_at);
+
+  const dry = await replayDryRun(deadId);
+  assert.match(dry.statements.join('\n'), /UPDATE billing_events SET processed_at = NULL WHERE id = \$1/);
+  assert.equal(dry.statements.some((sql) => sql.includes(deadId)), false);
+  assert.equal(dry.statements.some((sql) => sql.includes(dry.outboxId)), false);
+
+  await replayExecute(deadId);
+  const cleared = await getPool().query<{ processed_at: Date | null }>(
+    `SELECT processed_at FROM billing_events WHERE provider_event_id = 'evt_replay_processed'`,
+  );
+  assert.equal(cleared.rows[0]?.processed_at, null);
+
+  assert.equal(await drainOne(), true);
+  const again = await getPool().query<{ processed_at: Date | null }>(
+    `SELECT processed_at FROM billing_events WHERE provider_event_id = 'evt_replay_processed'`,
+  );
+  assert.ok(again.rows[0]?.processed_at);
+});
+
+test('production drops crash hooks even when chaos inject is armed', async () => {
+  const previousNode = process.env.NODE_ENV;
+  const previousChaos = process.env.ALLOW_CHAOS_INJECT;
+  process.env.NODE_ENV = 'production';
+  process.env.ALLOW_CHAOS_INJECT = 'true';
+  try {
+    const rawBody = checkoutBody({ id: 'evt_prod_hook' });
+    let beforeCommitRan = false;
+    const response = await handle(
+      { rawBody, signature: signBody(rawBody) },
+      {
+        beforeCommit: async () => {
+          beforeCommitRan = true;
+          throw new Error('hook_should_not_run');
+        },
+      },
+    );
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).outcome, 'outboxed');
+    assert.equal(beforeCommitRan, false);
+
+    let afterRan = false;
+    let beforeMarkRan = false;
+    assert.equal(
+      await drainOnce({
+        afterInvocation: async () => {
+          afterRan = true;
+          throw new Error('hook_should_not_run');
+        },
+        beforeMarkProcessed: async () => {
+          beforeMarkRan = true;
+          throw new Error('hook_should_not_run');
+        },
+      }),
+      2,
+    );
+    assert.equal(afterRan, false);
+    assert.equal(beforeMarkRan, false);
+    const completed = await getPool().query<{ n: number }>(
+      `SELECT count(*)::int AS n FROM outbox
+       WHERE billing_event_id = (
+         SELECT id FROM billing_events WHERE provider_event_id = 'evt_prod_hook'
+       )
+         AND completed_at IS NOT NULL
+         AND last_error IS NULL`,
+    );
+    assert.equal(Number(completed.rows[0]?.n), 2);
+
+    process.env.OUTBOX_MAX_ATTEMPTS = '1';
+    const deadBody = checkoutBody({ id: 'evt_prod_dead' });
+    const deadResponse = await handle({ rawBody: deadBody, signature: signBody(deadBody) });
+    assert.equal(deadResponse.status, 200);
+    await getPool().query(
+      `UPDATE outbox SET completed_at = now(), locked_at = NULL, locked_by = NULL
+       WHERE idempotency_key = 'stripe|evt_prod_dead|send_email'`,
+    );
+    await getPool().query(
+      `UPDATE outbox SET attempts = 1, locked_at = NULL, locked_by = NULL, available_at = now()
+       WHERE idempotency_key = 'stripe|evt_prod_dead|grant_credit'`,
+    );
+    let deadHookRan = false;
+    assert.equal(
+      await drainOne({
+        beforeMarkProcessed: async () => {
+          deadHookRan = true;
+          throw new Error('hook_should_not_run');
+        },
+      }),
+      true,
+    );
+    assert.equal(deadHookRan, false);
+    assert.equal(
+      await count(
+        `SELECT count(*)::int AS n FROM dead_letters d
+         JOIN outbox o ON o.id = d.outbox_id
+         WHERE o.idempotency_key = 'stripe|evt_prod_dead|grant_credit' AND d.replayed_at IS NULL`,
+      ),
+      1,
+    );
+  } finally {
+    if (previousNode === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = previousNode;
+    if (previousChaos === undefined) delete process.env.ALLOW_CHAOS_INJECT;
+    else process.env.ALLOW_CHAOS_INJECT = previousChaos;
+  }
+});
+
 test('unknown adapter is poison, not a retry', async () => {
   await accept('evt_poison');
   await getPool().query(

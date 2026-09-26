@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import { grantCreditAdapter } from '../../src/adapters/grant_credit.js';
 import { recordTestInvocation } from '../../src/adapters/testInvocation.js';
 import { getPool } from '../../src/db/pool.js';
 import { drainOnce } from '../../src/outbox/drain.js';
@@ -173,6 +174,50 @@ test('outbox payload copies Connect account and omits it when absent', () => {
     data: { object: { id: 'in_1', customer: 'cus_1', amount_paid: 50, currency: 'usd' } },
   } as never);
   assert.equal(without.account, null);
+});
+
+test('grant_credit throws on missing money fields and writes no invocation', async () => {
+  const base = {
+    billingEventId: '00000000-0000-0000-0000-000000000001',
+    providerEventId: 'evt_missing_money',
+    idempotencyKey: 'stripe|evt_missing_money|grant_credit',
+  };
+  const missing = [
+    { currency: 'usd', customer: 'cus_1' },
+    { amount_total: 100, customer: 'cus_1' },
+    { amount_paid: 100, currency: 'usd' },
+    { amount_total: null, amount_paid: undefined, currency: 'usd', customer: 'cus_1' },
+  ];
+  for (const payload of missing) {
+    await assert.rejects(
+      () => grantCreditAdapter.execute({ ...base, payload }),
+      /grant_credit requires amount, currency, and customer/,
+    );
+  }
+  assert.equal(await count('SELECT count(*)::int AS n FROM adapter_invocations'), 0);
+
+  await grantCreditAdapter.execute({
+    ...base,
+    idempotencyKey: 'stripe|evt_zero_amount|grant_credit',
+    payload: { amount_total: 0, currency: 'usd', customer: 'cus_1' },
+  });
+  await grantCreditAdapter.execute({
+    ...base,
+    idempotencyKey: 'stripe|evt_amount_paid|grant_credit',
+    payload: { amount_paid: 1200, currency: 'usd', customer: 'cus_1' },
+  });
+  assert.equal(
+    await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
+      'stripe|evt_zero_amount|grant_credit',
+    ]),
+    1,
+  );
+  assert.equal(
+    await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
+      'stripe|evt_amount_paid|grant_credit',
+    ]),
+    1,
+  );
 });
 
 test('invocation log stays off unless NODE_ENV=test or HOOKSTEEL_RECORD_INVOCATIONS=true', async () => {

@@ -20,6 +20,8 @@ test('production entry does not export or import chaos', () => {
   }
   const indexSrc = readFileSync('src/index.ts', 'utf8');
   assert.doesNotMatch(indexSrc, /chaos/);
+  assert.doesNotMatch(indexSrc, /HandleOptions/);
+  assert.doesNotMatch(indexSrc, /DrainOptions/);
 
   const roots = ['src', 'scripts', 'examples'];
   for (const root of roots) {
@@ -69,5 +71,6 @@ test('exactly five chaos tests and the Next route uses request.text()', () => {
   assert.doesNotMatch(prod, /lease_expires_at/);
   assert.doesNotMatch(prod, /setBeforeCommitHook/);
   assert.doesNotMatch(prod, /setAfterInvocationHook/);
-  assert.doesNotMatch(prod, /ALLOW_CHAOS_INJECT/);
+  assert.match(prod, /NODE_ENV === 'production'/);
+  assert.match(prod, /ALLOW_CHAOS_INJECT === 'true'/);
 });

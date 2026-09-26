@@ -23,6 +23,12 @@ function json(status: number, body: unknown): Response {
   });
 }
 
+/** Production always wins, even when ALLOW_CHAOS_INJECT is set. */
+function honorChaosHooks(): boolean {
+  if (process.env.NODE_ENV === 'production') return false;
+  return process.env.NODE_ENV === 'test' || process.env.ALLOW_CHAOS_INJECT === 'true';
+}
+
 function safeLog(err: unknown): string {
   const message = err instanceof Error ? err.message : 'unexpected error';
   return message.replace(/whsec_[A-Za-z0-9_]+/g, 'whsec_[redacted]');
@@ -91,7 +97,7 @@ export async function handle(input: HandleInput, options?: HandleOptions): Promi
       await client.query(`UPDATE billing_events SET status = 'outboxed' WHERE id = $1`, [billingEventId]);
     }
 
-    if (options?.beforeCommit) await options.beforeCommit(client);
+    if (honorChaosHooks() && options?.beforeCommit) await options.beforeCommit(client);
     await client.query('COMMIT');
     committed = true;
     return json(200, {

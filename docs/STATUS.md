@@ -28,13 +28,13 @@
 - Polar design is merged: https://github.com/yellowgram/hooksteel/pull/2 (`cursor/polar-path-design-cac1`). Docs only.
 - Polar implement is merged: https://github.com/yellowgram/hooksteel/pull/3 at `09c4f88d21dae3fc01af6cae27456246b898626c` (`Polar path: dual-key HMAC verify and handlePolar`). LICENSE unchanged. CR3 P2s stayed deferred.
 - Replay CLI design is **greenlit**: [`DESIGN_REPLAY_CLI.md`](./DESIGN_REPLAY_CLI.md) §1 and §3. PQ1 locked: `replay:list`, `replay:dry-run`, `replay:execute` in one `scripts/replay-cli.ts` (tsx + dotenv, no bin, no inspect). PQ2 locked: execute stdout JSON (`deadLetterId`, `outboxId`, `adapter`) is the operator note. No `--operator`. No `replayed_by`.
-- Replay CLI **implement is in progress** (PR link filled when the implement PR is open). Polar path lineage stays `09c4f88` (PR #3). `src/outbox/replay.ts` is not edited. CR2-A-P2-002 stays deferred (README known limit). Listing stays dark.
+- Replay CLI **implement is in progress**: https://github.com/yellowgram/hooksteel/pull/5 (`cursor/replay-cli-list-dry-run-execute-9765`). Polar path lineage stays `09c4f88` (PR #3). `src/outbox/replay.ts` is not edited. CR2-A-P2-002 stays deferred (README known limit). Listing stays dark.
 - RD1 and RD2 are README known limits on the implement PR. Do not edit `src/outbox/replay.ts`.
 - Refund window still deferred. Soft-WTP / Lock / Audit / hosted gateway still OFF. No Polar listing / KYC.
 
 ## Next
 
-1. Replay CLI implement PR (in progress): three npm scripts, argv unit test, README / `BUYER_START_HERE` runbook. Do not merge from this note. Polar lineage stays `09c4f88`. Listing stays dark.  
+1. Replay CLI implement PR is in progress: https://github.com/yellowgram/hooksteel/pull/5. Three npm scripts, argv unit test, README / `BUYER_START_HERE` runbook. Do not merge from this note. Polar lineage stays `09c4f88`. Listing stays dark.  
 2. Ready-gate remainder (zip, checksum, landing, 60s demo) and Polar listing stay after that. CoS owns the listing. Listing stays dark now.
 
 ## Kill watch (from DECISION)

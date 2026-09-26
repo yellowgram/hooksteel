@@ -18,6 +18,7 @@ First baseline of the Billing Event Reliability Kit. `package.json` version is `
 - No hosted gateway. Soft-WTP is off. No Lock. No Audit.
 - Polar listing stays dark.
 - Purchase-refund window is 30 days (founder lock 2026-09-26). That is not the replay CLI.
+- Founding price is $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Soft-WTP is off. Listing stays dark until the founder-approved clip, the distribution post, and the founder types go-live.
 - `order.refunded` is stored as `ignored` and does not claw back credit.
 - The chaos set stays at five files. No fuzzing.
 - Single-app license only. Multi-app is not included.

@@ -4,8 +4,9 @@
 
 | | |
 |---|---|
-| Founding | $89 |
-| List | $129 |
+| Founding | $89 for the first 10 licenses OR 30 days after go-live, whichever comes first |
+| List | $129 after that window |
+| SKU | One. Do not run two Polar products. |
 | Contact | hello@yellowgram.dev |
 | Site | https://www.yellowgram.dev |
 | License | Single-app: one production application and one production Stripe account |

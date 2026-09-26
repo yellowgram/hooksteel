@@ -21,7 +21,7 @@
 
 ## Phase
 
-**Ready gate in progress. Replay CLI merged at `c6a4012`. Listing dark. Purchase-refund window 30 days (founder lock 2026-09-26). The 60s demo is the product: one clip, Stripe and Polar together. Distribution before Polar.**
+**Ready gate in progress. Replay CLI merged at `c6a4012`. Listing dark. Purchase-refund window 30 days (founder lock 2026-09-26). Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. The 60s demo is the product: one clip, Stripe and Polar together. Distribution before Polar. Listing stays dark until the founder-approved clip, the distribution post, and the founder types go-live.**
 
 - Stripe path is on `main` at `f25f235` (`Stripe path: exactly-once webhook side effects + chaos suite`). PR: https://github.com/yellowgram/hooksteel/pull/1
 - Design contract for that slice remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Code-review packs: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md), [`COS_CODE_REVIEW_PR1.yaml`](./COS_CODE_REVIEW_PR1.yaml).
@@ -39,8 +39,9 @@
 
 1. Founder films and approves the one clip in [DEMO_60S.md](./DEMO_60S.md). Stripe and Polar, four deliveries, one side effect, rollback, same clip. A Stripe-only or Polar-only recording is not the gate. A recording is not in the repo.
 2. Founder posts that clip where the burn already happened: a tight X thread, Show HN, and Stripe/Polar builder chats. Same breath: use them for ingress; this is the outbox you keep.
-3. Only after that approved clip and that distribution post may CoS list on Polar, as the cash register. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post.
-4. CoS sets the Polar refund toggle to 30 days before the listing goes light. Do not publish the product to do that. GitHub Release `v0.1.0` steps are in [POLAR_DELIVERABLES.md](./POLAR_DELIVERABLES.md). Do not publish the Polar product. No Checkout, no KYC, no Soft-WTP, no Lock/Audit, no hosted gateway. Polar lineage stays `09c4f88`.
+3. Founder types go-live. Listing stays dark until the founder-approved clip, the distribution post, and that word.
+4. Only after that approved clip, that distribution post, and go-live may CoS list on Polar, as the cash register. One SKU. Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. Do not run two Polar products. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post.
+5. CoS sets the Polar refund toggle to 30 days before the listing goes light. Do not publish the product to do that. GitHub Release `v0.1.0` steps are in [POLAR_DELIVERABLES.md](./POLAR_DELIVERABLES.md). Do not publish the Polar product. No Checkout, no KYC, no Soft-WTP, no Lock/Audit, no hosted gateway. Polar lineage stays `09c4f88`.
 
 ## Kill watch (from DECISION)
 

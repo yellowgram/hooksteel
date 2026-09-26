@@ -6,15 +6,16 @@ The purchase-refund window is locked at 30 days. Soft-WTP is off. This packet is
 
 ## Do not list
 
-CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post.
+CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post. Listing also stays dark until the founder types go-live. Clip and post are not that word.
 
 Order locked:
 
 1. Founder-approved clip. One clip, not two provider demos. Same event four times → one side effect, rollback mid-fulfillment, Stripe and Polar in that same clip. Script: `docs/DEMO_60S.md`. If that clip cannot beat the Stripe docs and the Hookdeck homepage, do not list.
 2. Distribution post, where the burn already happened. Channels: a tight X thread, Show HN, and Stripe/Polar builder chats. Shape: "we double-provisioned after a 500." Same breath: use them for ingress; this is the outbox you keep.
-3. Only then is Polar the cash register. Not before.
+3. Founder types go-live.
+4. Only then is Polar the cash register. Not before. One SKU.
 
-Missing the clip or the post means do not list. A cover image does not replace either one. Do not start KYC or Checkout from this packet.
+Missing the clip, the post, or go-live means do not list. A cover image does not replace any of them. Do not start KYC or Checkout from this packet.
 
 ## Product
 
@@ -24,7 +25,8 @@ Missing the clip or the post means do not list. A cover image does not replace e
 | Line | Billing Event Reliability Kit |
 | Price to enter | **$89 USD** (founding) |
 | List price in the description | **$129 USD** |
-| When to change $89 → $129 | Only when the founder says the founding window is over. Do not invent a coupon. |
+| Founding window | Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. |
+| SKU | One Polar product. Do not open a second product to change the price. |
 | License | Single-app: one production application and one production Stripe account (test and live keys of that same account count as one). See `LICENSE`. |
 | Not on this listing | Multi-app, Lock, Audit, Soft-WTP, hosted gateway, implementation services, Credit Ledger |
 
@@ -42,7 +44,7 @@ HookSteel is owned code for Stripe and Polar webhooks. The same billing event fo
 
 You get a private GitHub repository and a zip (`hooksteel-0.1.0.zip`). You run Postgres. Your Stripe account and your Polar account stay yours. There is no hosted webhook gateway in this purchase.
 
-**Price:** $89 founding. List price $129 after the founding window. **License:** Single-app — one production application and one production Stripe account.
+**Price:** Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Soft-WTP is off. The purchase-refund window is 30 days. **License:** Single-app — one production application and one production Stripe account.
 
 **Use Hookdeck when** you need hosted ingress, fan-out, a team dashboard, or you do not want to run an outbox worker. **Use HookSteel when** the fear is a side effect that already ran inside a transaction that then rolls back, and you want that code in your repo for Stripe and Polar. Use both only if you want Hookdeck in front and this kit inside. Do not buy HookSteel if you want yellowgram to host your webhooks.
 
@@ -131,6 +133,21 @@ Configure this only when the founder allows the listing to go light. Not now.
 
 Until that benefit is actually on, do not tell buyers it already works.
 
+## CoS flip checklist
+
+Do not flip the listing on from this packet. Listing stays dark until the founder-approved clip, the distribution post, and the founder types go-live. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post.
+
+When those three exist, one Polar product only:
+
+Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products.
+
+1. Price on that product is founding **$89**.
+2. Founding window: first **10 licenses** OR **30 days after go-live**, whichever comes first; then set that same product to **$129**.
+3. One SKU. Do not run two Polar products. Do not invent a coupon. Do not open a second product at $129 while the $89 product is still up.
+4. Soft-WTP stays off. No waitlist benefit. No "email me forever updates" benefit.
+5. Purchase-refund window is **30 days**. Set the Polar refund toggle to 30 days before the listing goes light. Do not publish to set it.
+6. Stop if the clip, the post, or the typed go-live is missing. Do not start KYC or Checkout to get ahead of that word.
+
 ## Refund toggle
 
 **30 days. Founder lock 2026-09-26.** Before the listing goes light, set the Polar refund toggle to 30 days. You may set that toggle on the unpublished product. Do not publish. Do not start KYC or Checkout. Do not leave a rail default that is not 30 days. Listing stays dark.
@@ -168,13 +185,15 @@ Changelog: CHANGELOG.md
 Support: SUPPORT.md
 ```
 
-6. Stop. Do not upload the asset to a **visible** Polar product. Do not start KYC or Checkout. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post. The purchase-refund window is already 30 days. Set the Polar refund toggle to 30 days before the listing goes light. Do not publish in order to set it.
+6. Stop. Do not upload the asset to a **visible** Polar product. Do not start KYC or Checkout. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post. Listing stays dark until the founder types go-live. The purchase-refund window is already 30 days. Set the Polar refund toggle to 30 days before the listing goes light. Do not publish in order to set it. Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Soft-WTP stays off.
 
 ## Still dark
 
 - Polar product visibility: dark / unpublished
 - No founder-approved 60s clip yet (one clip: Stripe and Polar, four deliveries, one side effect, rollback)
 - No distribution post yet (X, Hacker News, Stripe/Polar builder chats)
+- Founder has not typed go-live
+- One SKU when it does go light: founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. Do not run two Polar products.
 - Checkout: off
 - KYC: not started from this packet
 - Soft-WTP: off

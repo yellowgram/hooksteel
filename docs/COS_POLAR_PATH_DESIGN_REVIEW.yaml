@@ -1,0 +1,185 @@
+# HookSteel — CoS packet
+# Expert design review of PR #2 (Polar webhook path design×3)
+# PR: https://github.com/yellowgram/hooksteel/pull/2
+# Head: cursor/polar-path-design-cac1 @ 5afb2ec0aa5dd7ee75119e22f69a7e3cc7f28c3a
+# Base: main @ f25f235 (Stripe path merged)
+# Contract reviewed: docs/DESIGN_POLAR_PATH.md §1 + §2
+# Date: 2026-09-27
+# Design only. No Polar application code. Soft-WTP OFF.
+
+schema_version: 1
+product: HookSteel
+packet_type: expert_design_review
+audience: hooksteelbot
+reviewer: grok
+slice: polar_path
+pr: 2
+pr_url: https://github.com/yellowgram/hooksteel/pull/2
+head_sha: 5afb2ec0aa5dd7ee75119e22f69a7e3cc7f28c3a
+pr_state: draft
+ci:
+  workflow: chaos-postgres
+  conclusion: success
+  note: Docs-only PR; Stripe chaos still green. Not a Polar implement proof.
+
+standing_constraints:
+  - exactly_5_chaos
+  - no_hosted_gateway
+  - no_polar_sdk_in_buyer_app
+  - no_soft_wtp
+  - no_lock_audit_services
+  - polar_listing_dark
+  - refund_14_vs_30_deferred
+  - no_edit_migrations_outbox_drain_replay_adapters
+  - no_sixth_chaos_file
+  - stripe_handle_name_unchanged
+  - r1_to_r14_hold
+  - h1_h2_h3_hold
+
+cos_instruction: |
+  1. Do not implement Polar code from this packet or from PR #2.
+  2. Post this YAML as the design-review input. Do not paraphrase locks.
+  3. PQ1 and PQ2 stay founder questions. Recommended answers below if founder
+     is silent. H1: silence is not a hidden yes; implement must state which
+     default it followed.
+  4. After founder answers (or accepts recommended defaults), merge PR #2 as
+     docs. Implement is a later PR under 3 code reviews from DESIGN_POLAR_PATH.md §1.
+  5. Do not rewrite LICENSE in the Polar implement PR unless founder closes
+     PQ2 as "edit LICENSE now".
+  6. Keep every item in rejected[].
+
+assertive_verdict: |
+  PR #2 is the right Polar slice. Dual-key stdlib HMAC, webhook-id as
+  provider_event_id, empty defaults on order.updated and checkout.updated,
+  reuse of shipped outbox, five chaos files extended in place, no Polar SDK.
+  No P0. Do not implement until PQ1 (and PQ2) are closed or explicitly taken
+  at the recommended defaults. Then merge the design PR. Then a new implement PR.
+
+approve_design_direction: true
+approve_implement_now: false
+approve_merge_design_pr: waiting_founder_pq1_pq2
+
+what_holds:
+  - id: dual_key_hmac
+    lock: >
+      node:crypto createHmac + timingSafeEqual. Keys = UTF-8 bytes of full
+      whsec_ string (pre-2026-09-08 Polar HMAC) AND Standard Webhooks
+      (strip whsec_, strict base64-decode remainder) when decode differs.
+      300s window both ways. Signed content = webhook-id.timestamp.rawBody.
+      v1 tokens only. No @polar-sh/sdk, standardwebhooks, or svix.
+    evidence: Polar delivery docs 2026-09-26, sdk/typescript webhooks.ts, issue 13519
+  - id: provider_event_id_is_webhook_id
+    lock: >
+      provider_event_id = webhook-id header. Never data.id.
+      order.created and order.paid share an order id and are different events.
+  - id: h2_polar_map
+    lock: >
+      Default grant only order.paid → [grant_credit, send_email].
+      order.created, order.updated, order.refunded, checkout.*,
+      subscription.canceled/revoked, and any other type → [].
+      invite_github opt-in only.
+  - id: reuse_shipped_machinery
+    lock: >
+      No migration. No drain/replay/adapter edits. handlePolar copies shipped
+      Stripe handler semantics (ignored sets processed_at, try/finally rollback,
+      production chaos-hook gate).
+  - id: five_chaos_extend_in_place
+    lock: Chaos 01-05 each gain one Polar case. No 06- file. Dual-key matrix stays in unit tests.
+  - id: http_contract
+    lock: >
+      400 invalid_webhook_secret / invalid_signature / invalid_payload.
+      200 outboxed | ignored | duplicate.
+      500 transient after verify, rolled back.
+      Do not 200 a bad signature. Do not adopt Polar sample 202/403.
+  - id: livemode_unsigned
+    lock: >
+      POLAR_EXPECT_LIVEMODE default false. Stored on every accepted Polar row.
+      No mismatch 400. Not inferred from secret or access token.
+
+founder_questions:
+  - id: PQ1
+    question: Accept legacy polar_whs_ secrets, or only whsec_?
+    recommendation: whsec_only
+    means: >
+      Reject empty, placeholders, and any secret that does not start with whsec_.
+      polar_whs_ sample → 400 invalid_webhook_secret. Buyers rotate in Polar.
+      Current Polar delivery docs only show whsec_.
+    silence_means: implement recommended default and state that in the implement PR
+    h1: not_auto_merged
+  - id: PQ2
+    question: Does Single-app LICENSE need a Polar-org clause in this slice?
+    recommendation: leave_license_unchanged_this_slice
+    means: >
+      LICENSE stays one production application + one production Stripe account.
+      Polar org count is deferred. Do not silently edit LICENSE in implement.
+    silence_means: LICENSE byte-identical on the Polar implement PR
+    later: optional Multi-app / Polar-org sentence after listing gate
+
+findings:
+  - id: PD1
+    severity: P1
+    kind: design_lock
+    issue: Polar livemode is an operator declaration, not a signed fact
+    change_required: >
+      README known-limits must say a live Polar endpoint pointed at a process
+      with POLAR_EXPECT_LIVEMODE unset/false still verifies if the secret
+      matches and stores livemode=false. Do not invent a Polar livemode field.
+      Do not add livemode_mismatch 400 on this path.
+  - id: PD2
+    severity: P1
+    kind: design_lock
+    issue: Both HMAC eras must be proven before ship
+    change_required: >
+      Unit tests mint and accept both polar_hmac and standard_webhooks for the
+      same body+secret. Chaos may mint only standard_webhooks. Shipping one
+      era and fixing the other in code review is R14. Reject.
+  - id: PD3
+    severity: P2
+    kind: support_copy
+    issue: Polar retries every non-2xx and disables the endpoint after 10
+    change_required: >
+      Implement README troubleshooting must include placeholder secret, raw-body
+      reparse, wrong key era, polar_whs_ rejected, and endpoint-disabled-after-10.
+  - id: PD4
+    severity: P2
+    kind: product_honesty
+    issue: Every order.paid including subscription_cycle grants credit
+    change_required: >
+      Document. Buyers who do not want renewal grants change the Polar map.
+      Do not special-case billing_reason in v0.1.
+
+p0: []
+p1_locks: [PD1, PD2]
+p2: [PD3, PD4]
+
+rejected:
+  - Polar SDK or standardwebhooks or svix as the verify implementation
+  - Single HMAC era in v0.1
+  - Dedupe on data.id
+  - Default grant on order.updated or checkout.updated
+  - Sixth chaos file or dual-scheme chaos matrix
+  - HTTP 200 on bad signature to avoid Polar 10-strike disable
+  - Polar sample 202/403 as the kit contract
+  - Polar OAT / access token required to verify
+  - Edit migrations, outbox, drain, replay, grant_credit, send_email
+  - LICENSE rewrite unless founder closes PQ2 as edit-now
+  - Infer livemode from secret prefix
+  - New adapters, refund clawback, Slack/Discord parsing
+  - next at repo root
+  - Implement inside PR #2
+  - Reopen R1–R14 or H2/H3
+
+recommended_if_founder_silent:
+  PQ1: whsec_only
+  PQ2: leave_license_unchanged_this_slice
+
+next_after_founder:
+  - Write PQ1/PQ2 answers into DESIGN_POLAR_PATH.md §3
+  - Merge PR #2 as docs (draft → ready)
+  - New PR for Polar implement from §1 only
+  - Three code-review passes on that implement PR
+  - Do not start implement from this design PR
+
+status_line: >
+  Polar path design×3 reviewed; direction approved; halted for PQ1/PQ2 then
+  docs merge; no Polar implement yet.

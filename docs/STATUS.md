@@ -17,25 +17,25 @@
 
 **Founder GREENLIT** Polar path design. PQ1 and PQ2 closed. CoS PD1–PD4 accepted. See [`DESIGN_POLAR_PATH.md`](./DESIGN_POLAR_PATH.md) §3. Implement is on `main`.
 
-**Founder GREENLIT** replay CLI design 2026-09-26. PQ1 `three_npm_scripts`. PQ2 `terminal_json_only`. See [`DESIGN_REPLAY_CLI.md`](./DESIGN_REPLAY_CLI.md) §3. Implement is a separate later PR.
+**Founder GREENLIT** replay CLI design 2026-09-26. PQ1 `three_npm_scripts`. PQ2 `terminal_json_only`. See [`DESIGN_REPLAY_CLI.md`](./DESIGN_REPLAY_CLI.md) §3. Implement is in progress on a separate PR.
 
 ## Phase
 
-**Polar merged at `09c4f88`. Replay CLI design greenlit. Next = a separate implement PR.**
+**Polar merged at `09c4f88`. Replay CLI implement in progress. Listing dark.**
 
 - Stripe path is on `main` at `f25f235` (`Stripe path: exactly-once webhook side effects + chaos suite`). PR: https://github.com/yellowgram/hooksteel/pull/1
 - Design contract for that slice remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Code-review packs: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md), [`COS_CODE_REVIEW_PR1.yaml`](./COS_CODE_REVIEW_PR1.yaml).
 - Polar design is merged: https://github.com/yellowgram/hooksteel/pull/2 (`cursor/polar-path-design-cac1`). Docs only.
 - Polar implement is merged: https://github.com/yellowgram/hooksteel/pull/3 at `09c4f88d21dae3fc01af6cae27456246b898626c` (`Polar path: dual-key HMAC verify and handlePolar`). LICENSE unchanged. CR3 P2s stayed deferred.
-- Replay CLI design is **greenlit**: [`DESIGN_REPLAY_CLI.md`](./DESIGN_REPLAY_CLI.md) §1 and §3. PQ1 locked: `replay:list`, `replay:dry-run`, `replay:execute` in one `scripts/replay-cli.ts` (tsx + dotenv, no bin, no inspect). PQ2 locked: execute stdout JSON (`deadLetterId`, `outboxId`, `adapter`) is the operator note. No `--operator`. No `replayed_by`. This design change does not implement the CLI.
-- RD1 and RD2 stay known limits for the implement README. Do not edit `src/outbox/replay.ts`. CR2-A-P2-002 stays deferred.
+- Replay CLI design is **greenlit**: [`DESIGN_REPLAY_CLI.md`](./DESIGN_REPLAY_CLI.md) §1 and §3. PQ1 locked: `replay:list`, `replay:dry-run`, `replay:execute` in one `scripts/replay-cli.ts` (tsx + dotenv, no bin, no inspect). PQ2 locked: execute stdout JSON (`deadLetterId`, `outboxId`, `adapter`) is the operator note. No `--operator`. No `replayed_by`.
+- Replay CLI **implement is in progress** (PR link filled when the implement PR is open). Polar path lineage stays `09c4f88` (PR #3). `src/outbox/replay.ts` is not edited. CR2-A-P2-002 stays deferred (README known limit). Listing stays dark.
+- RD1 and RD2 are README known limits on the implement PR. Do not edit `src/outbox/replay.ts`.
 - Refund window still deferred. Soft-WTP / Lock / Audit / hosted gateway still OFF. No Polar listing / KYC.
 
 ## Next
 
-1. A **separate** PR implements the replay CLI from [`DESIGN_REPLAY_CLI.md`](./DESIGN_REPLAY_CLI.md) §1 and §3 (three npm scripts, argv unit test, README / `BUYER_START_HERE` runbook). This design merge does not start that PR.  
-2. That implement PR copies RD1 and RD2 into the README known limits and does not edit `src/outbox/replay.ts`.  
-3. Ready-gate remainder (zip, checksum, landing, 60s demo) and Polar listing stay after that. CoS owns the listing. Listing stays dark now.
+1. Replay CLI implement PR (in progress): three npm scripts, argv unit test, README / `BUYER_START_HERE` runbook. Do not merge from this note. Polar lineage stays `09c4f88`. Listing stays dark.  
+2. Ready-gate remainder (zip, checksum, landing, 60s demo) and Polar listing stay after that. CoS owns the listing. Listing stays dark now.
 
 ## Kill watch (from DECISION)
 
@@ -45,4 +45,4 @@
 - Support &gt;2h/wk day 60  
 - Buyers demand hosted gateway → **stop**; do not pivot to services on Polar  
 
-*Stripe merged at f25f235. Polar merged at 09c4f88 (PR #3). Replay CLI design greenlit (PQ1 three npm scripts, PQ2 terminal JSON only). Next = a separate implement PR. Soft-WTP OFF. No Polar listing.*
+*Stripe merged at f25f235. Polar merged at 09c4f88 (PR #3). Replay CLI implement in progress (PQ1 three npm scripts, PQ2 terminal JSON only). Polar lineage stays 09c4f88. Soft-WTP OFF. Listing dark.*

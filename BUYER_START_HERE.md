@@ -8,6 +8,9 @@ HookSteel is a Node kit. Postgres is the ship path.
 4. `npm run migrate`
 5. `npm test` — five chaos scenarios against Postgres. Postgres 13+; CI uses 16.
 6. `npm run outbox:drain -- --once` after webhooks have been accepted.
+7. Dead letters: `npm run replay:list`, then `npm run replay:dry-run -- <dead_letter_id>`, then `npm run replay:execute -- <dead_letter_id>`, then `npm run outbox:drain -- --once`. The drain runs the adapter. Replay is not a Polar purchase refund.
+
+**Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. **Replay is not a Polar purchase refund.** A Polar refund returns the money paid for this kit. The refund window is not chosen here. `order.refunded` stays ignored and does not claw back credit.
 
 The Next example reads `examples/next/.env.local`, not the repo-root `.env`. See `examples/next/README.md`.
 

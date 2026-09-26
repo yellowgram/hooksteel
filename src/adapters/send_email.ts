@@ -1,4 +1,3 @@
-import { runAfterInvocationHook } from './hooks.js';
 import { recordTestInvocation } from './testInvocation.js';
 import type { FulfillmentAdapter } from './types.js';
 
@@ -11,6 +10,5 @@ export const sendEmailAdapter: FulfillmentAdapter = {
       return { lastError: 'skipped_no_email' };
     }
     await recordTestInvocation(ctx.idempotencyKey, sendEmailAdapter.name);
-    await runAfterInvocationHook(ctx.idempotencyKey);
   },
 };

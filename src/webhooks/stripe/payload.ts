@@ -40,6 +40,7 @@ export function buildOutboxPayload(event: Stripe.Event): Record<string, unknown>
       currency: obj.currency ?? null,
       payment_status: obj.payment_status ?? null,
       mode: obj.mode ?? null,
+      account: event.account ?? null,
     };
   }
   if (event.type === 'invoice.paid') {
@@ -49,9 +50,11 @@ export function buildOutboxPayload(event: Stripe.Event): Record<string, unknown>
       customer_email: emailOf(obj),
       amount_paid: obj.amount_paid ?? null,
       currency: obj.currency ?? null,
+      account: event.account ?? null,
     };
   }
   return {
     object_id: obj.id ?? null,
+    account: event.account ?? null,
   };
 }

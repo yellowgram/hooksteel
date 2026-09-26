@@ -4,12 +4,16 @@ import { getPool } from '../../db/pool.js';
 import { enqueueOutbox, idempotencyKey } from '../../outbox/enqueue.js';
 import { mapAdapters } from './mapAdapters.js';
 import { buildOutboxPayload } from './payload.js';
-import { runBeforeCommitHook } from './hooks.js';
 import { verifyStripeEvent, WebhookRejected } from './verify.js';
 
 export interface HandleInput {
   rawBody: string;
   signature: string | null;
+}
+
+/** Optional in-transaction callback. The Next route does not pass this. Tests do. */
+export interface HandleOptions {
+  beforeCommit?: (client: pg.PoolClient) => Promise<void> | void;
 }
 
 function json(status: number, body: unknown): Response {
@@ -28,7 +32,7 @@ function safeLog(err: unknown): string {
  * Verify a Stripe webhook and persist billing_events + outbox in one transaction.
  * Adapters are never called here. Callers must pass the raw body string (not JSON.parse'd).
  */
-export async function handle(input: HandleInput): Promise<Response> {
+export async function handle(input: HandleInput, options?: HandleOptions): Promise<Response> {
   let event: Stripe.Event;
   try {
     event = verifyStripeEvent(input.rawBody, input.signature);
@@ -69,7 +73,11 @@ export async function handle(input: HandleInput): Promise<Response> {
     const billingEventId = inserted.rows[0].id;
     const adapters = mapAdapters(event.type);
     if (adapters.length === 0) {
-      await client.query(`UPDATE billing_events SET status = 'ignored' WHERE id = $1`, [billingEventId]);
+      // Drain never visits a row with zero children, so mark it processed here.
+      await client.query(
+        `UPDATE billing_events SET status = 'ignored', processed_at = now() WHERE id = $1`,
+        [billingEventId],
+      );
     } else {
       const payload = buildOutboxPayload(event);
       for (const adapter of adapters) {
@@ -83,7 +91,7 @@ export async function handle(input: HandleInput): Promise<Response> {
       await client.query(`UPDATE billing_events SET status = 'outboxed' WHERE id = $1`, [billingEventId]);
     }
 
-    await runBeforeCommitHook(client);
+    if (options?.beforeCommit) await options.beforeCommit(client);
     await client.query('COMMIT');
     committed = true;
     return json(200, {

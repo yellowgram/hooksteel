@@ -16,6 +16,7 @@ test('buyer migrations are plain CREATE files without IF NOT EXISTS', () => {
     '001_billing_events.sql',
     '002_outbox.sql',
     '003_dead_letters.sql',
+    '004_dead_letters_outbox_unique.sql',
   ]);
   for (const file of files) {
     const sql = readFileSync(`migrations/${file}`, 'utf8');
@@ -50,6 +51,40 @@ test('second migrate is a no-op and schema reserves polar without lease_expires_
       `INSERT INTO billing_events (provider, provider_event_id, livemode, event_type, payload, status)
        VALUES ('stripe', 'evt_bad_status', false, 'checkout.session.completed', '{}'::jsonb, 'failed')`,
     ),
+  );
+
+  const index = await getPool().query<{ indexdef: string }>(
+    `SELECT indexdef FROM pg_indexes WHERE indexname = 'dead_letters_open_outbox_uidx'`,
+  );
+  assert.match(index.rows[0]?.indexdef ?? '', /UNIQUE/);
+
+  const event = await getPool().query<{ id: string }>(
+    `INSERT INTO billing_events (provider, provider_event_id, livemode, event_type, payload, status)
+     VALUES ('stripe', 'evt_reserved_reasons', false, 'checkout.session.completed', '{}'::jsonb, 'ignored')
+     RETURNING id`,
+  );
+  const billingEventId = event.rows[0]?.id;
+  for (const [adapter, reason] of [
+    ['grant_credit', 'timeout'],
+    ['send_email', 'adapter_error'],
+  ] as const) {
+    const outbox = await getPool().query<{ id: string }>(
+      `INSERT INTO outbox (billing_event_id, adapter, payload, idempotency_key)
+       VALUES ($1, $2, '{}'::jsonb, $3)
+       RETURNING id`,
+      [billingEventId, adapter, `stripe|evt_reserved_reasons|${adapter}`],
+    );
+    await getPool().query(
+      `INSERT INTO dead_letters (outbox_id, billing_event_id, reason, payload_snapshot)
+       VALUES ($1, $2, $3, '{}'::jsonb)`,
+      [outbox.rows[0]?.id, billingEventId, reason],
+    );
+  }
+  assert.equal(
+    await count(
+      `SELECT count(*)::int AS n FROM dead_letters WHERE reason IN ('timeout', 'adapter_error')`,
+    ),
+    2,
   );
 });
 

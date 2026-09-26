@@ -16,11 +16,12 @@ export class WebhookRejected extends Error {
 
 let stripe: Stripe | undefined;
 
+/** Not a Stripe API key. The SDK constructor requires a non-empty string; verify never calls the API. */
+export const WEBHOOK_VERIFY_CLIENT_SENTINEL = 'hooksteel_webhook_verify_only_not_an_api_key';
+
 function stripeClient(): Stripe {
   if (!stripe) {
-    // Webhook verify does not call the Stripe API. A dummy key keeps the SDK constructor happy
-    // when STRIPE_SECRET_KEY is unset.
-    const key = process.env.STRIPE_SECRET_KEY || 'sk_test_unused_for_webhook_verify_only';
+    const key = process.env.STRIPE_SECRET_KEY || WEBHOOK_VERIFY_CLIENT_SENTINEL;
     stripe = new Stripe(key);
   }
   return stripe;

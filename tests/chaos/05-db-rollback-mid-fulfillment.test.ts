@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { armCrashAfterInvocationOnce, disarmChaos } from '../../src/chaos/inject.js';
+import { crashAfterInvocationOnce } from '../../src/chaos/inject.js';
 import { getPool } from '../../src/db/pool.js';
 import { drainOnce } from '../../src/outbox/drain.js';
 import { handle } from '../../src/webhooks/stripe/handler.js';
@@ -19,13 +19,8 @@ test('crash after adapter_invocations write and before completed_at re-drains to
   assert.equal(accepted.status, 200);
   assert.equal(await count('SELECT count(*)::int AS n FROM outbox WHERE completed_at IS NULL'), 2);
 
-  armCrashAfterInvocationOnce(key);
-  try {
-    const processed = await drainOnce();
-    assert.ok(processed >= 1);
-  } finally {
-    disarmChaos();
-  }
+  const processed = await drainOnce(crashAfterInvocationOnce(key));
+  assert.ok(processed >= 1);
 
   assert.equal(
     await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [key]),

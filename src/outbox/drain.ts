@@ -1,7 +1,15 @@
-import { requireAdapter } from '../adapters/registry.js';
+import { getAdapter } from '../adapters/registry.js';
 import type { AdapterResult } from '../adapters/types.js';
 import { getPool } from '../db/pool.js';
 import type { ClaimedOutbox, DeadLetterReason } from './types.js';
+
+export interface DrainOptions {
+  limit?: number;
+  /** Runs after execute() returns and before completed_at. Tests use this to crash mid-fulfillment. */
+  afterInvocation?: (idempotencyKey: string) => Promise<void> | void;
+  /** Runs inside the completion transaction after the child update and before processed_at. */
+  beforeMarkProcessed?: () => Promise<void> | void;
+}
 
 const CLAIM_SQL = `
 UPDATE outbox o
@@ -74,6 +82,9 @@ async function withTransaction<T>(fn: (client: import('pg').PoolClient) => Promi
 }
 
 async function markProcessed(client: import('pg').PoolClient, billingEventId: string): Promise<void> {
+  // Lock the parent so two workers finishing sibling outbox rows cannot both
+  // observe the other row as still incomplete and leave processed_at null.
+  await client.query(`SELECT id FROM billing_events WHERE id = $1 FOR UPDATE`, [billingEventId]);
   await client.query(
     `UPDATE billing_events
      SET processed_at = now()
@@ -96,7 +107,11 @@ async function lookupProviderEventId(billingEventId: string): Promise<string> {
   return result.rows[0]?.provider_event_id ?? '';
 }
 
-async function complete(row: ClaimedOutbox, lastError: string | null): Promise<void> {
+async function complete(
+  row: ClaimedOutbox,
+  lastError: string | null,
+  options?: DrainOptions,
+): Promise<void> {
   await withTransaction(async (client) => {
     await client.query(
       `UPDATE outbox
@@ -107,6 +122,7 @@ async function complete(row: ClaimedOutbox, lastError: string | null): Promise<v
        WHERE id = $1`,
       [row.id, lastError],
     );
+    if (options?.beforeMarkProcessed) await options.beforeMarkProcessed();
     await markProcessed(client, row.billing_event_id);
   });
 }
@@ -125,11 +141,17 @@ async function backoff(row: ClaimedOutbox, message: string): Promise<void> {
   });
 }
 
-async function deadLetter(row: ClaimedOutbox, reason: DeadLetterReason): Promise<void> {
+async function deadLetter(
+  row: ClaimedOutbox,
+  reason: DeadLetterReason,
+  options?: DrainOptions,
+): Promise<void> {
   await withTransaction(async (client) => {
     await client.query(
       `INSERT INTO dead_letters (outbox_id, billing_event_id, reason, payload_snapshot)
-       VALUES ($1, $2, $3, $4::jsonb)`,
+       VALUES ($1, $2, $3, $4::jsonb)
+       ON CONFLICT (outbox_id) WHERE replayed_at IS NULL
+       DO NOTHING`,
       [row.id, row.billing_event_id, reason, JSON.stringify(row.payload ?? {})],
     );
     await client.query(
@@ -141,6 +163,7 @@ async function deadLetter(row: ClaimedOutbox, reason: DeadLetterReason): Promise
        WHERE id = $1`,
       [row.id],
     );
+    if (options?.beforeMarkProcessed) await options.beforeMarkProcessed();
     await markProcessed(client, row.billing_event_id);
   });
 }
@@ -149,8 +172,13 @@ function skipped(result: AdapterResult): boolean {
   return Boolean(result && result.lastError === 'skipped_no_email');
 }
 
-/** Claim and handle a single due outbox row. Returns false when the queue is idle. */
-export async function drainOne(): Promise<boolean> {
+/**
+ * Claim and handle a single due outbox row. Returns false when the queue is idle.
+ * Every claim, including lease reclaim, increments attempts. There is no heartbeat:
+ * an adapter that runs longer than OUTBOX_LEASE_MS can be claimed again and must be
+ * idempotent under that overlap.
+ */
+export async function drainOne(options?: DrainOptions): Promise<boolean> {
   const claimed = await withTransaction(async (client) => {
     const result = await client.query<ClaimedOutbox>(CLAIM_SQL, [leaseSeconds(), workerId()]);
     return result.rows[0] ?? null;
@@ -159,19 +187,27 @@ export async function drainOne(): Promise<boolean> {
   claimed.attempts = Number(claimed.attempts);
 
   if (claimed.attempts > maxAttempts()) {
-    await deadLetter(claimed, 'max_attempts');
+    // timeout and adapter_error stay in the CHECK and are not written here.
+    // Throws backoff until this path; a slow adapter is not a lease-timeout dead letter.
+    await deadLetter(claimed, 'max_attempts', options);
+    return true;
+  }
+
+  const adapter = getAdapter(claimed.adapter);
+  if (!adapter) {
+    await deadLetter(claimed, 'poison', options);
     return true;
   }
 
   try {
-    const adapter = requireAdapter(claimed.adapter);
     const result = await adapter.execute({
       billingEventId: claimed.billing_event_id,
       providerEventId: await lookupProviderEventId(claimed.billing_event_id),
       payload: claimed.payload,
       idempotencyKey: claimed.idempotency_key,
     });
-    await complete(claimed, skipped(result) ? 'skipped_no_email' : null);
+    if (options?.afterInvocation) await options.afterInvocation(claimed.idempotency_key);
+    await complete(claimed, skipped(result) ? 'skipped_no_email' : null, options);
   } catch (err) {
     await backoff(claimed, errorMessage(err));
   }
@@ -179,10 +215,11 @@ export async function drainOne(): Promise<boolean> {
 }
 
 /** Process up to OUTBOX_BATCH_SIZE rows sequentially, then return. No in-process parallelism. */
-export async function drainOnce(limit = batchSize()): Promise<number> {
+export async function drainOnce(options?: DrainOptions): Promise<number> {
+  const limit = options?.limit ?? batchSize();
   let processed = 0;
   for (let i = 0; i < limit; i += 1) {
-    const did = await drainOne();
+    const did = await drainOne(options);
     if (!did) break;
     processed += 1;
   }

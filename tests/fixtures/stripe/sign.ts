@@ -10,7 +10,7 @@ let stripe: Stripe | undefined;
 
 function client(): Stripe {
   if (!stripe) {
-    stripe = new Stripe('sk_test_unused_for_webhook_verify_only');
+    stripe = new Stripe('hooksteel_webhook_verify_only_not_an_api_key');
   }
   return stripe;
 }

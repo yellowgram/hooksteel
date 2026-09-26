@@ -17,14 +17,19 @@
 
 ## Phase
 
-**Stripe path implemented** on this repo per [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md) §1 (cycle-2 locks, H2/H3 demotions): migrations, `constructEvent` handler, same-transaction outbox, minimal drain, exactly 5 Postgres chaos tests, Next example only under `examples/next`.
+**Stripe path PR #1 — CR×3 findings fixed on the branch; halted for founder before merge.**
 
-Not in this tree: Polar verify, polished replay CLI, landing, Polar listing, hosted gateway.
+- PR: https://github.com/yellowgram/hooksteel/pull/1 (`cursor/stripe-path-chaos-658e`)
+- Adversarial pack: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md) (Experts A/B/C)
+- Verdict was **REQUEST CHANGES** (P0=0, P1=5, P2=12). Founder asked for every P1 and every P2. None waived.
+- This branch now contains those fixes (processed_at race, idempotent dead letters, Express raw body, invocation gate, Next env, and the P2 list).
+- Design contract remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Soft-WTP / Lock / Audit / hosted gateway still OFF.
+- Not in this tree: Polar verify, polished replay CLI, landing, Polar listing.
 
 ## Next
 
-1. Founder code-review of the Stripe path PR.  
-2. Then Polar verify, polished replay CLI, ready-gate rest → Polar listing (CoS).
+1. **Founder** reviews the fix commit on PR #1 and merges when satisfied.  
+2. Then Polar path, polished replay CLI, ready-gate rest → Polar listing (CoS).
 
 ## Kill watch (from DECISION)
 
@@ -34,4 +39,4 @@ Not in this tree: Polar verify, polished replay CLI, landing, Polar listing, hos
 - Support &gt;2h/wk day 60  
 - Buyers demand hosted gateway → **stop**; do not pivot to services on Polar  
 
-*Stripe path is in the repo. Polar verify, replay CLI, and listing stay later.*
+*Stripe path PR #1 — CR×3 P1s and P2s fixed on the branch; halted for founder before merge.*

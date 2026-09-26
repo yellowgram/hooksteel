@@ -33,6 +33,7 @@ test('production entry does not export or import chaos', () => {
 test('root package does not depend on next or a Polar SDK', () => {
   const pkg = JSON.parse(readFileSync('package.json', 'utf8')) as {
     engines?: { node?: string };
+    main?: string;
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
   };
@@ -42,6 +43,7 @@ test('root package does not depend on next or a Polar SDK', () => {
     assert.equal(/polar/i.test(name), false, name);
   }
   assert.match(pkg.engines?.node ?? '', /20/);
+  assert.match(pkg.main ?? '', /^(\.\/)?dist\/index\.js$/);
 });
 
 test('exactly five chaos tests and the Next route uses request.text()', () => {
@@ -58,9 +60,14 @@ test('exactly five chaos tests and the Next route uses request.text()', () => {
   assert.doesNotMatch(route, /request\.json\(/);
   assert.match(route, /handle\(\{\s*rawBody,\s*signature\s*\}\)/);
 
-  const prod = walk('src').map((file) => readFileSync(file, 'utf8')).join('\n');
+  const prodFiles = walk('src');
+  assert.equal(prodFiles.some((file) => file.endsWith(`${path.sep}hooks.ts`)), false);
+  const prod = prodFiles.map((file) => readFileSync(file, 'utf8')).join('\n');
   assert.match(prod, /FOR UPDATE SKIP LOCKED/);
   assert.doesNotMatch(prod, /SERIALIZABLE/);
   assert.doesNotMatch(prod, /LISTEN\s/);
   assert.doesNotMatch(prod, /lease_expires_at/);
+  assert.doesNotMatch(prod, /setBeforeCommitHook/);
+  assert.doesNotMatch(prod, /setAfterInvocationHook/);
+  assert.doesNotMatch(prod, /ALLOW_CHAOS_INJECT/);
 });

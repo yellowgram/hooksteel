@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { armAbortBeforeCommitOnce, disarmChaos } from '../../src/chaos/inject.js';
+import { abortBeforeCommitOnce } from '../../src/chaos/inject.js';
 import { handle } from '../../src/webhooks/stripe/handler.js';
 import { checkoutBody, signBody } from '../fixtures/stripe/sign.js';
 import { count, drainUntilIdle, idleInTransaction, installDbHooks, withTimeout } from '../setup/harness.js';
@@ -12,18 +12,15 @@ test('abort before commit rolls back, leaves no idle transaction, and retry inse
   const signature = signBody(rawBody);
   let sawUncommittedInsert = false;
 
-  armAbortBeforeCommitOnce(async (client) => {
-    const seen = await client.query<{ n: number }>('SELECT count(*)::int AS n FROM billing_events');
-    sawUncommittedInsert = Number(seen.rows[0]?.n) === 1;
-  });
-
-  try {
-    const first = await handle({ rawBody, signature });
-    const firstBody = await first.json();
-    assert.equal(first.status, 500, JSON.stringify(firstBody));
-  } finally {
-    disarmChaos();
-  }
+  const first = await handle(
+    { rawBody, signature },
+    abortBeforeCommitOnce(async (client) => {
+      const seen = await client.query<{ n: number }>('SELECT count(*)::int AS n FROM billing_events');
+      sawUncommittedInsert = Number(seen.rows[0]?.n) === 1;
+    }),
+  );
+  const firstBody = await first.json();
+  assert.equal(first.status, 500, JSON.stringify(firstBody));
 
   assert.equal(sawUncommittedInsert, true);
   assert.equal(await count('SELECT count(*)::int AS n FROM billing_events'), 0);

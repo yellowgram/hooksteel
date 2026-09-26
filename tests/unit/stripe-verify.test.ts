@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import { recordTestInvocation } from '../../src/adapters/testInvocation.js';
 import { getPool } from '../../src/db/pool.js';
 import { drainOnce } from '../../src/outbox/drain.js';
 import {
@@ -9,6 +10,7 @@ import {
   mapAdapters,
 } from '../../src/webhooks/stripe/mapAdapters.js';
 import { handle } from '../../src/webhooks/stripe/handler.js';
+import { buildOutboxPayload } from '../../src/webhooks/stripe/payload.js';
 import { checkoutBody, signBody } from '../fixtures/stripe/sign.js';
 import { count, drainUntilIdle, installDbHooks, TEST_WEBHOOK_SECRET } from '../setup/harness.js';
 
@@ -20,6 +22,8 @@ test('verify uses constructEvent and does not hand-roll HMAC', () => {
   assert.doesNotMatch(src, /createHmac/);
   assert.doesNotMatch(src, /timingSafeEqual/);
   assert.doesNotMatch(src, /startsWith\('sk_/);
+  assert.doesNotMatch(src, /sk_test_/);
+  assert.doesNotMatch(src, /sk_live_/);
 });
 
 test('default map keeps invoice.paid and subscription.deleted empty; invite_github is opt-in', () => {
@@ -71,6 +75,10 @@ test('empty adapter map persists ignored with zero outbox rows', async () => {
     `SELECT status FROM billing_events WHERE provider_event_id = 'evt_invoice'`,
   );
   assert.equal(row.rows[0]?.status, 'ignored');
+  const processed = await getPool().query<{ processed_at: Date | null }>(
+    `SELECT processed_at FROM billing_events WHERE provider_event_id = 'evt_invoice'`,
+  );
+  assert.ok(processed.rows[0]?.processed_at);
   assert.equal(await count('SELECT count(*)::int AS n FROM outbox'), 0);
 
   const deleted = checkoutBody({ id: 'evt_deleted', type: 'customer.subscription.deleted' });
@@ -133,4 +141,65 @@ test('send_email missing customer_email completes as skipped_no_email', async ()
   );
   assert.equal(await count('SELECT count(*)::int AS n FROM dead_letters'), 0);
   assert.equal(await drainOnce(), 0);
+});
+
+test('outbox payload copies Connect account and omits it when absent', () => {
+  const withAccount = buildOutboxPayload({
+    id: 'evt_acct',
+    object: 'event',
+    type: 'checkout.session.completed',
+    livemode: false,
+    account: 'acct_123',
+    data: {
+      object: {
+        id: 'cs_acct',
+        customer: 'cus_acct',
+        customer_email: 'a@b.c',
+        amount_total: 100,
+        currency: 'usd',
+        payment_status: 'paid',
+        mode: 'payment',
+      },
+    },
+  } as never);
+  assert.equal(withAccount.account, 'acct_123');
+  assert.equal(withAccount.session_id, 'cs_acct');
+
+  const without = buildOutboxPayload({
+    id: 'evt_no_acct',
+    object: 'event',
+    type: 'invoice.paid',
+    livemode: false,
+    data: { object: { id: 'in_1', customer: 'cus_1', amount_paid: 50, currency: 'usd' } },
+  } as never);
+  assert.equal(without.account, null);
+});
+
+test('invocation log stays off unless NODE_ENV=test or HOOKSTEEL_RECORD_INVOCATIONS=true', async () => {
+  const previousNode = process.env.NODE_ENV;
+  const previousFlag = process.env.HOOKSTEEL_RECORD_INVOCATIONS;
+  try {
+    process.env.NODE_ENV = 'development';
+    delete process.env.HOOKSTEEL_RECORD_INVOCATIONS;
+    await recordTestInvocation('stripe|evt_gate|grant_credit', 'grant_credit');
+    assert.equal(await count('SELECT count(*)::int AS n FROM adapter_invocations'), 0);
+
+    process.env.NODE_ENV = 'production';
+    await recordTestInvocation('stripe|evt_gate|grant_credit', 'grant_credit');
+    assert.equal(await count('SELECT count(*)::int AS n FROM adapter_invocations'), 0);
+
+    process.env.HOOKSTEEL_RECORD_INVOCATIONS = 'true';
+    await recordTestInvocation('stripe|evt_gate|grant_credit', 'grant_credit');
+    assert.equal(
+      await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
+        'stripe|evt_gate|grant_credit',
+      ]),
+      1,
+    );
+  } finally {
+    if (previousNode === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = previousNode;
+    if (previousFlag === undefined) delete process.env.HOOKSTEEL_RECORD_INVOCATIONS;
+    else process.env.HOOKSTEEL_RECORD_INVOCATIONS = previousFlag;
+  }
 });

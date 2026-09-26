@@ -1,4 +1,3 @@
-import { runAfterInvocationHook } from './hooks.js';
 import { recordTestInvocation } from './testInvocation.js';
 import type { FulfillmentAdapter } from './types.js';
 
@@ -10,9 +9,8 @@ export const grantCreditAdapter: FulfillmentAdapter = {
     const currency = payload.currency ?? null;
     const customer = payload.customer ?? null;
     if (amount == null || currency == null || customer == null) {
-      // Stub still records one idempotent invocation. Replace this adapter to grant credit.
+      // Stub still records one idempotent invocation when the test log is enabled.
     }
     await recordTestInvocation(ctx.idempotencyKey, grantCreditAdapter.name);
-    await runAfterInvocationHook(ctx.idempotencyKey);
   },
 };

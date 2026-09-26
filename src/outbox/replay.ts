@@ -20,6 +20,7 @@ export interface ReplayDryRun {
   deadLetterId: string;
   adapter: string;
   outboxId: string;
+  /** Bound SQL. Ids are returned separately and are not interpolated into these strings. */
   statements: string[];
 }
 
@@ -41,10 +42,10 @@ async function lockDeadLetter(client: import('pg').PoolClient, deadLetterId: str
   return refuseUnlessReplayable(result.rows[0]);
 }
 
-function statementsFor(row: DeadLetterRow): string[] {
+function statementsFor(): string[] {
   return [
-    `UPDATE outbox SET completed_at = NULL, last_error = NULL, available_at = now(), locked_at = NULL, locked_by = NULL, attempts = 0 WHERE id = '${row.outbox_id}'`,
-    `UPDATE dead_letters SET replayed_at = now() WHERE id = '${row.id}'`,
+    'UPDATE outbox SET completed_at = NULL, last_error = NULL, available_at = now(), locked_at = NULL, locked_by = NULL, attempts = 0 WHERE id = $1',
+    'UPDATE dead_letters SET replayed_at = now() WHERE id = $1 AND replayed_at IS NULL',
   ];
 }
 
@@ -82,7 +83,7 @@ export async function replayDryRun(deadLetterId: string): Promise<ReplayDryRun> 
     deadLetterId: row.id,
     adapter: row.adapter as string,
     outboxId: row.outbox_id as string,
-    statements: statementsFor(row),
+    statements: statementsFor(),
   };
 }
 

@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { after, before, beforeEach } from 'node:test';
 import dotenv from 'dotenv';
-import { disarmChaos } from '../../src/chaos/inject.js';
 import { closePool, getPool } from '../../src/db/pool.js';
 import { migrate } from '../../src/db/migrate.js';
 import { drainOnce } from '../../src/outbox/drain.js';
@@ -14,6 +13,7 @@ export { TEST_WEBHOOK_SECRET };
 
 export function applyTestEnv(): void {
   process.env.NODE_ENV = 'test';
+  process.env.HOOKSTEEL_RECORD_INVOCATIONS = 'true';
   process.env.ALLOW_CHAOS_INJECT = 'true';
   process.env.ALLOW_DEMO_CONTROLS = 'false';
   process.env.STRIPE_WEBHOOK_SECRET = TEST_WEBHOOK_SECRET;
@@ -38,13 +38,11 @@ export async function prepareDb(): Promise<void> {
   await getPool().query(sql);
   await truncateAll();
   resetAdapterMap();
-  disarmChaos();
 }
 
 export async function resetState(): Promise<void> {
   applyTestEnv();
   resetAdapterMap();
-  disarmChaos();
   await truncateAll();
 }
 

@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { armCrashAfterInvocationAlways, disarmChaos } from '../../src/chaos/inject.js';
+import { crashAfterInvocationAlways } from '../../src/chaos/inject.js';
 import { getPool } from '../../src/db/pool.js';
-import { drainOnce } from '../../src/outbox/drain.js';
+import { drainOnce, drainOne } from '../../src/outbox/drain.js';
 import { replayDryRun, replayExecute, ReplayRefusedError } from '../../src/outbox/replay.js';
 import { handle } from '../../src/webhooks/stripe/handler.js';
 import { checkoutBody, signBody } from '../fixtures/stripe/sign.js';
@@ -41,12 +41,7 @@ test('adapter failure backs off by 2^attempts capped at 60s, then dead-letters a
   process.env.OUTBOX_MAX_ATTEMPTS = '1';
   await accept('evt_backoff');
   const key = 'stripe|evt_backoff|grant_credit';
-  armCrashAfterInvocationAlways(key);
-  try {
-    await drainOnce();
-  } finally {
-    disarmChaos();
-  }
+  await drainOnce(crashAfterInvocationAlways(key));
 
   const failed = await getPool().query<{ delta: number; attempts: number; last_error: string }>(
     `SELECT EXTRACT(EPOCH FROM (available_at - now())) AS delta,
@@ -101,6 +96,9 @@ test('adapter failure backs off by 2^attempts capped at 60s, then dead-letters a
   const dry = await replayDryRun(deadId);
   assert.equal(dry.adapter, 'grant_credit');
   assert.match(dry.statements[0] ?? '', /attempts = 0/);
+  assert.match(dry.statements[0] ?? '', /\$1/);
+  assert.equal(dry.statements.some((sql) => sql.includes(deadId)), false);
+  assert.equal(dry.statements.some((sql) => sql.includes(dry.outboxId)), false);
   const afterDry = await getPool().query<{ replayed_at: Date | null }>(
     `SELECT replayed_at FROM dead_letters WHERE id = $1`,
     [deadId],
@@ -129,4 +127,86 @@ test('adapter failure backs off by 2^attempts capped at 60s, then dead-letters a
     await count(`SELECT count(*)::int AS n FROM outbox WHERE idempotency_key = $1 AND completed_at IS NOT NULL`, [key]),
     1,
   );
+});
+
+test('concurrent sibling completions still set processed_at', async () => {
+  await accept('evt_siblings');
+  let waiting = 0;
+  let release: () => void = () => {};
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const beforeMarkProcessed = async () => {
+    waiting += 1;
+    if (waiting === 2) release();
+    await gate;
+  };
+  const [first, second] = await Promise.all([
+    drainOne({ beforeMarkProcessed }),
+    drainOne({ beforeMarkProcessed }),
+  ]);
+  assert.equal(first, true);
+  assert.equal(second, true);
+  assert.equal(waiting, 2);
+  const row = await getPool().query<{ processed_at: Date | null }>(
+    `SELECT processed_at FROM billing_events WHERE provider_event_id = 'evt_siblings'`,
+  );
+  assert.ok(row.rows[0]?.processed_at);
+  assert.equal(await count('SELECT count(*)::int AS n FROM outbox WHERE completed_at IS NULL'), 0);
+});
+
+test('crash after dead_letters insert reclaims without a second open row', async () => {
+  process.env.OUTBOX_MAX_ATTEMPTS = '1';
+  await accept('evt_dl_crash');
+  const key = 'stripe|evt_dl_crash|grant_credit';
+  await getPool().query(
+    `UPDATE outbox SET completed_at = now(), locked_at = NULL, locked_by = NULL
+     WHERE idempotency_key = 'stripe|evt_dl_crash|send_email'`,
+  );
+  await getPool().query(
+    `UPDATE outbox SET attempts = 1, locked_at = NULL, locked_by = NULL, available_at = now()
+     WHERE idempotency_key = $1`,
+    [key],
+  );
+  await getPool().query(
+    `INSERT INTO dead_letters (outbox_id, billing_event_id, reason, payload_snapshot)
+     SELECT id, billing_event_id, 'max_attempts', payload
+     FROM outbox WHERE idempotency_key = $1`,
+    [key],
+  );
+
+  await drainOnce();
+
+  assert.equal(
+    await count(
+      `SELECT count(*)::int AS n FROM dead_letters d
+       JOIN outbox o ON o.id = d.outbox_id
+       WHERE o.idempotency_key = $1 AND d.replayed_at IS NULL`,
+      [key],
+    ),
+    1,
+  );
+  const row = await getPool().query<{ completed_at: Date | null; last_error: string | null }>(
+    `SELECT completed_at, last_error FROM outbox WHERE idempotency_key = $1`,
+    [key],
+  );
+  assert.ok(row.rows[0]?.completed_at);
+  assert.equal(row.rows[0]?.last_error, 'dead_lettered');
+});
+
+test('unknown adapter is poison, not a retry', async () => {
+  await accept('evt_poison');
+  await getPool().query(
+    `UPDATE outbox SET adapter = 'not_registered', idempotency_key = 'stripe|evt_poison|not_registered'
+     WHERE idempotency_key = 'stripe|evt_poison|grant_credit'`,
+  );
+  assert.equal(await drainOnce(), 2);
+  const reasons = await getPool().query<{ reason: string }>(
+    `SELECT reason FROM dead_letters ORDER BY reason`,
+  );
+  assert.deepEqual(
+    reasons.rows.map((row) => row.reason),
+    ['poison'],
+  );
+  assert.equal(await count('SELECT count(*)::int AS n FROM outbox WHERE completed_at IS NULL'), 0);
 });

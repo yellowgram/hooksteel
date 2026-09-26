@@ -12,11 +12,3 @@ const adapters = new Map<string, FulfillmentAdapter>([
 export function getAdapter(name: string): FulfillmentAdapter | undefined {
   return adapters.get(name);
 }
-
-export function requireAdapter(name: string): FulfillmentAdapter {
-  const adapter = adapters.get(name);
-  if (!adapter) {
-    throw new Error(`no adapter registered: ${name}`);
-  }
-  return adapter;
-}

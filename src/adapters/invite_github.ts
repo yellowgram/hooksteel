@@ -1,4 +1,3 @@
-import { runAfterInvocationHook } from './hooks.js';
 import { recordTestInvocation } from './testInvocation.js';
 import type { FulfillmentAdapter } from './types.js';
 
@@ -7,6 +6,5 @@ export const inviteGithubAdapter: FulfillmentAdapter = {
   name: 'invite_github',
   async execute(ctx) {
     await recordTestInvocation(ctx.idempotencyKey, inviteGithubAdapter.name);
-    await runAfterInvocationHook(ctx.idempotencyKey);
   },
 };

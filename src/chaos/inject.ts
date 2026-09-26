@@ -1,6 +1,6 @@
 import type pg from 'pg';
-import { setAfterInvocationHook } from '../adapters/hooks.js';
-import { setBeforeCommitHook, type BeforeCommitHook } from '../webhooks/stripe/hooks.js';
+import type { DrainOptions } from '../outbox/drain.js';
+import type { HandleOptions } from '../webhooks/stripe/handler.js';
 
 function assertChaosAllowed(): void {
   if (process.env.NODE_ENV === 'production' || process.env.ALLOW_CHAOS_INJECT !== 'true') {
@@ -8,36 +8,41 @@ function assertChaosAllowed(): void {
   }
 }
 
-export function disarmChaos(): void {
-  if (process.env.NODE_ENV === 'production' || process.env.ALLOW_CHAOS_INJECT !== 'true') return;
-  setBeforeCommitHook(null);
-  setAfterInvocationHook(null);
+/**
+ * Pass the result as the second argument to handle(). Nothing is armed globally.
+ * The first call throws inside the webhook transaction, before COMMIT.
+ */
+export function abortBeforeCommitOnce(
+  probe?: (client: pg.PoolClient) => Promise<void>,
+): HandleOptions {
+  assertChaosAllowed();
+  return {
+    beforeCommit: async (client) => {
+      if (probe) await probe(client);
+      throw new Error('chaos_abort_before_commit');
+    },
+  };
 }
 
-/** After verify + in-txn writes, throw once before COMMIT. The handler must roll the transaction back. */
-export function armAbortBeforeCommitOnce(probe?: BeforeCommitHook): void {
+/** Throw once, after the adapter returns and before completed_at, for one idempotency key. */
+export function crashAfterInvocationOnce(idempotencyKey: string): DrainOptions {
   assertChaosAllowed();
-  setBeforeCommitHook(async (client: pg.PoolClient) => {
-    setBeforeCommitHook(null);
-    if (probe) await probe(client);
-    throw new Error('chaos_abort_before_commit');
-  });
+  let armed = true;
+  return {
+    afterInvocation: async (key) => {
+      if (!armed || key !== idempotencyKey) return;
+      armed = false;
+      throw new Error('chaos_crash_before_completed_at');
+    },
+  };
 }
 
-/** After the test invocation row commits on its own connection, throw once before completed_at. */
-export function armCrashAfterInvocationOnce(idempotencyKey: string): void {
+export function crashAfterInvocationAlways(idempotencyKey: string): DrainOptions {
   assertChaosAllowed();
-  setAfterInvocationHook(async (key) => {
-    if (key !== idempotencyKey) return;
-    setAfterInvocationHook(null);
-    throw new Error('chaos_crash_before_completed_at');
-  });
-}
-
-export function armCrashAfterInvocationAlways(idempotencyKey: string): void {
-  assertChaosAllowed();
-  setAfterInvocationHook(async (key) => {
-    if (key !== idempotencyKey) return;
-    throw new Error('chaos_always_crash');
-  });
+  return {
+    afterInvocation: async (key) => {
+      if (key !== idempotencyKey) return;
+      throw new Error('chaos_always_crash');
+    },
+  };
 }

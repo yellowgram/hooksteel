@@ -4,13 +4,17 @@ function isUndefinedTable(err: unknown): boolean {
   return typeof err === 'object' && err !== null && 'code' in err && (err as { code?: string }).code === '42P01';
 }
 
+/** Off unless the test runner or an explicit flag asks for the durable log. */
+export function shouldRecordTestInvocations(): boolean {
+  return process.env.NODE_ENV === 'test' || process.env.HOOKSTEEL_RECORD_INVOCATIONS === 'true';
+}
+
 /**
- * Test-only durable log. Writes on a separate connection so a drain crash after
- * this commit cannot erase the row. Production (NODE_ENV=production) never writes.
- * Buyers without the test table get a no-op (relation missing).
+ * Test-only durable log on a separate connection so a drain crash after this
+ * commit cannot erase the row. Unset, development, and production do not write.
  */
 export async function recordTestInvocation(idempotencyKey: string, adapter: string): Promise<void> {
-  if (process.env.NODE_ENV === 'production') return;
+  if (!shouldRecordTestInvocations()) return;
 
   const client = await getPool().connect();
   let committed = false;

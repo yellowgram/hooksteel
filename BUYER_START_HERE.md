@@ -4,9 +4,12 @@ HookSteel is a Node kit. Postgres is the ship path.
 
 1. Copy `.env.example` to `.env`. Set `DATABASE_URL` and `STRIPE_WEBHOOK_SECRET` to the `whsec_` that matches how you forward events (Stripe CLI secret and Dashboard endpoint secret are different).
 2. `npm ci`
-3. `npm run migrate`
-4. `npm test` — five chaos scenarios against Postgres.
-5. `npm run outbox:drain -- --once` after webhooks have been accepted.
+3. `npm run build` (writes `dist/` for plain Node and the Next example)
+4. `npm run migrate`
+5. `npm test` — five chaos scenarios against Postgres. Postgres 13+; CI uses 16.
+6. `npm run outbox:drain -- --once` after webhooks have been accepted.
+
+The Next example reads `examples/next/.env.local`, not the repo-root `.env`. See `examples/next/README.md`.
 
 The webhook handler is `handle({ rawBody, signature })`. Pass the raw request body string. The Next.js route under `examples/next` is an example only.
 

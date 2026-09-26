@@ -4,7 +4,7 @@ SHA-256 of the release zip. This file is not inside the zip. A hash stored insid
 
 | File | SHA-256 |
 | --- | --- |
-| `hooksteel-0.1.0.zip` | `c229b2c6dbeabf2acc3f66543adb99cca2ccee9a4325bbc9f757591dcf5cdf91` |
+| `hooksteel-0.1.0.zip` | `dddcfe5dca204cd92b2c1b2a10adbb99515d0552a4a5947693aff34a29573a65` |
 
 - Version: `0.1.0` (`package.json`)
 - Repo path: `release/hooksteel-0.1.0.zip`

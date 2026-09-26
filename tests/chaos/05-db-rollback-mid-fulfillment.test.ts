@@ -3,7 +3,9 @@ import { test } from 'node:test';
 import { crashAfterInvocationOnce } from '../../src/chaos/inject.js';
 import { getPool } from '../../src/db/pool.js';
 import { drainOnce } from '../../src/outbox/drain.js';
+import { handlePolar } from '../../src/webhooks/polar/handler.js';
 import { handle } from '../../src/webhooks/stripe/handler.js';
+import { orderPaidBody, polarHandleInput } from '../fixtures/polar/sign.js';
 import { checkoutBody, signBody } from '../fixtures/stripe/sign.js';
 import { count, installDbHooks } from '../setup/harness.js';
 
@@ -16,6 +18,47 @@ test('crash after adapter_invocations write and before completed_at re-drains to
   const signature = signBody(rawBody);
 
   const accepted = await handle({ rawBody, signature });
+  assert.equal(accepted.status, 200);
+  assert.equal(await count('SELECT count(*)::int AS n FROM outbox WHERE completed_at IS NULL'), 2);
+
+  const processed = await drainOnce(crashAfterInvocationOnce(key));
+  assert.ok(processed >= 1);
+
+  assert.equal(
+    await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [key]),
+    1,
+  );
+  const crashed = await getPool().query<{ completed_at: Date | null; last_error: string | null }>(
+    `SELECT completed_at, last_error FROM outbox WHERE idempotency_key = $1`,
+    [key],
+  );
+  assert.equal(crashed.rows[0]?.completed_at, null);
+  assert.match(crashed.rows[0]?.last_error ?? '', /chaos_crash_before_completed_at/);
+
+  await getPool().query(
+    `UPDATE outbox SET available_at = now() WHERE idempotency_key = $1 AND completed_at IS NULL`,
+    [key],
+  );
+
+  await drainOnce();
+  assert.equal(
+    await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [key]),
+    1,
+  );
+  const healed = await getPool().query<{ completed_at: Date | null }>(
+    `SELECT completed_at FROM outbox WHERE idempotency_key = $1`,
+    [key],
+  );
+  assert.ok(healed.rows[0]?.completed_at);
+});
+
+test('polar crash after adapter_invocations write and before completed_at re-drains to count 1', async () => {
+  const eventId = 'msg_polar_mid_1';
+  const key = `polar|${eventId}|grant_credit`;
+  const rawBody = orderPaidBody({ orderId: 'ord_polar_mid' });
+  const input = polarHandleInput(rawBody, eventId);
+
+  const accepted = await handlePolar(input);
   assert.equal(accepted.status, 200);
   assert.equal(await count('SELECT count(*)::int AS n FROM outbox WHERE completed_at IS NULL'), 2);
 

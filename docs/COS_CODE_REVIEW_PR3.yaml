@@ -1,0 +1,178 @@
+# HookSteel — CoS packet
+# Adversarial CODE REVIEW ×3 on PR #3 (Polar webhook path implement)
+# PR: https://github.com/yellowgram/hooksteel/pull/3
+# Head reviewed: cd202b8ed7737fdd6c014181a34743e84e533ade
+# Base: origin/main @ 9d7b443 (design merged). Stripe code remains f25f235.
+# Contract: docs/DESIGN_POLAR_PATH.md §1 + COS PD1–PD4 + PQ1/PQ2
+# Date: 2026-09-26
+# Soft-WTP OFF. Findings only. Do not merge this PR from the review commit.
+# Do not fix P2s in this run.
+
+schema_version: 1
+product: HookSteel
+packet_type: adversarial_code_review
+audience: CoS
+reviewer: grok
+slice: polar_path
+pr: 3
+pr_url: https://github.com/yellowgram/hooksteel/pull/3
+head_sha: cd202b8ed7737fdd6c014181a34743e84e533ade
+base_sha: 9d7b4435d52168381d15aae819bc2f3c0a6662d9
+ci:
+  workflow: chaos-postgres
+  conclusion: success
+  runs:
+    - https://github.com/yellowgram/hooksteel/actions/runs/36270600324
+    - https://github.com/yellowgram/hooksteel/actions/runs/36270604634
+
+cos_instruction: |
+  1. Verdict is APPROVE. Do not treat P2s as merge blockers.
+  2. Do not merge from this review commit. Founder merges.
+  3. Do not implement product-code fixes in the review pass.
+  4. PQ1 whsec_ only and PQ2 LICENSE byte-identical are verified. Do not reopen them.
+  5. PD1–PD4 hold on this head. Do not add livemode_mismatch 400. Do not special-case billing_reason.
+  6. Do not reopen Stripe CR1/CR2 P1s. This diff does not touch those files.
+  7. Keep every item in rejected[].
+
+assertive_verdict: |
+  PR #3 matches DESIGN_POLAR_PATH.md §1. Dual-key stdlib HMAC accepts the
+  published Standard Webhooks test vector and a distinct UTF-8-key MAC.
+  handlePolar uses the shipped Stripe transaction shape. Five chaos files
+  only. LICENSE byte-identical to origin/main. No P0. No P1. Two P2s are
+  optional follow-ups. Do not merge from the review commit.
+
+verdict: APPROVE
+counts: {p0: 0, p1: 0, p2: 2}
+
+prior_design_locks:
+  - {id: PQ1, status: holds, evidence: non-whsec_ and polar_whs_ return 400 invalid_webhook_secret and store nothing}
+  - {id: PQ2, status: holds, evidence: git diff origin/main...HEAD -- LICENSE is empty}
+  - {id: PD1, status: holds, evidence: README known limit states unsigned livemode=false cross-wire; no mismatch 400}
+  - {id: PD2, status: holds, evidence: unit test both eras; independent TestWebhookSign vector accepted at the MAC stage}
+  - {id: PD3, status: holds, evidence: README troubleshooting has placeholder, raw body, wrong era, polar_whs_, 10-strike}
+  - {id: PD4, status: holds, evidence: subscription_cycle still outboxes grant_credit; README says so; no billing_reason branch}
+
+stripe_cr_not_reopened:
+  note: >
+    git diff origin/main...HEAD is empty for src/webhooks/stripe, src/outbox,
+    src/adapters, src/chaos, migrations, and package.json. CR1/CR2 P1s were
+    not re-audited and are not reopened.
+  ids:
+    - A-P1-001
+    - A-P1-002
+    - B-P1-001
+    - B-P1-002
+    - C-P1-001
+    - CR2-A-P1-001
+    - CR2-A-P1-002
+    - CR2-B-P1-001
+
+iterations:
+  - id: 1
+    expert: billing_webhook_reliability
+    attack_thesis: >
+      Dedupe on data.id, grant on order.updated, or an outbox insert on
+      another connection double-fulfills. A production beforeCommit aborts
+      live traffic.
+    findings: []
+    holds:
+      - provider_event_id is webhook-id
+      - duplicate 200 with no new outbox
+      - ignored sets processed_at in the same transaction
+      - enqueueOutbox uses the handler client
+      - 500 after verify rolls back; chaos 04 and 05 cover Polar
+      - honorChaosHooks is false when NODE_ENV=production even if ALLOW_CHAOS_INJECT=true
+      - order.paid only in the default map; invite_github opt-in
+
+  - id: 2
+    expert: polar_signature_security
+    attack_thesis: >
+      One HMAC era, a string compare, a re-parsed body, or a logged secret
+      fails PQ1 or PD2.
+    findings:
+      - id: CR3-B-P2-001
+        severity: P2
+        merge_blocker: false
+        accepted: true
+        files: [tests/unit/polar-verify.test.ts, tests/fixtures/polar/sign.ts]
+        issue: Published Standard Webhooks MAC is not pinned in-repo
+        evidence: >
+          Both eras already differ and both are accepted, so a UTF-8-only
+          verifier would fail CI. sign.ts copies strictBase64. Out of band,
+          verifyPolarWebhook accepted TestWebhookSign
+          (v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=) through the MAC
+          check and returned invalid_payload only because that fixture has
+          no string type. Wrong key and dotted webhook-id returned
+          invalid_signature. Exactly 300s was accepted; 301s was rejected.
+        change_required: >
+          Not before merge. Optional later assertion that pins that published
+          signature under the published secret with Date.now inside the window.
+    holds:
+      - node:crypto createHmac and timingSafeEqual only
+      - whsec_ gate including polar_whs_
+      - both keys, 300s, raw body, v1 only
+      - no secret logged; safeLog redacts whsec_ base64
+
+  - id: 3
+    expert: kit_scope_chaos_dx
+    attack_thesis: >
+      A sixth chaos file, a LICENSE edit, a migration, or an adapter rewrite
+      breaks the slice even if verify is correct.
+    findings:
+      - id: CR3-C-P2-001
+        severity: P2
+        merge_blocker: false
+        accepted: true
+        files: [README.md]
+        issue: First HTTP table does not say the livemode-mismatch row is Stripe-only
+        evidence: >
+          README "HTTP status contract" lists Livemode mismatch 400. Polar
+          section and the PD1 known limit correctly forbid that code on Polar.
+          A reader who stops at the first table can mis-apply it.
+        change_required: >
+          Not before merge. Optional heading "Stripe" on that table.
+          Do not add a Polar livemode_mismatch 400.
+    holds:
+      - exactly five chaos files, each with a Polar case, Stripe cases kept
+      - LICENSE byte-identical
+      - no migration and no adapter body edits
+      - PD1 PD3 PD4 wording present
+      - examples/next polar route is request.text() plus the three headers
+
+p0_merge_blockers: []
+p1_should_fix_before_merge: []
+p2_known_limits:
+  - {id: CR3-B-P2-001, summary: Pin published Standard Webhooks MAC in unit tests later}
+  - {id: CR3-C-P2-001, summary: Label the first HTTP table Stripe; do not add Polar livemode_mismatch}
+
+required_code_fixes: []
+
+rejected:
+  - Sixth chaos file or dual-scheme chaos matrix
+  - Polar SDK or standardwebhooks or svix as the verify implementation
+  - LICENSE edit
+  - Migration, including one that adds polar or livemode
+  - Adapter rewrite for total_amount or customer_id
+  - Edits to drain, replay, outbox, or Stripe handle
+  - Dedupe on data.id
+  - Default grant on order.updated, checkout.updated, or order.created
+  - HTTP 200 on a bad signature
+  - Polar sample 202/403
+  - livemode_mismatch 400 or livemode inferred from the secret
+  - Polar access token required to verify
+  - Single HMAC era
+  - Reopen Stripe CR1/CR2 P1s
+  - Soft-WTP, Lock, Audit, hosted gateway, Polar listing, refund-window number
+  - Merge PR #3 from this review commit
+
+do_not:
+  - merge PR #3 from the review commit
+  - treat CR3-B-P2-001 or CR3-C-P2-001 as merge blockers
+  - reopen PQ1 PQ2 or PD1–PD4
+  - reopen Stripe CR1/CR2 P1s
+  - add a sixth chaos file
+  - edit LICENSE
+
+status_line: >
+  Polar implement CR×3 APPROVE on cd202b8. P0 0, P1 0, P2 2. Halt for founder.
+  Do not merge from the review commit.

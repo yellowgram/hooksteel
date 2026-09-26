@@ -2,7 +2,7 @@
 
 HookSteel is a Node kit. Postgres is the ship path.
 
-1. Copy `.env.example` to `.env`. Set `DATABASE_URL` and `STRIPE_WEBHOOK_SECRET` to the `whsec_` that matches how you forward events (Stripe CLI secret and Dashboard endpoint secret are different).
+1. Copy `.env.example` to `.env`. Set `DATABASE_URL` and `STRIPE_WEBHOOK_SECRET` to the `whsec_` that matches how you forward events (Stripe CLI secret and Dashboard endpoint secret are different). For Polar, set `POLAR_WEBHOOK_SECRET` to the endpoint `whsec_` (`polar_whs_` is rejected) and set `POLAR_EXPECT_LIVEMODE=true` on a production Polar endpoint.
 2. `npm ci`
 3. `npm run build` (writes `dist/` for plain Node and the Next example)
 4. `npm run migrate`
@@ -11,8 +11,6 @@ HookSteel is a Node kit. Postgres is the ship path.
 
 The Next example reads `examples/next/.env.local`, not the repo-root `.env`. See `examples/next/README.md`.
 
-The webhook handler is `handle({ rawBody, signature })`. Pass the raw request body string. The Next.js route under `examples/next` is an example only.
+The Stripe webhook handler is `handle({ rawBody, signature })`. The Polar webhook handler is `handlePolar({ rawBody, webhookId, webhookTimestamp, webhookSignature })`. Pass the raw request body string. `npm test` covers both HMAC key eras and the five chaos files (Polar cases live in those files). The Next.js routes under `examples/next` are examples only.
 
 Replace `grant_credit`, `send_email`, and `invite_github` with your own adapters. `invite_github` and `invoice.paid → [grant_credit]` are opt-in. See `README.md` for the HTTP status contract, Hookdeck honesty, and license (Single-app = one production application and one production Stripe account).
-
-Polar webhook verification is not in this slice. `billing_events.provider` already allows `'polar'`.

@@ -1,0 +1,17 @@
+{
+  "type": "order.paid",
+  "timestamp": "2026-09-26T16:00:00.000Z",
+  "data": {
+    "id": "ord_test_hooksteel_1",
+    "customer_id": "8f1c2a10-0000-4000-8000-000000000001",
+    "customer": {
+      "id": "8f1c2a10-0000-4000-8000-000000000001",
+      "email": "buyer@example.com"
+    },
+    "total_amount": 8900,
+    "currency": "usd",
+    "status": "paid",
+    "paid": true,
+    "billing_reason": "purchase"
+  }
+}

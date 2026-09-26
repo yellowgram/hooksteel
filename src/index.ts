@@ -17,3 +17,11 @@ export {
   resetAdapterMap,
 } from './webhooks/stripe/mapAdapters.js';
 export { buildOutboxPayload } from './webhooks/stripe/payload.js';
+export { handlePolar, type PolarHandleInput } from './webhooks/polar/handler.js';
+export {
+  DEFAULT_POLAR_ADAPTER_MAP,
+  configurePolarAdapterMap,
+  mapPolarAdapters,
+  resetPolarAdapterMap,
+} from './webhooks/polar/mapAdapters.js';
+export { buildPolarOutboxPayload } from './webhooks/polar/payload.js';

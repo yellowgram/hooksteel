@@ -4,7 +4,9 @@ import dotenv from 'dotenv';
 import { closePool, getPool } from '../../src/db/pool.js';
 import { migrate } from '../../src/db/migrate.js';
 import { drainOnce } from '../../src/outbox/drain.js';
+import { resetPolarAdapterMap } from '../../src/webhooks/polar/mapAdapters.js';
 import { resetAdapterMap } from '../../src/webhooks/stripe/mapAdapters.js';
+import { POLAR_TEST_WEBHOOK_SECRET } from '../fixtures/polar/secrets.js';
 import { TEST_WEBHOOK_SECRET } from '../fixtures/stripe/secrets.js';
 
 dotenv.config();
@@ -18,6 +20,8 @@ export function applyTestEnv(): void {
   process.env.ALLOW_DEMO_CONTROLS = 'false';
   process.env.STRIPE_WEBHOOK_SECRET = TEST_WEBHOOK_SECRET;
   process.env.STRIPE_EXPECT_LIVEMODE = 'false';
+  process.env.POLAR_WEBHOOK_SECRET = POLAR_TEST_WEBHOOK_SECRET;
+  process.env.POLAR_EXPECT_LIVEMODE = 'false';
   process.env.OUTBOX_WORKER_ID = 'test-worker';
   process.env.OUTBOX_MAX_ATTEMPTS = '5';
   process.env.OUTBOX_LEASE_MS = '30000';
@@ -38,11 +42,13 @@ export async function prepareDb(): Promise<void> {
   await getPool().query(sql);
   await truncateAll();
   resetAdapterMap();
+  resetPolarAdapterMap();
 }
 
 export async function resetState(): Promise<void> {
   applyTestEnv();
   resetAdapterMap();
+  resetPolarAdapterMap();
   await truncateAll();
 }
 

@@ -4,6 +4,8 @@ Next 15 lives only in this directory. The root package does not depend on `next`
 
 `app/api/webhooks/stripe/route.ts` reads `request.text()` and calls `handle({ rawBody, signature })`. Do not call `request.json()` on this route.
 
+`app/api/webhooks/polar/route.ts` reads `request.text()` and passes `webhook-id`, `webhook-timestamp`, and `webhook-signature` to `handlePolar`. Do not call `request.json()` on that route either. Set `POLAR_WEBHOOK_SECRET` and `POLAR_EXPECT_LIVEMODE` in `.env.local`.
+
 `next dev` does **not** load the repo-root `.env`. It loads `.env`, `.env.local`, and `.env.development` from **this** directory. The root `.env.example` is the source of truth for variable names.
 
 ```bash

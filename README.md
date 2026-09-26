@@ -10,7 +10,7 @@
 | Site | https://www.yellowgram.dev |
 | License | Single-app: one production application and one production Stripe account |
 
-Not a hosted gateway. Soft-WTP off. Polar listing dark until the ready gate. Polar webhook verification is the next slice; `billing_events.provider` already allows `'polar'`.
+Not a hosted gateway. Soft-WTP off. Polar listing dark until the ready gate. Stripe and Polar webhooks both verify into the same outbox. `billing_events.provider` already allows `'polar'`.
 
 ## What HookSteel guarantees
 
@@ -27,6 +27,7 @@ Outbox proves side-effect-after-commit and idempotency keys. It does not certify
 docker compose up -d
 cp .env.example .env
 # set STRIPE_WEBHOOK_SECRET to the whsec_ from `stripe listen` or your Dashboard endpoint
+# Polar: set POLAR_WEBHOOK_SECRET to the endpoint whsec_ (polar_whs_ is rejected)
 npm ci
 npm run build
 npm run migrate
@@ -110,6 +111,8 @@ Exactly five scenarios, all on Postgres. CI is `.github/workflows/chaos-postgres
 | 4 | Handler timeout | Abort after verify and before commit → zero committed rows, no idle-in-transaction, retry inserts once, one invocation after drain |
 | 5 | DB rollback mid-fulfillment | Invocation row commits on a separate connection, then the drain throws before `completed_at`. Re-drain keeps `adapter_invocations` count at 1 |
 
+Exactly five chaos files. Polar is covered inside those files: each one also runs the same theme for an `order.paid` signed with the post-cutoff `standard_webhooks` key. The pre-2026-09-08 `polar_hmac` key is proven in `tests/unit/polar-verify.test.ts`, not by a sixth file.
+
 `adapter_invocations` is created by the test setup only. It is not part of buyer migrate. Stubs write that table only when `NODE_ENV=test` or `HOOKSTEEL_RECORD_INVOCATIONS=true`. Unset, `development`, and `production` do not open a connection for it.
 
 `src/chaos` is imported only from tests. It returns option objects you pass into `handle` or `drainOnce`. Nothing in `src/index.ts` exports it, and production modules do not keep env-armed hook slots. `NODE_ENV=production` makes those helpers throw. `ALLOW_CHAOS_INJECT` defaults to false.
@@ -190,14 +193,132 @@ If migrate fails, fix the database and re-run. Do not hand-edit a file that only
 - Verify plus the database transaction should finish in **under 2 seconds**. A cold remote database that blows that budget should return **500** so Stripe retries. That is the correct outcome.
 - Chaos scenario 2 proves uniqueness and no deadlocks under reordering and concurrency. It does **not** promise a global total order.
 - Adapters that call Resend, GitHub, or Stripe should pass `idempotencyKey` through when the vendor supports it. The outbox unique key does not make those APIs idempotent by itself.
+- A live Polar endpoint pointed at a process with `POLAR_EXPECT_LIVEMODE` unset or false still verifies when the secret matches and stores `livemode=false`. Polar does not sign that bit. Do not invent a livemode field. Do not add `livemode_mismatch` 400 on this path. Sandbox and production are different organizations.
+- Polar disables an endpoint after 10 consecutive non-2xx responses. 400 does not mean Polar stops. Ten strikes disable the endpoint.
+- Every `order.paid` grants, including `billing_reason=subscription_cycle`. Buyers who do not want a credit on every renewal replace the `order.paid` row. v0.1 does not special-case `billing_reason`.
+- Exactly five chaos files. Polar is covered inside them.
+- The full Polar event JSONB may include customer email, billing address, and tax id. The kit has no purger. You own retention.
 
 ## Troubleshooting
 
 **Signatures fail on events you just forwarded.** The route must verify the raw body. Fetch and Next use `request.text()`. Express uses `express.raw({ type: 'application/json' })` and `req.body` as a Buffer — not `req.text()`, not `req.headers.get`, and not `express.json()`. `request.json()` or a JSON body parser changes bytes and `constructEvent` returns 400. Also check CLI `whsec_` vs Dashboard `whsec_`: they are not interchangeable. For the Next example, put `DATABASE_URL`, `STRIPE_WEBHOOK_SECRET`, and `STRIPE_EXPECT_LIVEMODE` in `examples/next/.env.local`. `next dev` does not load the repo-root `.env`.
 
+**Polar signatures fail.**
+
+- Placeholder secret (`whsec_replace_me`, `replace_me`, `changeme`, `test`, or empty) or any secret that does not start with `whsec_` returns 400 `invalid_webhook_secret` and stores nothing.
+- `polar_whs_` is rejected. Rotate the endpoint secret in the Polar dashboard until it is a `whsec_…` value.
+- Raw body re-parsed: `request.json()`, `JSON.parse` then `JSON.stringify`, or `express.json()` changes bytes and the HMAC fails. Use `request.text()`, or `express.raw({ type: 'application/json' })` and `Buffer.toString('utf8')`. Do not mount `express.json()` on the Polar route.
+- Wrong key era: secrets generated before 2026-09-08 00:00 UTC and secrets generated on or after that instant use different HMAC keys. The kit tries both. A verifier that only uses one era fails the other.
+- The endpoint is disabled after 10 consecutive non-2xx responses. 400 does not mean Polar stops. Ten strikes disable the endpoint. Do not return 200 for a bad signature to avoid that disable.
+- Mapping both `order.updated` and `order.paid` to the same adapters grants twice.
+
+For the Next example, put `POLAR_WEBHOOK_SECRET` and `POLAR_EXPECT_LIVEMODE` in `examples/next/.env.local` as well.
+
 ## Polar
 
-Not in this slice. No Polar SDK. Schema already accepts `provider = 'polar'`. See `src/webhooks/polar/README.md`.
+Polar verify is stdlib HMAC (`node:crypto`): two key eras, the exact raw body, and the headers `webhook-id`, `webhook-timestamp`, and `webhook-signature`. There is no `@polar-sh/sdk`, no `standardwebhooks`, no `svix`, and no Polar access token. A 300 second window applies in both directions. Comparison uses `timingSafeEqual` on digest bytes. Only `v1` tokens are accepted.
+
+Secrets generated before 2026-09-08 00:00 UTC use the UTF-8 bytes of the full `whsec_…` string as the HMAC key. Secrets generated on or after that instant use Standard Webhooks: strip `whsec_` and base64-decode the remainder. The secret string does not say which era it is, so the kit tries both. `polar_whs_` and any other prefix are rejected.
+
+Dashboard delivery format must be **Raw** JSON. Slack and Discord bodies are not parsed. The secret is the endpoint `whsec_`.
+
+`provider_event_id` is the `webhook-id` header. It is not `data.id`. `order.created` and `order.paid` share an order id and are different events.
+
+`POLAR_EXPECT_LIVEMODE` is an operator declaration written to `billing_events.livemode`. Unset means false (sandbox). Polar does not send a livemode field. A production Polar endpoint must set this true. It is not inferred from the secret. There is no `livemode_mismatch` 400 on this path.
+
+Polar publishes a webhook IP list on the [delivery page](https://polar.sh/docs/integrate/webhooks/delivery). The kit does not allowlist those IPs. They change, and they are not authentication.
+
+The stored JSONB may include customer email, billing address, and tax id. You own retention.
+
+Fetch / Hono (`Request`):
+
+```ts
+import { handlePolar } from 'hooksteel';
+
+app.post('/api/webhooks/polar', async (c) => {
+  const rawBody = await c.req.text();
+  return handlePolar({
+    rawBody,
+    webhookId: c.req.header('webhook-id') ?? null,
+    webhookTimestamp: c.req.header('webhook-timestamp') ?? null,
+    webhookSignature: c.req.header('webhook-signature') ?? null,
+  });
+});
+```
+
+Express. Use `express.raw` so the bytes that are signed are the bytes you verify. `req.body` is a Buffer. Call `Buffer.toString('utf8')`.
+
+```ts
+import express from 'express';
+import { handlePolar } from 'hooksteel';
+
+const app = express();
+
+app.post(
+  '/api/webhooks/polar',
+  express.raw({ type: 'application/json' }),
+  async (req, res) => {
+    const rawBody = Buffer.isBuffer(req.body) ? req.body.toString('utf8') : '';
+    const header = (name: string) => {
+      const value = req.headers[name];
+      return typeof value === 'string' ? value : null;
+    };
+    const response = await handlePolar({
+      rawBody,
+      webhookId: header('webhook-id'),
+      webhookTimestamp: header('webhook-timestamp'),
+      webhookSignature: header('webhook-signature'),
+    });
+    res.status(response.status).type(response.headers.get('content-type') ?? 'application/json');
+    res.send(await response.text());
+  },
+);
+```
+
+Do not mount `express.json()` on this route. The Next route under `examples/next` is `request.text()` plus the three headers.
+
+| Condition | Status | Persist? | Outbox? |
+| --- | --- | --- | --- |
+| Missing / placeholder / non-`whsec_` secret | **400** `invalid_webhook_secret` | No | No |
+| Missing header, bad timestamp, tamper, wrong key, no `v1` match | **400** `invalid_signature` | No | No |
+| Signature ok, body not a JSON object with string `type` | **400** `invalid_payload` | No | No |
+| First accept + mapped adapters | **200** `outboxed` | Yes | Yes, same txn |
+| First accept + empty map | **200** `ignored` | Yes (`processed_at` set) | Zero |
+| Duplicate `webhook-id` already stored | **200** `duplicate` | No new row | No |
+| DB unavailable / txn failure / unexpected error after verify | **500** `transient` | No (rolled back) | No |
+
+Polar retries non-2xx (up to 10, exponential backoff) and disables the endpoint after 10 consecutive non-2xx responses. 400 does not mean Polar stops. Poison stays 400. A database blip stays 500. Returning 200 for a bad signature would ACK poison.
+
+### Default Polar adapter map
+
+| Event type | Adapters |
+| --- | --- |
+| `order.paid` | `grant_credit`, `send_email` |
+| `order.created` | `[]` (persisted as `ignored`) |
+| `order.updated` | `[]` (persisted as `ignored`) |
+| `order.refunded` | `[]` (persisted as `ignored`; no credit clawback) |
+| `checkout.created` / `checkout.updated` / `checkout.expired` | `[]` |
+| `subscription.canceled` / `subscription.revoked` | `[]` |
+| Any other verified type | `[]` |
+
+`invite_github` is **opt-in**. It is not in the default Polar map.
+
+Every `order.paid` grants, including `billing_reason=subscription_cycle`. Each delivery has its own `webhook-id`. That is a new payment. v0.1 does not special-case `billing_reason`. Buyers who sell subscriptions and do not want a credit on every renewal replace the `order.paid` row.
+
+`order.updated` is not an opt-in grant alongside `order.paid`. Polar also sends `order.updated` when the order becomes paid. Mapping both `order.updated` and `order.paid` to the same adapters grants twice.
+
+`checkout.updated → [grant_credit, send_email]` only if you also filter `data.status === 'succeeded'` and remove `order.paid` from those same adapters. The kit does not ship that filter. `checkout.updated` fires for `open`, `expired`, `confirmed`, `succeeded`, and `failed`.
+
+```ts
+import { DEFAULT_POLAR_ADAPTER_MAP, configurePolarAdapterMap } from 'hooksteel';
+
+configurePolarAdapterMap({
+  ...DEFAULT_POLAR_ADAPTER_MAP,
+  'order.paid': ['grant_credit', 'send_email', 'invite_github'],
+});
+```
+
+`order.paid` outbox payload: `{order_id, customer, customer_email, amount_total, currency, status, paid, billing_reason}`. `customer` is `data.customer_id`. `amount_total` is `data.total_amount` in cents (0 is a real amount). `customer_email` null completes `send_email` as `skipped_no_email`. Checkout opt-in payload: `{checkout_id, customer, customer_email, amount_total, currency, status}`. Any other opted-in type is `{object_id}` only.
 
 ## Support
 

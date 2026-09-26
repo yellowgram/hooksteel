@@ -15,7 +15,7 @@
 | `MINIMUM_SUPPORT_CHECKLIST.md` — stranger self-serve bar (v3) | CI, Postgres chaos jobs, release zips |
 | `BUYER_NEEDS_BEYOND_CHECKLIST.md` — buyer/operator-owned needs | Polar delivery artifacts (when ready) |
 | `DESIGN_STRIPE_PATH.md` — Stripe path + 5 chaos (cycle-1 + cycle-2 locks merged) | Stripe path code on `main` @ `f25f235`: migrations, handler, drain, chaos tests |
-| `DESIGN_POLAR_PATH.md` — Polar path design×3, founder greenlit (PQ1/PQ2 closed, PD1–PD4 locks) | Polar verify + `handlePolar` implement in progress (`cursor/polar-webhook-path-9fc9`). |
+| `DESIGN_POLAR_PATH.md` — Polar path design×3, founder greenlit (PQ1/PQ2 closed, PD1–PD4 locks) | Polar verify + `handlePolar` implement in progress: https://github.com/yellowgram/hooksteel/pull/3 |
 | `COS_POLAR_PATH_DESIGN_REVIEW.yaml` — CoS design review; PD1–PD4 accepted | — |
 | `DESIGN_REVIEW_CYCLE2_JUDGEMENT.md` — HookSteel accept/reject of CoS cycle-2 packet | — |
 | This `README.md` — agent pointer | — |

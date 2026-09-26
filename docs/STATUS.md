@@ -24,7 +24,7 @@
 - Stripe path is on `main` at `f25f235` (`Stripe path: exactly-once webhook side effects + chaos suite`). PR: https://github.com/yellowgram/hooksteel/pull/1
 - Design contract for that slice remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Code-review packs: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md), [`COS_CODE_REVIEW_PR1.yaml`](./COS_CODE_REVIEW_PR1.yaml).
 - Polar design is merged: https://github.com/yellowgram/hooksteel/pull/2 (`cursor/polar-path-design-cac1`). Docs only.
-- Polar implement PR: opening on `cursor/polar-webhook-path-9fc9`. Link filled when the PR is up.
+- Polar implement PR: https://github.com/yellowgram/hooksteel/pull/3 (`cursor/polar-webhook-path-9fc9`).
 - [`DESIGN_POLAR_PATH.md`](./DESIGN_POLAR_PATH.md) §1 is the implement contract. §3: **PQ1** `whsec_` only (`polar_whs_` and any non-`whsec_` prefix → 400 `invalid_webhook_secret`; buyers rotate). **PQ2** LICENSE byte-identical this slice; Polar-org clause deferred.
 - CoS [`COS_POLAR_PATH_DESIGN_REVIEW.yaml`](./COS_POLAR_PATH_DESIGN_REVIEW.yaml) **PD1–PD4** are in this implement: unsigned-livemode known limit, both HMAC eras in unit tests, README 10-strike troubleshooting, every `order.paid` including `subscription_cycle` grants with no `billing_reason` special-case.
 - Refund window still deferred. Soft-WTP / Lock / Audit / hosted gateway still OFF. No Polar listing / KYC.
@@ -42,4 +42,4 @@
 - Support &gt;2h/wk day 60  
 - Buyers demand hosted gateway → **stop**; do not pivot to services on Polar  
 
-*Stripe merged at f25f235. Polar design merged (PQ1/PQ2 closed, PD1–PD4 accepted). Polar implement in progress on `cursor/polar-webhook-path-9fc9`. Soft-WTP OFF. No Polar listing. LICENSE unchanged.*
+*Stripe merged at f25f235. Polar design merged (PQ1/PQ2 closed, PD1–PD4 accepted). Polar implement in progress: https://github.com/yellowgram/hooksteel/pull/3. Soft-WTP OFF. No Polar listing. LICENSE unchanged.*

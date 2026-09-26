@@ -3,6 +3,8 @@
 # Source: yellowgram/hooksteel docs @ sha 66891396b9764538c2169f2ed2c8c66102222855
 # Date: 2026-09-26
 # Soft-WTP OFF. No application code. No Polar. Halt remains until founder GO after locks land in DESIGN_STRIPE_PATH.md §1.
+# Purchase-refund window locked 2026-09-26 at 30 days (docs/REFUND_GLOSSARY.md).
+# Older "14 vs 30" / "still deferred" lines in this packet are the cycle-2 record, not current policy.
 
 schema_version: 3
 product: HookSteel
@@ -38,7 +40,7 @@ cos_instruction: |
   4. Append iterations[] as DESIGN_STRIPE_PATH.md §4 "Cycle 2 delta log".
   5. Replace STATUS.md phase with status_md_patch.phase.
   6. DESIGN_STRIPE_PATH.md §3 should list ZERO open product questions for this
-     slice except refund 14 vs 30 (deferred, not this slice).
+     slice. Purchase-refund window is 30 days (docs/REFUND_GLOSSARY.md). This cycle did not pick that number.
   7. Rejected items stay rejected.
 
 assertive_verdict: |
@@ -398,7 +400,7 @@ closed_open_questions:
     now: Node 20 locked; Next not a root dependency; Next 15 only inside examples/next
   - id: 5
     was: refund 14 vs 30
-    now: still deferred — do not reopen
+    now: locked at 30 days in docs/REFUND_GLOSSARY.md — do not reopen inside this slice
   - id: NQ1
     was: examples/next vs in-root Next
     now: examples/next + root Node library

@@ -2,7 +2,7 @@
 
 **Filename:** `BUYER_NEEDS_BEYOND_CHECKLIST.md` (kit buyers; dual title = Buyer / Operator)  
 **Audience:** buyer of the **$89–129 Polar zip / private GitHub** (indie SaaS founder / integrator / ops) — not founder income rails  
-**Baseline treated as covered:** `/workspace/income/hooksteel/MINIMUM_SUPPORT_CHECKLIST.md` (v3)  
+**Baseline treated as covered:** `docs/MINIMUM_SUPPORT_CHECKLIST.md` (v3) in this repository  
 **Method:** three sequential adversarial expert iterations *after* treating the minimum-support checklist as covered; each adds concrete buyer-owned needs, kills fluff.  
 **Naming:** BUYER_NEEDS (buyer of the kit). Operator needs = how that buyer runs outbox/replay in *their* prod (keel-inspired depth; Polar digital-kit shape from credit-ledger).  
 **Date:** 2026-09-26 ET — design-only; no code/git/outreach/PRs. Soft-WTP OFF. No Lock/Audit/services. Polar dark until ready (yellowgram concern — not a buyer deliverable).
@@ -25,7 +25,7 @@ Treat checklist items (offline fixtures, Postgres chaos CI, demo flags off, live
 8. **Org / license fit** — Single-app / one organization at launch; no resale as competing boilerplate. Multi-app $249 is optional later — do not assume Single-app covers unlimited products. If intent is to republish a starter, **do not buy**.
 9. **Support expectations calibrated** — 60 days GitHub Issues, best-effort, no SLA, ≤~2 h/week founder attention, repro required. Buyer who needs a call / Slack / implementation partner must obtain that elsewhere (not on this Polar SKU).
 10. **Pin target decision** — Keep the Polar zip / tag `v0.1.0` (and checksum when published) as the team’s pin. Floating “whatever email attachment” is a buyer failure mode.
-11. **Refund window awareness** — Kit purchase may allow **14–30 day** Polar refund (founder/CoS aligned). That is **not** the same as webhook replay. Decide purchase with the chaos demo / fixtures in mind.
+11. **Refund window awareness** — Kit purchase refund window is **30 days** (founder lock 2026-09-26). That is **not** the same as the replay CLI or a provider `order.refunded` webhook. `order.refunded` does not claw back credit. Decide purchase with the chaos demo / fixtures in mind.
 
 ### Unzip, prove, graduate off stubs
 

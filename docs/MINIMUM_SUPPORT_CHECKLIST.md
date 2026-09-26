@@ -5,7 +5,7 @@
 **Product:** HookSteel — Billing Event Reliability Kit — Postgres `billing_events` + outbox + dead_letters; Stripe + Polar signed handlers; transactional outbox worker; exactly 5 chaos scenarios; replay CLI; adapter stubs; Hookdeck honesty. Buyer’s Stripe/Polar + DB. Not hosted SaaS. Not Hookdeck.  
 **Income path:** One Polar SKU (Single-app at launch); private repo `yellowgram/hooksteel`; Release **v0.1.0** zip CoS-uploaded to Polar when ready gate clears (GitHub URL not public). Polar org **Suthirth solutions** — **dark until ready**.  
 **Goal:** Keep founder support near zero (≤2 h/week, 60-day Issues, no SLA) by making strangers self-serve before they open an Issue.  
-**Standing note:** Later implement work uses **3 design + 3 code-review** adversarial passes. **This pass is design-only** — docs under `/workspace/income/hooksteel/`; do not change kit application code here. Closing gaps from this checklist later also requires **3+3**.  
+**Standing note:** This checklist was written as design-only. The kit now lives in this repository. Do not change verify, handle, drain, migrations, adapters, `LICENSE`, or `src/outbox/replay.ts` from a checklist pass. Later product code still goes through **3 design + 3 code-review** passes.  
 **Models mirrored:** credit-ledger MINIMUM_SUPPORT (primary Polar digital-kit shape); keel MINIMUM_OPS (ops/supervision depth for worker + dead_letter triage).
 
 ---
@@ -16,7 +16,7 @@
 
 1. **Offline proof (≤10 min, no live Stripe/Polar network, no live keys)** — From the unzipped `v0.1.0` tree: `npm install → npm test` (or documented equivalent) green against **fixtures** that exercise Stripe + Polar signature verification paths with canned payloads/secrets. Document exact commands. Strangers must prove “same event 4× → one side effect” without booking the founder.
 2. **Postgres CI path documented beside offline** — Same suite (or the 5 chaos scenarios) also runs on Postgres in CI. README states: offline fast path proves logic; Postgres CI is the ship gate. Be honest if offline uses an embedded/test DB — do not claim SQLite file = production HA for the outbox worker.
-3. **60s demo script in-repo** — Scripted steps (or recorded demo checklist) that show duplicate delivery → one adapter execution. Demo must beat “ask Cursor + Stripe docs” on the outbox/rollback angle. Kill criterion if this cannot land.
+3. **60s demo script in-repo** — One clip, not two provider demos. Script: `docs/DEMO_60S.md`. Command: `npm run demo:60s` (existing chaos files `01-duplicate-delivery` and `05-db-rollback-mid-fulfillment` only; do not add a sixth chaos file). Same event four times → one side effect, rollback mid-fulfillment, Stripe and Polar in that same clip. Kill criterion: if that clip cannot beat the Stripe docs and the Hookdeck homepage, do not list. A Stripe-only or Polar-only recording is not the gate.
 4. **Optional live CLI paths (documented, not required for first 10 min)** — Stripe CLI `listen` + Polar test webhook docs for buyers who want real provider round-trips after fixtures go green. Card/`sk_test_` only; never require live mode for support eligibility.
 5. **Adapter stub graduation note in the happy path** — One short “you are done with stubs when…”: replace `grant_credit` / `send_email` / `invite_github` stubs with *your* implementations; keep idempotency keys; leave demo/no-op adapters out of production deploys.
 
@@ -37,7 +37,7 @@
 15. **Hookdeck honesty section stays prominent** — Same outline as MVP_SCOPE (ingress vs in-app outbox). Polar listing links it. Deflects “make this hosted” Issues into a product decision, not a free feature build. Kill criterion if buyers demand hosted gateway → stop; do not pivot to services on Polar.
 16. **Known limits block required (ship + listing)** — Exactly 5 chaos scenarios (no fuzz); Single-app license at launch; no hosted gateway; side effects are buyer-owned adapters; ordering policy for out-of-order is documented as “unique-id + outbox,” not global total order across providers; 12mo patches (when stated) ≠ perpetual rewrite. Listing must not contradict README.
 17. **Issue template that forces repro** — Require: kit semver / zip checksum or tag `v0.1.0`, Node version, OS, DB engine, failing **test name** (prefer chaos scenario name) or provider **test-mode** event id, redacted env **booleans only** (no secrets). Missing repro → auto comment + close after N days. No live secrets pasted — template states this.
-18. **Purchase refund vs provider “replay” glossary** — Kit purchase may have a **14–30 day refund** window (DECISION adversarial #3); **founder decision flag:** CoS must set Polar refund toggle to the chosen number and match README. “Replay” = CLI re-drive of billing events / dead letters — not a money refund. Two different words; one support fire if conflated.
+18. **Purchase refund vs provider “replay” glossary** — Kit purchase refund window is **30 days** (founder lock 2026-09-26). CoS sets the Polar refund toggle to 30 days before the listing goes light. Listing stays dark. “Replay” = CLI re-drive of billing events / dead letters — not a money refund. Two different words; one support fire if conflated. `order.refunded` stays ignored and does not claw back credit.
 19. **Private-repo Issues access path documented for CoS** — Buyers need a written way onto Issues for 60 days (Polar GitHub benefit auto-invite, collaborator invite, or handoff). Without this, “support” is a Polar chat that is not in the product boundary. Repo: `yellowgram/hooksteel`.
 
 ### D. Tests / CI that keep strangers off your calendar
@@ -60,7 +60,7 @@
 29. **Out-of-scope auto-reply ready** — Hosted gateway / yellowgram-operated ingress; Hookdeck feature parity as a service; Lock/Audit; Soft-WTP outreach; implementation services; “debug my production live keys”; India-local ICP customization; adding unbounded chaos/fuzz as free work; Credit Ledger product conflation. Template closes these without founder improvisation.
 30. **No Lock / Audit / Soft-WTP / services doors on Polar** — Listing and docs state: this product is the download + private GitHub access only. Do not advertise services that are not sold. Polar AUP: human services not primary offering.
 31. **License one-liner visible** — Single-app / one org at launch; use/modify OK; no resale as competing boilerplate; no warranty for billing correctness in buyer prod. Multi-app $249 is **later**, not implied by Single-app purchase.
-32. **Purchase refund policy aligned with Polar toggle** — DECISION noted **14–30 day refund** for HookSteel (chaos demo reduces “doesn’t work” refunds). **Founder decision flag:** pick the number (14 vs 30), put it in README + listing, CoS sets Polar refund toggle to match **before** listing goes live. Do not leave a rail default that contradicts the kit.
+32. **Purchase refund policy aligned with Polar toggle** — **Founder lock 2026-09-26: 30 days.** README, `BUYER_START_HERE`, `docs/REFUND_GLOSSARY.md`, and `docs/POLAR_DELIVERABLES.md` state 30 days. CoS sets the Polar refund toggle to 30 days before the listing goes light. Do not publish to set it. Do not leave a rail default that is not 30 days. Listing stays dark.
 
 ### G. Ops: outbox worker supervision, dead_letter triage, replay runbook
 
@@ -114,8 +114,8 @@
 | Elevate Hookdeck honesty + known limits into listing-linked requirements | Wrong-buyer purchase → refund/support regardless of demo quality |
 | Add §G worker supervision + dead_letter triage + replay runbook + thin observability | Integrators assume webhook 200 = fulfillment done |
 | Out-of-scope auto-reply pack (hosted, Lock/Audit, Soft-WTP, live-key debug, fuzz expansion) | Enforces support boundary under phone-first hours |
-| Align Polar refund toggle with chosen 14–30 day window | **Founder flag:** rail default ≠ product policy |
-| 60s demo script as checklist item tied to kill criterion | Cannot beat Cursor → do not Polar |
+| Align Polar refund toggle with the purchase-refund window | **Founder lock 2026-09-26: 30 days.** See `docs/REFUND_GLOSSARY.md`. Do not copy a rail default over 30 days. |
+| 60s demo script as checklist item tied to kill criterion | One Stripe+Polar clip. If it cannot beat the Stripe docs and the Hookdeck homepage, do not list. |
 | Dual Stripe+Polar fixture paths called out in §A/§D | Single-provider kit fails DECISION differentiation |
 
 **Killed / demoted**
@@ -128,17 +128,17 @@
 - **Credit-ledger conflation** (“include reserve/finalize”) — Separate product; killed from HookSteel min-support.
 - **India-ICP customization** — Global English only; killed.
 
-**Remaining gaps vs ready gate** (implement later under **3 design + 3 code-review**)
+**Ready-gate status** (the rows below used to say this work was not built; that is no longer true)
 
-| Ready-gate item | Checklist coverage | Gap |
+| Ready-gate item | Checklist coverage | Where it stands |
 | --- | --- | --- |
-| 5 chaos green on Postgres CI | §D.20 | **Code + CI not built yet** |
-| Stripe + Polar paths + fixtures | §A.1, §B, §D.21 | **Implement under 3+3; Stripe path next** |
-| Outbox worker + replay CLI | §B.10, §G.33–35 | **Design locked; code TBD** |
-| 60s demo | §A.3 | **Script/recording TBD** |
-| Hookdeck honesty | §C.15 | **Copy outline in MVP_SCOPE; landing TBD** |
-| Commercial license | §F.31 | **LICENSE file TBD at ship** |
-| Polar | §F + STATUS | **Dark until above green** |
+| 5 chaos green on Postgres CI | §D.20 | On `main`. `.github/workflows/chaos-postgres.yml` runs migrate, `npm run demo:60s`, and `npm test` on Postgres 16. |
+| Stripe + Polar paths + fixtures | §A.1, §B, §D.21 | On `main`. `handle` and `handlePolar`. No Polar SDK. |
+| Outbox worker + replay CLI | §B.10, §G.33–35 | On `main`. `npm run outbox:drain`, `replay:list`, `replay:dry-run`, `replay:execute`. |
+| 60s demo | §A.3 | Script is `docs/DEMO_60S.md`. `npm run demo:60s` runs chaos `01` and `05` only. The founder still has to film and approve the one clip. A recording is not in the repo. |
+| Hookdeck honesty | §C.15 | `README.md`, `docs/LANDING.md`, and `docs/POLAR_DELIVERABLES.md`. |
+| Commercial license | §F.31 | `LICENSE` is in the tree. Single-app. |
+| Polar | §F + STATUS | Listing stays dark until the founder-approved clip and the distribution post. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post. |
 
 ---
 
@@ -176,4 +176,4 @@
 | Support boundary | Kept: 60-day/no SLA/≤2h, out-of-scope pack, no Lock/Audit/Soft-WTP, license, refund toggle align (§F) |
 | — | **New (keel-inspired):** worker supervision + dead_letter triage + replay runbook + thin observability (§G) |
 
-*Last updated: 2026-09-26 ET — design-only; no code/git/outreach/PRs/Polar in this pass.*
+*Last updated: 2026-09-26 ET — checklist text started as design-only. Kit code, five chaos files, replay CLI, and ready-gate docs are in this repository. Listing stays dark. Purchase-refund window 30 days.*

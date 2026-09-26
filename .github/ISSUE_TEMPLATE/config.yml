@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: HookSteel support boundary
+    url: https://github.com/yellowgram/hooksteel/blob/main/SUPPORT.md
+    about: 60 days from purchase, best-effort, no SLA. Read this before opening an Issue.

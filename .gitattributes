@@ -1,0 +1,13 @@
+# git archive omit contract for hooksteel-*.zip.
+# scripts/pack-release.sh also passes pathspec excludes.
+
+/docs/CHECKSUMS.md export-ignore
+/release/ export-ignore
+/.env export-ignore
+/.env.local export-ignore
+/examples/next/.env.local export-ignore
+node_modules/ export-ignore
+/dist/ export-ignore
+*.dump export-ignore
+*.backup export-ignore
+*.sql.gz export-ignore

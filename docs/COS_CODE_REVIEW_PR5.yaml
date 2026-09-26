@@ -1,0 +1,264 @@
+# HookSteel — CoS packet
+# Adversarial CODE REVIEW ×3 on PR #5 (replay CLI implement)
+# PR: https://github.com/yellowgram/hooksteel/pull/5
+# Head reviewed: c78f40bf6859d6f6a20809845bddc15fc54aa8b8
+# Base: main @ b6dc333846cfc8ca3cc2e7bfd68824525ddeb216
+# Contract: docs/DESIGN_REPLAY_CLI.md §1 (PQ1 three_npm_scripts, PQ2 terminal_json_only locked)
+# Date: 2026-09-26
+# Soft-WTP OFF. Findings only. Do not merge this PR from the review commit.
+# Do not fix P2s in this run. There are none.
+
+schema_version: 1
+product: HookSteel
+packet_type: code_review
+audience: CoS
+reviewer: grok
+slice: replay_cli
+pr: 5
+pr_url: https://github.com/yellowgram/hooksteel/pull/5
+head_sha: c78f40bf6859d6f6a20809845bddc15fc54aa8b8
+base_sha: b6dc333846cfc8ca3cc2e7bfd68824525ddeb216
+approve_merge: false
+ci:
+  workflow: chaos-postgres
+  conclusion: success
+  runs:
+    - https://github.com/yellowgram/hooksteel/actions/runs/36274619668
+    - https://github.com/yellowgram/hooksteel/actions/runs/36274616321
+
+cos_instruction: |
+  1. Verdict is APPROVE. P0, P1, and P2 are empty. Do not invent a follow-up fix.
+  2. approve_merge stays false. Do not merge from this review commit. Founder merges.
+  3. PQ1 three_npm_scripts and PQ2 terminal_json_only are verified. Do not reopen them.
+  4. CR2-A-P2-002 stays deferred. Do not edit src/outbox/replay.ts to label $1.
+  5. Do not add a sixth chaos file, a bin, --force, --operator, or replayed_by.
+  6. Keep every item in rejected[].
+
+assertive_verdict: |
+  PR #5 matches DESIGN_REPLAY_CLI.md §1. PQ1 three_npm_scripts and PQ2
+  terminal_json_only hold. parseReplayArgs rejects bad argv before getPool.
+  Usage and errors go to stderr. Dry-run spreads ReplayDryRun and does not
+  rewrite the three $1 statements. Execute does not spawn drain or call an
+  adapter. git diff is empty for replay.ts, drain.ts, webhooks, adapters,
+  migrations, and LICENSE. README ## Replay and BUYER_START_HERE step 7
+  match §1.6, including the glossary, the poison runbook, and CR2-A-P2-002.
+  No P0. No P1. No P2. approve_merge is false. Founder merges.
+
+what_holds:
+  - id: CR1
+    lens: argv_process_boundary
+    holds:
+      - parseReplayArgs accepts only list, dry-run plus one id, and execute plus one id
+      - empty id, a second id, any token starting with -, unknown commands, and list extras return the one usage line
+      - entrypoint guard is import.meta.url versus pathToFileURL of argv[1]; a test import does not open a pool
+      - bad argv writes the usage line to stderr, exits 1, and does not call getPool
+      - ReplayRefusedError and other throws print error.message only, with no stack
+      - closePool runs on the success path and on the throw path, same shutdown shape as scripts/outbox-drain.ts
+      - list JSON is command, count = rows.length, and the listDeadLetters rows
+      - dry-run JSON is command plus a spread of ReplayDryRun
+      - execute JSON is command, the argv id, outboxId, adapter, and next as the text npm run outbox:drain -- --once
+      - execute does not import drain, adapters, or child_process
+      - ReplayRefusedError strings stay in src/outbox/replay.ts and are not reworded
+    evidence: >
+      Local tsx: no args, --force, execute one two, dry-run with an empty id,
+      and inspect id each exited 1 with only the usage line on stderr.
+      list and dry-run of a uuid with DATABASE_URL unset exited 1 with
+      stderr DATABASE_URL is required and no stack. npm run replay:execute -- --force
+      exited 1 with the usage line. tests/unit/replay-cli.test.ts and
+      tests/unit/layout.test.ts passed.
+
+  - id: CR2
+    lens: mutation_honesty_dry_run
+    holds:
+      - git diff base...head is empty for src/outbox/replay.ts and src/outbox/drain.ts
+      - dry-run is writeJson of command plus the ReplayDryRun object; statements are not mapped or relabeled
+      - statementsFor still uses $1 three times; the CLI does not interpolate ids
+      - package.json adds replay:list, replay:dry-run, and replay:execute only; bin is absent; dependencies are unchanged
+      - tests/chaos is still exactly the five files; no workflow edit
+      - --force, --operator, and replayed_by are not implemented; flag tokens fail argv parse
+    evidence: >
+      git diff b6dc333...c78f40b is empty for src/outbox/replay.ts,
+      src/outbox/drain.ts, src/webhooks, src/adapters, migrations, LICENSE,
+      src/index.ts, tests/chaos, and package-lock.json. The changed files
+      are BUYER_START_HERE.md, README.md, docs/STATUS.md, package.json,
+      scripts/replay-cli.ts, and tests/unit/replay-cli.test.ts.
+      layout.test.ts still asserts the five chaos names.
+
+  - id: CR3
+    lens: buyer_docs_support
+    holds:
+      - README ## Replay sits after ## Drain and replaces the no-polished-CLI paragraph
+      - the four-command runbook and the eight prose rules in §1.6 are present
+      - glossary sentence is byte-identical in README ## Replay and BUYER_START_HERE.md
+      - BUYER_START_HERE step 7 is the §1.6 sentence
+      - CR2-A-P2-002 known-limit sentence is byte-identical under README known limits
+      - poison runbook tells the operator to register the adapter before execute
+      - yellowgram is not on-call; whoever holds DATABASE_URL runs the commands; no audit column
+      - Hookdeck bullets are byte-identical to the base
+      - Polar section and the HTTP status table are not in the diff
+      - STATUS says implement is in progress on PR #5, replay.ts is not edited, listing stays dark, and do not merge from that note
+      - LICENSE, migrations, webhooks, and adapters are untouched
+    evidence: >
+      Glossary, step 7, the usage line, and the CR2-A-P2-002 sentence match
+      DESIGN_REPLAY_CLI.md §1.6. git show base:README.md Hookdeck section
+      equals HEAD. Refund window number is not chosen.
+
+findings: []
+
+p0: []
+p1: []
+p2: []
+
+counts: {p0: 0, p1: 0, p2: 0}
+verdict: APPROVE
+required_code_fixes: []
+fixes_pushed: false
+
+prior_locks:
+  - {id: PQ1, status: holds, evidence: three npm scripts only; no bin; no inspect; list is inspect}
+  - {id: PQ2, status: holds, evidence: execute JSON is deadLetterId, outboxId, adapter; no --operator; no replayed_by}
+  - {id: CR2-A-P2-002, status: deferred, evidence: replay.ts diff empty; README known limit copied; $1 not relabeled}
+  - {id: CR3-B-P2-001, status: not_reopened, evidence: polar verify tests not in the diff}
+  - {id: CR3-C-P2-001, status: not_reopened, evidence: HTTP status table not in the diff}
+
+iterations:
+  - id: 1
+    expert: argv_process_boundary
+    attack_thesis: >
+      A helpful parser accepts --force or a second id, opens the pool before
+      usage fails, rewords ReplayRefusedError, or shells out to drain from
+      execute. An entrypoint check that is always true connects during the
+      argv unit test. An entrypoint check that is always false makes npm run
+      a silent exit 0.
+    findings: []
+    holds:
+      - bad argv exits 1 on stderr before getPool
+      - entrypoint runs the CLI under tsx and stays false when the unit test imports parseReplayArgs
+      - closePool on success and on throw
+      - JSON shapes are the §1.3 objects
+      - next is a string; drain and adapters are not imported
+      - refusal messages are err.message from the untouched ReplayRefusedError
+
+  - id: 2
+    expert: mutation_honesty_dry_run
+    attack_thesis: >
+      Implement labels the three $1 placeholders, adds billingEventId, or
+      splices the dead-letter id into the statement strings. A bin, a sixth
+      chaos file, or a replayed_by migration sneaks in beside the scripts.
+    findings: []
+    holds:
+      - replay.ts and drain.ts diffs are empty
+      - dry-run spreads ReplayDryRun
+      - $1 stays a placeholder
+      - no bin, no sixth chaos, no --force path, no --operator, no replayed_by
+
+  - id: 3
+    expert: buyer_docs_support
+    attack_thesis: >
+      The glossary is skipped, so the next ticket asks replay to refund the
+      Polar purchase. The known limit is omitted and an operator pastes one
+      bind into psql. STATUS claims the CLI is merged or that replay.ts was fixed.
+    findings: []
+    holds:
+      - glossary in README and BUYER_START_HERE
+      - step 7 matches §1.6
+      - poison runbook and yellowgram-not-on-call are present
+      - CR2-A-P2-002 known limit is present
+      - Hookdeck, LICENSE, migrations, webhooks, and adapters stay as they were
+      - STATUS matches an open implement PR
+
+rejected:
+  - Edit src/outbox/replay.ts or drain.ts to label $1 or add billingEventId
+  - UUID regex in the CLI (malformed ids stay a database error message; list ids are the operator path)
+  - npm --silent or a bin so the npm run preamble is absent from the terminal (PQ1 locked npm run; the tsx process stdout is one JSON document)
+  - Sixth chaos file or a chaos case that execs the CLI
+  - package.json bin, hooksteel-replay, or an inspect subcommand
+  - --force, --all, --drain, --yes, --operator, or a confirm prompt
+  - Spawn drain, call drainOnce, or call an adapter from execute
+  - Interpolate ids into SQL text
+  - Print payload_snapshot
+  - Filter the list to replayed_at IS NULL
+  - replayed_by column or migration
+  - CR3-B-P2-001 published MAC pin
+  - CR3-C-P2-001 Stripe label on the first HTTP table
+  - LICENSE edit
+  - Refund window number, order.refunded clawback, Polar listing, KYC
+  - Soft-WTP, Lock, Audit, hosted gateway
+  - Merge PR #5 from this review commit
+
+do_not:
+  - merge PR #5 from this review commit
+  - set approve_merge true
+  - reopen PQ1 or PQ2
+  - fix CR2-A-P2-002 inside replay.ts
+  - reopen CR3-B-P2-001 or CR3-C-P2-001
+  - add a sixth chaos file
+  - edit LICENSE, migrations, webhooks, adapters, drain.ts, or replay.ts
+  - start a Polar listing
+
+status_line: >
+  Replay CLI CR×3 APPROVE on c78f40b. P0 0, P1 0, P2 0. Independent review
+  APPROVE with no in-slice fixes. Founder authorized squash-merge 2026-09-26.
+  See independent_expert_review.
+
+# Separate reviewer. Did not treat the CR×3 packet as evidence.
+# Re-read DESIGN_REPLAY_CLI.md §1 and the PR diff from scratch.
+# Founder (yellowgram, 2026-09-26) authorized squash-merge after this pass.
+# That authority supersedes the CR×3 halt and "do not merge" lines above.
+# It does not reopen replay.ts, drain, verify, handlers, migrations, adapters,
+# LICENSE, a sixth chaos file, CR2-A-P2-002, the CR3 P2s, Soft-WTP, listing, or refund.
+independent_expert_review:
+  date: 2026-09-26
+  reviewer: independent
+  base_sha: b6dc333846cfc8ca3cc2e7bfd68824525ddeb216
+  reviewed_head: 8e9fca6cb70cef0a3d43a14bf7ef4cc399e59641
+  contract: docs/DESIGN_REPLAY_CLI.md §1
+  verdict: APPROVE
+  approve_merge: true
+  counts: {p0: 0, p1: 0, p2: 0}
+  findings_fixed: []
+  findings_deferred:
+    - id: IX-DEF-001
+      severity: n/a
+      kind: rejected
+      issue: >
+        A non-uuid token makes Postgres throw "invalid input syntax for type uuid"
+        instead of "dead letter not found".
+      why_deferred: >
+        §1.3 forbids a UUID regex. The lookup miss for a real uuid is already
+        "dead letter not found". Rewording the cast error would edit
+        src/outbox/replay.ts. List ids are uuids.
+    - id: IX-DEF-002
+      severity: n/a
+      kind: rejected
+      issue: >
+        npm run writes its script banner on stdout before the JSON document.
+      why_deferred: >
+        PQ1 locked npm run without --silent, the same runner as outbox:drain.
+        The tsx process stdout is one JSON document. A bin or a command-spelling
+        change is out of slice.
+    - id: IX-DEF-003
+      severity: n/a
+      kind: deferred
+      issue: CR2-A-P2-002 three $1 labels, and CR3-B-P2-001 / CR3-C-P2-001.
+      why_deferred: Founder standing constraints. Not this merge.
+  local_proof:
+    npm_test: pass
+    npm_test_count: 50
+    database: postgres 16
+    cli:
+      - empty list exits 0 with count 0 and rows []
+      - seeded list, dry-run, and execute match the §1.3 JSON shapes
+      - dry-run statements contain $1 and do not contain the dead-letter, outbox, or billing-event ids
+      - execute reopened the outbox (attempts 0, completed_at null), cleared processed_at, set replayed_at, and did not print a stack
+      - second execute stderr is exactly "dead letter already replayed", exit 1
+      - --force stderr is the usage line, exit 1, no new row
+      - missing uuid stderr is exactly "dead letter not found"
+      - success path returned in under a second after closePool
+  merge:
+    method: squash
+    authorized_by: yellowgram
+    authorized_on: 2026-09-26
+    pr_url: https://github.com/yellowgram/hooksteel/pull/5
+    # GitHub assigns the squash SHA at merge time. Filled on main after squash.
+    sha: pending_squash

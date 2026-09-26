@@ -167,7 +167,32 @@ On adapter throw, `available_at = now() + 2^attempts seconds`, capped at 60. Whe
 
 When every child outbox row is complete, drain locks the billing event row and then sets `processed_at`, so two workers finishing sibling adapters cannot both miss it. An empty adapter map is `ignored` and `processed_at` is set in the handler, because drain never visits a row with zero children.
 
-Replay mutation (no polished CLI in this slice): refuse when `replayed_at` is set or the billing event row is missing; otherwise clear the outbox completion fields, set `dead_letters.replayed_at`, commit, and let a normal drain run. Dry-run returns bound `UPDATE` statements (`$1`) plus the ids as separate fields. It does not interpolate ids into SQL text, and it writes nothing.
+## Replay
+
+```bash
+npm run replay:list
+npm run replay:dry-run -- <dead_letter_id>
+npm run replay:execute -- <dead_letter_id>
+npm run outbox:drain -- --once
+```
+
+**Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. **Replay is not a Polar purchase refund.** A Polar refund returns the money paid for this kit. The refund window is not chosen here. `order.refunded` stays ignored and does not claw back credit.
+
+**Inspect** is `replay:list`. Read `reason`, `adapter`, and `replayed_at`. `replayed_at: null` is open. Rows that already have `replayed_at` set stay in the list. v0.1 drain writes `max_attempts` and `poison`. `timeout` and `adapter_error` are reserved and this drain does not write them.
+
+Fix the adapter or the payload **before** execute. Replay does not repair a throw. For `poison`, register the adapter first or the next claim writes a new poison row.
+
+**Dry-run one id** copied from that list. The id is `dead_letters.id`, not an outbox id and not a provider event id. Dry-run writes nothing. Read `adapter`, `outboxId`, and `deadLetterId`. The statements stay parameterized.
+
+**Execute that one id.** It reopens that one outbox row, clears `processed_at` on the billing event, and sets `replayed_at`. It does not call the adapter. It does not run the other adapters on that event. A second execute of the same id is refused. There is no `--force`.
+
+**Drain runs the adapter.** A `npm run outbox:drain` loop that is already up may claim the row (`available_at` is now). When nothing is looping, run `npm run outbox:drain -- --once`. Do not stop a healthy worker as a prerequisite. The CLI will not start or stop one.
+
+One operator, one id per command. Two ids in one invocation is a usage error and writes nothing.
+
+The idempotency key does not change. Pass it through to the external API. Replay without that discipline can double-send.
+
+Yellowgram is not on-call for the buyer’s dead-letter queue. Whoever holds `DATABASE_URL` can run these commands. There is no audit column.
 
 ## Migrations
 
@@ -198,6 +223,7 @@ If migrate fails, fix the database and re-run. Do not hand-edit a file that only
 - Every `order.paid` grants, including `billing_reason=subscription_cycle`. Buyers who do not want a credit on every renewal replace the `order.paid` row. v0.1 does not special-case `billing_reason`.
 - Exactly five chaos files. Polar is covered inside them.
 - The full Polar event JSONB may include customer email, billing address, and tax id. The kit has no purger. You own retention.
+- Replay dry-run prints three `UPDATE` statements that each use `$1`. Those placeholders are not the same row. `outboxId` and `deadLetterId` are separate JSON fields. The billing-event id is not a field on the dry-run object. Do not paste the statements into a SQL client with one bind value. The CLI is the writer. Labeling the three `$1`s inside `replay.ts` is deferred (CR2-A-P2-002).
 
 ## Troubleshooting
 

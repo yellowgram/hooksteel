@@ -20,6 +20,9 @@
     "build": "tsc -p tsconfig.build.json",
     "migrate": "tsx src/db/migrate.ts",
     "outbox:drain": "tsx scripts/outbox-drain.ts",
+    "replay:list": "tsx scripts/replay-cli.ts list",
+    "replay:dry-run": "tsx scripts/replay-cli.ts dry-run",
+    "replay:execute": "tsx scripts/replay-cli.ts execute",
     "test": "tsx --test --test-concurrency=1 tests/unit/*.test.ts tests/chaos/*.test.ts",
     "typecheck": "tsc --noEmit"
   },

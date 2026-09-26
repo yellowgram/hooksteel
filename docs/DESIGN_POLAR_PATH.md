@@ -6,7 +6,7 @@
 **Base:** `main` @ `f25f235` (Stripe path merged). Schema, outbox, drain, replay, five chaos files, and the Stripe handler stay.  
 **Repo:** https://github.com/yellowgram/hooksteel  
 **This pass:** **Design only.** No application code. No Polar SDK forced into buyer apps. Soft-WTP OFF. No Lock/Audit/services. No hosted gateway. No Polar listing/KYC. Refund window stays deferred.  
-**Standing practice:** 3 progressive adversarial **design** iterations in §2. **Implement stays halted** until the founder reviews this doc.  
+**Standing practice:** 3 progressive adversarial **design** iterations in §2. **Founder GREENLIT** 2026-09-26. PQ1 and PQ2 are closed in §3. CoS PD1–PD4 are implement locks. **Implement is a separate later PR** — not this design change.  
 **Date:** 2026-09-26 ET  
 **Evidence read that day:** Polar delivery docs, Polar TypeScript SDK `webhooks.ts` on `master`, Standard Webhooks spec, Polar OpenAPI `2026-04`, Polar sandbox + events docs, Polar issue #13519.
 
@@ -45,7 +45,7 @@ Polar’s own SDK example is fine for Polar’s docs. It is the wrong dependency
 | [Polar — Handle & monitor webhook deliveries](https://polar.sh/docs/integrate/webhooks/delivery), fetched 2026-09-26 | Secrets **generated before 2026-09-08 00:00 UTC** are “Polar HMAC”: the HMAC key is the **UTF-8 bytes of the full `whsec_…` string**. Secrets **generated on or after that instant** are Standard Webhooks: pass `whsec_…` through as a Standard Webhooks secret (strip `whsec_`, base64-decode the remainder). The delivery page says Polar SDKs **1.0.0-alpha.19 and later** try **both** keys. `sdk/typescript/src/webhooks.ts` on `master` (fetched the same day) does that. Polar retries failed deliveries (up to 10, exponential backoff), times out at **10s**, asks handlers to respond within **2s**, and **disables the endpoint after 10 consecutive non-2xx responses**. |
 | [polar `sdk/typescript/src/webhooks.ts` on master](https://github.com/polarsource/polar/blob/master/sdk/typescript/src/webhooks.ts), fetched 2026-09-26 | Tolerance **300 seconds** both directions. Signed content `` `${webhookId}.${Math.floor(timestamp)}.${body}` ``. Header `webhook-signature` is space-separated `v1,<base64>`. `hmacKeys`: always the UTF-8 secret, plus base64-decode of the `whsec_` remainder when that decode is non-empty and different. Compare HMAC bytes (WebCrypto `verify`), not strings. |
 | [Standard Webhooks spec](https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md) | Symmetric scheme HMAC-SHA256, secret serialized as base64 with a `whsec_` prefix, signature id `v1`, constant-time compare, timestamp tolerance against replay, `webhook-id` stable across retries and used as the idempotency key. Id and timestamp must not contain `.` (concatenation attack). Sign the **exact** body bytes; do not re-serialize JSON. |
-| [polarsource/polar#13519](https://github.com/polarsource/polar/issues/13519) (open, updated 2026-08-10) | Explains the pre-cutoff behavior: the server base64-encoded the **entire** secret before constructing `StandardWebhook`, so the real HMAC key is the literal UTF-8 secret (prefix included). A spec-only “strip `whsec_` and base64-decode” verifier fails those deliveries. The issue text still mentions a historical `polar_whs_` prefix; the 2026-09-26 delivery page only shows `whsec_…`. Prefix policy for `polar_whs_` is **PQ1**, not something this design invents. |
+| [polarsource/polar#13519](https://github.com/polarsource/polar/issues/13519) (open, updated 2026-08-10) | Explains the pre-cutoff behavior: the server base64-encoded the **entire** secret before constructing `StandardWebhook`, so the real HMAC key is the literal UTF-8 secret (prefix included). A spec-only “strip `whsec_` and base64-decode” verifier fails those deliveries. The issue text still mentions a historical `polar_whs_` prefix; the 2026-09-26 delivery page only shows `whsec_…`. **PQ1 CLOSED:** `whsec_` only. Reject `polar_whs_` and any other prefix. |
 | [Polar OpenAPI](https://polar.sh/docs/openapi.json) `info.version` **2026-04** | `WebhookOrderPaidPayload` is `{ type, timestamp, data }` with `data` = `Order`. `Order` requires `id`, `customer_id` (uuid), `customer`, `total_amount` (cents, after discounts and taxes), `currency`, `status`, `paid`, `billing_reason`. `OrderCustomer.email` is `string \| null`. `CheckoutStatus` is `open \| expired \| confirmed \| succeeded \| failed`. **No schema property is named `livemode`, `sandbox`, or `environment`.** |
 | [Sandbox](https://polar.sh/docs/integrate/sandbox) | Sandbox is a **separate server and organization** (`sandbox.polar.sh` / `sandbox-api.polar.sh`), not a test-mode flag on the event. |
 | [Webhook events](https://polar.sh/docs/integrate/webhooks/events) and [Orders](https://polar.sh/docs/features/orders) | After a successful charge, Polar sends `order.updated` **and** `order.paid` with the same paid order. `order.paid` is the event that means payment was received. Renewal sequences also emit `order.paid`. `order.created` can still be `pending`. |
@@ -241,7 +241,7 @@ Stripe lines stay. Replace the reserved Polar comment with:
 ```bash
 # Polar endpoint secret from the dashboard. Current docs: whsec_…
 # Pre-2026-09-08 secrets and later secrets use different HMAC keys; the kit tries both.
-# Legacy polar_whs_ secrets are rejected until PQ1 says otherwise — rotate them in Polar.
+# PQ1 CLOSED: whsec_ only. polar_whs_ and any other prefix are rejected — rotate them in Polar.
 POLAR_WEBHOOK_SECRET=whsec_replace_me
 
 # Operator declaration written to billing_events.livemode. Unset → false (sandbox).
@@ -260,7 +260,7 @@ Separate module from Stripe. A shared map would let a Polar type fall through in
 
 | Event type | Default adapters | Why |
 | --- | --- | --- |
-| `order.paid` | `[grant_credit, send_email]` | Payment received. Polar’s orders doc: the event integrations act on. Each delivery has its own `webhook-id`, including subscription renewals (`billing_reason=subscription_cycle`). That is a new payment, not a duplicate. |
+| `order.paid` | `[grant_credit, send_email]` | Payment received. Polar’s orders doc: the event integrations act on. **PD4:** every `order.paid` grants, including `billing_reason=subscription_cycle`. Each delivery has its own `webhook-id`. That is a new payment, not a duplicate. v0.1 does not special-case `billing_reason`. |
 | `order.created` | `[]` | Can still be `pending` / unpaid. Persist `ignored`. |
 | `order.updated` | `[]` | Polar also sends this when the order becomes paid, **with the same order as `order.paid`**. A default grant here double-fulfills. |
 | `order.refunded` | `[]` | Persist only. No credit clawback in this slice. |
@@ -274,7 +274,7 @@ Separate module from Stripe. A shared map would let a Polar type fall through in
 
 - `checkout.updated → [grant_credit, send_email]` only if the buyer also filters `data.status === 'succeeded'` **and** removes `order.paid` from those same adapters. The kit does not ship that filter in the default map.
 - `order.updated` is not an opt-in grant alongside `order.paid`.
-- Buyers who sell subscriptions and do not want a credit on every renewal replace the `order.paid` row. The kit does not special-case `billing_reason`.
+- **PD4.** Buyers who sell subscriptions and do not want a credit on every renewal replace the `order.paid` row. The kit does not branch on `billing_reason` in v0.1.
 
 **Outbox payload** for `order.paid` (full event JSON stays on `billing_events.payload`):
 
@@ -317,9 +317,9 @@ Signatures are minted at runtime. Do not commit `webhook-signature` or a frozen 
 
 Test secret: a fixed `whsec_` + standard base64 whose decoded bytes are **not** the UTF-8 of the full secret, and which is not a placeholder. `sign.ts` takes `scheme: 'polar_hmac' | 'standard_webhooks'` and writes a `v1,` token. `webhook-id` values in tests contain no `.`.
 
-**Unit file `tests/unit/polar-verify.test.ts` (offline, no network):**
+**Unit file `tests/unit/polar-verify.test.ts` (offline, no network). PD2: both HMAC eras are green before ship. Chaos may mint only `standard_webhooks`. Shipping one era and repairing the other in code review is an R14 miss.**
 
-- Both schemes accept the same body and secret.
+- Both schemes (`polar_hmac` and `standard_webhooks`) accept the same body and secret.
 - Wrong key, one-byte tamper, missing header, non-integer timestamp, timestamp older than 300s, timestamp more than 300s ahead, `webhook-id` containing `.` → 400 `invalid_signature`, zero rows.
 - Placeholder, empty, and non-`whsec_` (including a `polar_whs_…` sample) → 400 `invalid_webhook_secret`, zero rows.
 - Valid signature, body not JSON → 400 `invalid_payload`, zero rows.
@@ -349,15 +349,15 @@ Add, do not replace the Stripe sections:
 
 1. Polar verify is stdlib HMAC, dual key, raw body, three headers. No Polar SDK and no access token.
 2. HTTP table in §1.4, plus the 10-strike disable and “400 does not mean Polar stops.”
-3. `POLAR_EXPECT_LIVEMODE` is an operator declaration. Sandbox and production are different organizations.
+3. **PD1 known limit (required wording).** A live Polar endpoint pointed at a process with `POLAR_EXPECT_LIVEMODE` unset or false still verifies when the secret matches and stores `livemode=false`. Polar does not sign that bit. Do not invent a livemode field. Do not add `livemode_mismatch` 400 on this path. Sandbox and production are different organizations.
 4. Default map and the `order.updated` / `checkout.updated` double-fulfill warning.
 5. Dashboard format **Raw**. Secret is the endpoint `whsec_`.
-6. Troubleshooting: (1) raw body re-parsed, (2) spec-only library with the wrong key era, (3) `polar_whs_` rejected until rotated, (4) endpoint disabled after repeated 4xx/5xx, (5) `order.updated` and `order.paid` both arriving and a buyer map granting on both.
+6. **PD3 troubleshooting (required).** Include: placeholder secret, raw body re-parsed, wrong key era, `polar_whs_` rejected (PQ1 — rotate in the Polar dashboard), and **endpoint disabled after 10 consecutive non-2xx** (400 does not stop Polar; 10 strikes disable the endpoint). Also say that mapping both `order.updated` and `order.paid` to the same adapters grants twice.
 7. Optional pointer to Polar’s published webhook IP list on the delivery page. The kit does **not** allowlist IPs (they change, and they are not authentication).
 8. Full JSONB may include customer email, billing address, and tax id. Buyer owns retention. Same PII limit as Stripe.
 9. `BUYER_START_HERE.md`: drop “Polar webhook verification is not in this slice” and point at `handlePolar` + `npm test`.
 
-Hookdeck honesty bullets stay verbatim. Known limits gain the Polar livemode gap, the non-2xx disable rule, and “exactly five chaos files, Polar covered inside them.”
+Hookdeck honesty bullets stay verbatim. Known limits must include the PD1 cross-wire sentence, the PD3 10-strike disable, the PD4 renewal-grant sentence, and “exactly five chaos files, Polar covered inside them.”
 
 ### 1.10 R1–R14 and H1–H3, applied to Polar
 
@@ -377,7 +377,7 @@ Hookdeck honesty bullets stay verbatim. Known limits gain the Polar livemode gap
 | R12 | No Grafana / worker UI. |
 | R13 | No public MIT extract. LICENSE file not edited. |
 | R14 | Dual-key verify is locked **here**. Do not ship one key era and “fix the other in code review.” |
-| H1 | PQ1 is not auto-closed. Recommended default is in §3. Silence means implement that default and say so; it does not mean a hidden founder yes. |
+| H1 | **Closed by founder**, not by silence. PQ1 = `whsec_` only. PQ2 = LICENSE unchanged this slice. See §3. |
 | H2 | `order.updated` and `checkout.updated` default to `[]`, not `[grant_credit]`. |
 | H3 | Null `customer.email` uses the existing `skipped_no_email` no-op. Do not throw that into `dead_letters`. |
 
@@ -476,39 +476,58 @@ Iteration 1 left the MAC as “HMAC-SHA256 the body with the secret.” Iteratio
 | LICENSE edit to count Polar organizations, or to reinterpret Single-app | Founder lock for this pass: commercial Single-app text unchanged. |
 | Migration adding `livemode_source` or widening `provider` | Column and check already fit. |
 | `next` or `@polar-sh/sdk` at the repo root | Layout test already forbids both shapes. |
-| Implement-now inside this design PR | Design×3 halts for founder review. |
+| Implement-now inside this design PR | Founder greenlit the design. Implement is a separate later PR. |
 
 ---
 
 ## (3) Open questions for founder
 
-**One** open question. Everything else in the “do not reopen” table is closed by evidence or by an existing lock.
+**Founder GREENLIT.** No open product questions remain for this slice. PQ1 and PQ2 are answered locks. CoS findings PD1–PD4 from [`COS_POLAR_PATH_DESIGN_REVIEW.yaml`](./COS_POLAR_PATH_DESIGN_REVIEW.yaml) are accepted as implement locks. Refund window 14 vs 30 stays deferred.
 
-### PQ1 — legacy `polar_whs_` prefix
+### PQ1 — CLOSED: `whsec_` only
 
 | | |
 | --- | --- |
 | Question | Must verify accept a webhook secret that starts with `polar_whs_`, or only `whsec_`? |
-| Why it is open | The delivery page fetched 2026-09-26 describes both key eras as `whsec_…`. Issue #13519 (open, updated 2026-08-10) still says the HMAC key was the full secret **including a `whsec_` or `polar_whs_` prefix**. Those two public sources do not agree on the prefix. The kit cannot see when an endpoint was created. |
-| Recommended default if you do not answer before implement | **`whsec_` only.** Any other prefix, including `polar_whs_`, is `invalid_webhook_secret` (400, no store). README tells the buyer to rotate that secret in the Polar dashboard (rotation issues a `whsec_…` value). |
-| If you answer yes, accept `polar_whs_` | Treat the full string as the Polar-HMAC UTF-8 key only. Do not strip a prefix and base64-decode it. Keep the `whsec_` dual-key path unchanged. |
+| **Answer** | **`whsec_` only.** |
+| Lock | Empty, placeholders (`whsec_replace_me`, `replace_me`, `changeme`, `test`), `polar_whs_…`, and any other non-`whsec_` prefix → **400** `invalid_webhook_secret`, no store. |
+| Buyer action | Rotate the endpoint secret in the Polar dashboard until it is a `whsec_…` value. |
+| Not in this answer | Accepting `polar_whs_` as a Polar-HMAC UTF-8 key. That option is rejected. |
 
-This is not a license question and not a refund-window question.
+### PQ2 — CLOSED: LICENSE unchanged this slice
+
+| | |
+| --- | --- |
+| Question | Does the Single-app LICENSE need a Polar-org clause in this slice? |
+| **Answer** | **Leave LICENSE unchanged.** |
+| Lock | The implement PR keeps `LICENSE` **byte-identical**. Wording stays one production application and one production Stripe account. |
+| Deferred | A Polar-org clause, and any Multi-app reword, wait until a later listing decision. Do not add them in the Polar implement PR. |
+
+### PD1–PD4 — accepted implement locks
+
+| ID | Sev | Lock |
+| --- | --- | --- |
+| **PD1** | P1 | README known limits must say: a live Polar endpoint pointed at a process with `POLAR_EXPECT_LIVEMODE` unset or false still verifies if the secret matches and stores `livemode=false`. Do not invent a Polar livemode field. Do not add `livemode_mismatch` 400 on this path. |
+| **PD2** | P1 | Unit tests mint and accept **both** `polar_hmac` and `standard_webhooks` for the same body and secret before ship. Chaos may mint only `standard_webhooks`. One era shipped, the other “fixed in code review,” is rejected (R14). |
+| **PD3** | P2 | Implement README troubleshooting includes placeholder secret, raw-body reparse, wrong key era, `polar_whs_` rejected, and **endpoint disabled after 10 consecutive non-2xx**. |
+| **PD4** | P2 | Document that **every** `order.paid` grants, including `billing_reason=subscription_cycle`. Buyers who do not want renewal grants change the Polar map. No `billing_reason` special-case in v0.1. |
 
 ### Closed — do not reopen in implement
 
 | Topic | Lock |
 | --- | --- |
-| Refund window 14 vs 30 | **Still deferred.** Not decided here. Not a Polar-path blocker. |
-| Single-app LICENSE wording | **Unchanged.** No Polar-org sentence added. |
-| Which HMAC keys | **Both**, per §1.1. Not PQ1. |
-| Livemode payload field | **Absent** in OpenAPI 2026-04. Store the env declaration. Do not invent a field. |
+| PQ1 secret prefix | **`whsec_` only.** |
+| PQ2 LICENSE | **Byte-identical** on the implement PR. Polar-org clause deferred. |
+| Refund window 14 vs 30 | **Still deferred.** Not a Polar-path blocker. |
+| Which HMAC keys | **Both**, per §1.1 and PD2. |
+| Livemode payload field | **Absent.** PD1 documents the unsigned column. Do not invent a field. |
 | HTTP 200 / 400 / 500 | Frozen in §1.4. |
 | `provider` enum / new migration | No. |
 | Sixth chaos scenario | No. |
 | Polar SDK as a required dependency | No. |
+| Implement inside the design PR | **No.** Design merges first. Polar code is a separate PR. |
 
-No separate `DESIGN_POLAR_PATH_OPEN.md`. PQ1 lives here.
+No separate `DESIGN_POLAR_PATH_OPEN.md`.
 
 ---
 
@@ -560,25 +579,25 @@ Ready-gate items still outside this slice: 60s demo recording, landing, checksum
 | IP allowlist enforcement; Slack/Discord body support; Polar OAT required to verify | Not the signature, not Raw JSON, not the webhook secret |
 | HTTP 202/403 split; 200 on bad signature | Breaks the kit contract or ACKs poison |
 | Migration for livemode, `lease_expires_at`, or `SERIALIZABLE` | R1/R3. Livemode stays the existing column. |
-| Fuzzing, Grafana, public MIT extract, implement-inside-this-PR | R11–R13. Design×3 halts for review. |
+| Fuzzing, Grafana, public MIT extract, implement-inside-this-design-PR | R11–R13. Design is greenlit; Polar code is a later PR. |
 | Shipping one HMAC era and repairing the other in code review | R14 |
 
 ---
 
 ## (6) Success criteria (later implement pass)
 
-Founder reviews this doc first. Implement is in a **later** change, then three code-review passes. That change is done when all of the following hold:
+Founder GREENLIT this design. Implement is a **separate later PR**, then three code-review passes. Do not add Polar application code to the design PR. That later change is done when all of the following hold:
 
-1. `src/webhooks/polar/verify.ts` implements §1.1 with `node:crypto` only. Both keys, 300s window, `timingSafeEqual`, strict base64, `whsec_` gate, no secret in logs.
+1. `src/webhooks/polar/verify.ts` implements §1.1 with `node:crypto` only. Both keys, 300s window, `timingSafeEqual`, strict base64, **PQ1 `whsec_` gate** (reject `polar_whs_` and any other prefix as `invalid_webhook_secret`), no secret in logs.
 2. `handlePolar` matches §1.3–§1.4, including same-txn outbox, `ignored` + `processed_at`, duplicate 200, 500 after verify with rollback. Stripe `handle` behavior unchanged.
 3. Default map and `order.paid` payload match §1.6. `grant_credit` / `send_email` / drain / replay / migrations have **no** diff.
 4. `examples/next/.../polar/route.ts` is `request.text()` plus the three headers. Root package has no `next` and no Polar SDK. `src/index.ts` adds the Polar exports in §1.2 and still does not export chaos or handle options.
-5. Unit tests in §1.8 are green, including **both** HMAC schemes and “same order id, two webhook ids → two rows.”
+5. **PD2.** Unit tests in §1.8 are green, including **both** HMAC schemes on the same body and secret, and “same order id, two webhook ids → two rows.”
 6. The five existing chaos files each contain the Polar case in §1.8 and still contain their Stripe cases. `tests/chaos/` has exactly those five test files. `chaos-postgres` runs them with no live Polar calls.
-7. `.env.example`, `examples/next/.env.example`, `README.md`, and `BUYER_START_HERE.md` match §1.5 and §1.9. `LICENSE` byte-identical.
-8. Stub `src/webhooks/polar/README.md` is gone (replaced by the modules). `npm test` and `npm run typecheck` green on Postgres.
-9. PQ1 shipped as the recommended `whsec_`-only gate unless the founder has answered otherwise in writing. The implement PR states which one it followed.
+7. `.env.example`, `examples/next/.env.example`, `README.md`, and `BUYER_START_HERE.md` match §1.5 and §1.9, including **PD1** (unsigned livemode / cross-wire known limit), **PD3** (10-strike disable in troubleshooting), and **PD4** (every `order.paid`, including `subscription_cycle`, grants; no `billing_reason` special-case).
+8. **PQ2.** `LICENSE` is byte-identical to the file on `main` at design-merge time. No Polar-org clause.
+9. Stub `src/webhooks/polar/README.md` is gone (replaced by the modules). `npm test` and `npm run typecheck` green on Postgres.
 
 ---
 
-*Last updated: 2026-09-26 ET — design×3 locked in §1; PQ1 open with a recommended default; implement halted for founder review. No application code in this pass.*
+*Last updated: 2026-09-26 ET — founder GREENLIT. PQ1 `whsec_` only. PQ2 LICENSE unchanged. PD1–PD4 accepted. Design PR merges as docs. Polar implement is a separate later PR. No application code in this pass.*

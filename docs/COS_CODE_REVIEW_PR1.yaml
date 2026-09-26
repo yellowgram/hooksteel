@@ -1,1 +1,168 @@
-# see artifacts; overwritten below
+# HookSteel — CoS packet
+# Adversarial CODE REVIEW ×2 on PR #1 (post-fix head)
+# PR: https://github.com/yellowgram/hooksteel/pull/1
+# Head reviewed: 09efca4d55402c47dae93106a352bd8cc494b1d2
+# Date: 2026-09-27
+# Soft-WTP OFF. Do not merge this PR until P1s are fixed or founder-waived.
+
+schema_version: 1
+product: HookSteel
+packet_type: adversarial_code_review
+audience: CoS
+reviewer: grok
+pr: 1
+pr_url: https://github.com/yellowgram/hooksteel/pull/1
+head_sha: 09efca4d55402c47dae93106a352bd8cc494b1d2
+ci:
+  workflow: chaos-postgres
+  conclusion: success
+
+cos_instruction: |
+  1. Do not merge PR #1 until P1s below are fixed or founder-waived in writing.
+  2. Prior pack P1s (A-P1-001/002, B-P1-001/002, C-P1-001) are verified fixed.
+     Do not reopen them.
+  3. Apply required_code_fixes[] on the PR branch. Do not redesign the slice.
+  4. Keep R1–R14 and H1–H3.
+
+assertive_verdict: |
+  Follow-up commit fixed the first review P1s. Still do not merge.
+  Replay leaves processed_at set while work is reopened.
+  grant_credit swallows missing amount instead of throwing.
+  handle/drain honor crash hooks in production with no guard.
+  No P0 double-fulfill or signature bypass. CI green is not a waiver.
+
+prior_p1_verification:
+  - {id: A-P1-001, status: fixed, evidence: markProcessed FOR UPDATE on billing_events}
+  - {id: A-P1-002, status: fixed, evidence: 004 partial unique index + ON CONFLICT DO NOTHING}
+  - {id: A-P2-001, status: fixed, evidence: ignored sets processed_at in handler}
+  - {id: B-P1-001, status: fixed, evidence: README Express uses express.raw}
+  - {id: B-P1-002, status: fixed, evidence: recordTestInvocation gated to test or flag}
+  - {id: C-P1-001, status: fixed, evidence: examples/next/.env.example}
+  - {id: C-P2-001, status: fixed, evidence: dist/ build, chaos excluded}
+  - {id: C-P2-002, status: fixed, evidence: examples/next lockfile}
+  - {id: C-P2-004, status: fixed, evidence: unknown adapter reason poison}
+
+iterations:
+  - id: 1
+    expert: outbox_recovery_after_the_first_review
+    attack_thesis: >
+      First review fixed sibling processed_at and duplicate dead letters.
+      Replay never clears processed_at. grant_credit ignores missing amount.
+      Chaos #2 concurrent block is duplicates only.
+    findings:
+      - id: CR2-A-P1-001
+        severity: P1
+        accepted: true
+        files: [src/outbox/replay.ts, src/outbox/drain.ts]
+        issue: replayExecute does not clear billing_events.processed_at
+        evidence: >
+          After DL, processed_at is set. Replay reopens outbox and leaves
+          processed_at set. markProcessed only writes when processed_at IS NULL.
+          Operators see done while work is open.
+        change_required: >
+          Same replay txn: UPDATE billing_events SET processed_at = NULL
+          WHERE id = billing_event_id. Unit test DL → replay → null → drain → set.
+      - id: CR2-A-P1-002
+        severity: P1
+        accepted: true
+        files: [src/adapters/grant_credit.ts]
+        issue: grant_credit stub does not throw when amount/currency/customer missing
+        evidence: >
+          Locked rule: H3 no-op is email only. Money path throws. Code comments
+          the missing fields and still records an invocation.
+        change_required: >
+          Throw when amount_total/amount_paid or currency or customer is null.
+          Do not recordTestInvocation. Add a unit test.
+      - id: CR2-A-P2-001
+        severity: P2
+        accepted: true
+        files: [tests/chaos/02-out-of-order.test.ts]
+        issue: Concurrent block never first-inserts two new events together
+        change_required: Concurrent first-insert of two fresh ids plus one duplicate. Same file.
+      - id: CR2-A-P2-002
+        severity: P2
+        accepted: true
+        files: [src/outbox/replay.ts]
+        issue: Dry-run SQL uses $1 for two different rows
+        change_required: Label which $1 is outbox vs dead letter.
+    rejected:
+      - Reopen A-P1-001 / A-P1-002
+      - lease_expires_at / SERIALIZABLE / LISTEN
+
+  - id: 2
+    expert: ship_surface_and_residual_hooks
+    attack_thesis: >
+      handle/drain still take crash callbacks with no production guard.
+      testInvocation ships in dist/. Next example is not built in CI.
+    findings:
+      - id: CR2-B-P1-001
+        severity: P1
+        accepted: true
+        files: [src/webhooks/stripe/handler.ts, src/outbox/drain.ts]
+        issue: Production handle/drain accept crash hooks with no guard
+        evidence: >
+          beforeCommit / afterInvocation / beforeMarkProcessed run in production.
+          Chaos helpers check ALLOW_CHAOS_INJECT; the raw options object does not.
+        change_required: >
+          Honor hooks only when NODE_ENV=test or ALLOW_CHAOS_INJECT=true.
+          Never when NODE_ENV=production. Unit test that production drops the hook.
+      - id: CR2-B-P2-001
+        severity: P2
+        accepted: true
+        files: [src/adapters/testInvocation.ts, tsconfig.build.json]
+        issue: dist/ includes testInvocation
+        change_required: Accept v0.1 if CR2-B-P1-001 lands, or exclude from emit.
+      - id: CR2-B-P2-002
+        severity: P2
+        accepted: true
+        files: [src/webhooks/stripe/verify.ts]
+        issue: Stripe client singleton freezes first key/sentinel
+        change_required: Accept as known limit. constructEvent still uses per-call secret.
+      - id: CR2-C-P2-001
+        severity: P2
+        accepted: true
+        files: [.github/workflows/chaos-postgres.yml]
+        issue: CI never builds examples/next
+        change_required: Optional follow-up job. Not a merge blocker.
+      - id: CR2-C-P2-002
+        severity: P2
+        accepted: true
+        files: [src/index.ts]
+        issue: Second arg on handle/drain is callable and undocumented types stay internal
+        change_required: Do not export HandleOptions/DrainOptions. Coupled to CR2-B-P1-001.
+    rejected:
+      - Next as root dependency
+      - Polar SDK
+      - Public MIT
+      - Sixth chaos file
+      - Hosted worker
+      - Require sk_ for verify
+
+required_code_fixes:
+  - CR2-A-P1-001
+  - CR2-A-P1-002
+  - CR2-B-P1-001
+
+p0_merge_blockers: []
+
+p1_should_fix_before_merge:
+  - {id: CR2-A-P1-001, summary: Clear processed_at in replayExecute and test it}
+  - {id: CR2-A-P1-002, summary: grant_credit throws on missing amount/currency/customer}
+  - {id: CR2-B-P1-001, summary: Ignore inject hooks unless test/chaos-armed; never in production}
+
+p2_known_limits:
+  - CR2-A-P2-001
+  - CR2-A-P2-002
+  - CR2-B-P2-001
+  - CR2-B-P2-002
+  - CR2-C-P2-001
+  - CR2-C-P2-002
+
+verdict: REQUEST_CHANGES
+counts: {p0: 0, p1: 3, p2: 6}
+
+do_not:
+  - merge PR #1 on head 09efca4 without the three P1s
+  - reopen fixed prior P1s
+  - implement Polar
+  - add a sixth chaos scenario

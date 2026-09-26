@@ -4,7 +4,7 @@
 **Owner:** yellowgram  
 **Contact:** hello@yellowgram.dev · www.yellowgram.dev  
 **Polar org (when ready):** Suthirth solutions (CoS owns listing)  
-**Private repo (README only until implement):** https://github.com/yellowgram/hooksteel  
+**Private repo:** https://github.com/yellowgram/hooksteel  
 **Date:** 2026-09-26 ET
 
 ---
@@ -17,15 +17,14 @@
 
 ## Phase
 
-**Stripe path design — cycle 2 locks merged; implement unlocked under 3 code-review passes. Next = implement on yellowgram/hooksteel.**
+**Stripe path implemented** on this repo per [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md) §1 (cycle-2 locks, H2/H3 demotions): migrations, `constructEvent` handler, same-transaction outbox, minimal drain, exactly 5 Postgres chaos tests, Next example only under `examples/next`.
 
-Design pack: [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md) (cycle-1 3/3 adversarial design + cycle-2 CoS locks merged). Judgement: [`DESIGN_REVIEW_CYCLE2_JUDGEMENT.md`](./DESIGN_REVIEW_CYCLE2_JUDGEMENT.md). No application code in the design pass; no cloud-agent launch from this folder.
+Not in this tree: Polar verify, polished replay CLI, landing, Polar listing, hosted gateway.
 
 ## Next
 
-1. **Implement** Stripe path in `yellowgram/hooksteel` under **3 code-review** adversarial passes (schema + signed webhook + same-txn outbox + minimal drain + 5 chaos on Postgres CI) per §1 locks.  
-2. Halt again for founder code-review pass after those 3 CRs.  
-3. Then Polar path, polished replay CLI, ready-gate rest → Polar listing (CoS).
+1. Founder code-review of the Stripe path PR.  
+2. Then Polar verify, polished replay CLI, ready-gate rest → Polar listing (CoS).
 
 ## Kill watch (from DECISION)
 
@@ -35,4 +34,4 @@ Design pack: [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md) (cycle-1 3/3 adv
 - Support &gt;2h/wk day 60  
 - Buyers demand hosted gateway → **stop**; do not pivot to services on Polar  
 
-*Cycle-2 design locks merged; implement unlocked on yellowgram/hooksteel under 3 code-review passes.*
+*Stripe path is in the repo. Polar verify, replay CLI, and listing stay later.*

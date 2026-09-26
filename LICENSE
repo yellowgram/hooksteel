@@ -1,0 +1,11 @@
+Commercial kit license — HookSteel
+
+Copyright (c) 2026 yellowgram
+
+The kit is not MIT. yellowgram distributes it as a private repository and a Polar zip. That channel is not a public MIT grant.
+
+You may use and modify this kit in a commercial product under the Single-app grant: one production application and one production Stripe account (test + live keys of that same account count as one). A second production product or a second live Stripe account requires the later Multi-app SKU. Not a GitHub-org count. Not a legal-entity count. yellowgram takes no revenue royalty on that product.
+
+You may not redistribute, resell, sublicense, or republish this kit — or a substantial portion of it — as a competing starter, boilerplate, template, theme, or course. Shipping the kit inside a product you sell is the use grant. Handing out the kit as a starter is not.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. YOU ARE RESPONSIBLE FOR BILLING CORRECTNESS IN PRODUCTION. THIS KIT DOES NOT PROVIDE LEGAL, TAX, OR ACCOUNTING ADVICE AND IS NOT AFFILIATED WITH STRIPE, POLAR, OR HOOKDECK. Outbox proves side-effect-after-commit + idempotency; it does not certify PCI, charge correctness, or tax.

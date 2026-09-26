@@ -15,7 +15,7 @@
 | `MINIMUM_SUPPORT_CHECKLIST.md` — stranger self-serve bar (v3) | CI, Postgres chaos jobs, release zips |
 | `BUYER_NEEDS_BEYOND_CHECKLIST.md` — buyer/operator-owned needs | Polar delivery artifacts (when ready) |
 | `DESIGN_STRIPE_PATH.md` — Stripe path + 5 chaos (cycle-1 + cycle-2 locks merged) | Stripe path code on `main` @ `f25f235`: migrations, handler, drain, chaos tests |
-| `DESIGN_POLAR_PATH.md` — Polar path design×3, founder greenlit (PQ1/PQ2 closed, PD1–PD4 locks) | No Polar verify code yet. Implement is a later PR. |
+| `DESIGN_POLAR_PATH.md` — Polar path design×3, founder greenlit (PQ1/PQ2 closed, PD1–PD4 locks) | Polar verify + `handlePolar` implement in progress (`cursor/polar-webhook-path-9fc9`). |
 | `COS_POLAR_PATH_DESIGN_REVIEW.yaml` — CoS design review; PD1–PD4 accepted | — |
 | `DESIGN_REVIEW_CYCLE2_JUDGEMENT.md` — HookSteel accept/reject of CoS cycle-2 packet | — |
 | This `README.md` — agent pointer | — |
@@ -29,7 +29,7 @@
 - Soft-WTP **OFF**. No Lock / Audit / services on Polar.
 - Polar org (Suthirth solutions) stays **dark until ready gate** (see `MVP_SCOPE.md`).
 - Stripe path is **merged** on `main` (`f25f235`). Further kit code still goes through **3 code-review** passes.
-- Polar path **design×3 is founder-greenlit** ([`DESIGN_POLAR_PATH.md`](./DESIGN_POLAR_PATH.md) §3: PQ1 `whsec_` only, PQ2 LICENSE unchanged, PD1–PD4 accepted). Merge the design PR, then implement in a **separate** PR. No Polar SDK as a required dependency. No Soft-WTP / Lock / Audit / hosted gateway.
+- Polar path **design×3 is founder-greenlit** and merged ([`DESIGN_POLAR_PATH.md`](./DESIGN_POLAR_PATH.md) §3: PQ1 `whsec_` only, PQ2 LICENSE unchanged, PD1–PD4 accepted). Implement is in progress on `cursor/polar-webhook-path-9fc9`. No Polar SDK as a required dependency. No Soft-WTP / Lock / Audit / hosted gateway.
 - ICP: Global English only. Contact: hello@yellowgram.dev · www.yellowgram.dev.
 
 ## Pattern sources
@@ -38,4 +38,4 @@
 - Ops/operator depth model: `/workspace/keel/MINIMUM_OPS_CHECKLIST.md`, `OPERATOR_NEEDS_BEYOND_CHECKLIST.md`
 - Product lock: `/workspace/income/digital-product-hunt/DECISION.md` §#1 HookSteel
 
-*Last updated: 2026-09-26 ET — Stripe path merged at f25f235; Polar design greenlit; implement is a separate PR.*
+*Last updated: 2026-09-26 ET — Stripe path merged at f25f235; Polar design merged; Polar implement in progress.*

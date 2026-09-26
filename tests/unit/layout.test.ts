@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
 import * as api from '../../src/index.js';
@@ -22,6 +22,13 @@ test('production entry does not export or import chaos', () => {
   assert.doesNotMatch(indexSrc, /chaos/);
   assert.doesNotMatch(indexSrc, /HandleOptions/);
   assert.doesNotMatch(indexSrc, /DrainOptions/);
+  assert.equal(typeof api.handle, 'function');
+  assert.equal(typeof api.handlePolar, 'function');
+  assert.equal(typeof api.mapPolarAdapters, 'function');
+  assert.equal(typeof api.buildPolarOutboxPayload, 'function');
+  assert.equal(typeof api.configurePolarAdapterMap, 'function');
+  assert.equal(typeof api.resetPolarAdapterMap, 'function');
+  assert.ok(api.DEFAULT_POLAR_ADAPTER_MAP);
 
   const roots = ['src', 'scripts', 'examples'];
   for (const root of roots) {
@@ -41,8 +48,20 @@ test('root package does not depend on next or a Polar SDK', () => {
   };
   const deps = { ...pkg.dependencies, ...pkg.devDependencies };
   assert.equal(deps.next, undefined);
+  assert.equal(deps.standardwebhooks, undefined);
+  assert.equal(deps.svix, undefined);
   for (const name of Object.keys(deps)) {
     assert.equal(/polar/i.test(name), false, name);
+  }
+  const nextPkg = JSON.parse(readFileSync('examples/next/package.json', 'utf8')) as {
+    dependencies?: Record<string, string>;
+    devDependencies?: Record<string, string>;
+  };
+  const nextDeps = { ...nextPkg.dependencies, ...nextPkg.devDependencies };
+  for (const name of Object.keys(nextDeps)) {
+    assert.equal(/polar/i.test(name), false, name);
+    assert.notEqual(name, 'standardwebhooks', name);
+    assert.notEqual(name, 'svix', name);
   }
   assert.match(pkg.engines?.node ?? '', /20/);
   assert.match(pkg.main ?? '', /^(\.\/)?dist\/index\.js$/);
@@ -61,6 +80,13 @@ test('exactly five chaos tests and the Next route uses request.text()', () => {
   assert.match(route, /request\.text\(\)/);
   assert.doesNotMatch(route, /request\.json\(/);
   assert.match(route, /handle\(\{\s*rawBody,\s*signature\s*\}\)/);
+
+  const polarRoute = readFileSync('examples/next/app/api/webhooks/polar/route.ts', 'utf8');
+  assert.match(polarRoute, /request\.text\(\)/);
+  assert.doesNotMatch(polarRoute, /request\.json\(/);
+  assert.match(polarRoute, /handlePolar/);
+  assert.doesNotMatch(polarRoute, /@polar-sh\/sdk/);
+  assert.equal(existsSync('src/webhooks/polar/README.md'), false);
 
   const prodFiles = walk('src');
   assert.equal(prodFiles.some((file) => file.endsWith(`${path.sep}hooks.ts`)), false);

@@ -19,20 +19,20 @@
 
 ## Phase
 
-**Polar path design greenlit. Design PR is to be merged. Implement is a separate later PR.**
+**Polar webhook path implement in progress.** Design is on `main`. This slice is verify + `handlePolar` + fixtures + example route + adapter map. Soft-WTP OFF. No Polar listing. LICENSE stays byte-identical (PQ2).
 
 - Stripe path is on `main` at `f25f235` (`Stripe path: exactly-once webhook side effects + chaos suite`). PR: https://github.com/yellowgram/hooksteel/pull/1
 - Design contract for that slice remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Code-review packs: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md), [`COS_CODE_REVIEW_PR1.yaml`](./COS_CODE_REVIEW_PR1.yaml).
-- Polar design PR: https://github.com/yellowgram/hooksteel/pull/2 (`cursor/polar-path-design-cac1`). Docs only. Founder merges. Do not implement Polar code on this PR.
-- [`DESIGN_POLAR_PATH.md`](./DESIGN_POLAR_PATH.md) §3: **PQ1** `whsec_` only (`polar_whs_` and any non-`whsec_` prefix → 400 `invalid_webhook_secret`; buyers rotate). **PQ2** LICENSE byte-identical this slice; Polar-org clause deferred.
-- CoS [`COS_POLAR_PATH_DESIGN_REVIEW.yaml`](./COS_POLAR_PATH_DESIGN_REVIEW.yaml) **PD1–PD4** are implement locks: unsigned-livemode known limit, both HMAC eras in unit tests before ship, README 10-strike troubleshooting, every `order.paid` including `subscription_cycle` grants with no `billing_reason` special-case.
-- Refund window still deferred. Soft-WTP / Lock / Audit / hosted gateway still OFF. No Polar listing / KYC. No Polar application code yet.
+- Polar design is merged: https://github.com/yellowgram/hooksteel/pull/2 (`cursor/polar-path-design-cac1`). Docs only.
+- Polar implement PR: opening on `cursor/polar-webhook-path-9fc9`. Link filled when the PR is up.
+- [`DESIGN_POLAR_PATH.md`](./DESIGN_POLAR_PATH.md) §1 is the implement contract. §3: **PQ1** `whsec_` only (`polar_whs_` and any non-`whsec_` prefix → 400 `invalid_webhook_secret`; buyers rotate). **PQ2** LICENSE byte-identical this slice; Polar-org clause deferred.
+- CoS [`COS_POLAR_PATH_DESIGN_REVIEW.yaml`](./COS_POLAR_PATH_DESIGN_REVIEW.yaml) **PD1–PD4** are in this implement: unsigned-livemode known limit, both HMAC eras in unit tests, README 10-strike troubleshooting, every `order.paid` including `subscription_cycle` grants with no `billing_reason` special-case.
+- Refund window still deferred. Soft-WTP / Lock / Audit / hosted gateway still OFF. No Polar listing / KYC.
 
 ## Next
 
-1. **Founder** merges design PR #2. This agent does not merge.  
-2. A **separate** PR implements Polar verify + handle + fixtures + example route + adapter map under 3 code-review passes, from [`DESIGN_POLAR_PATH.md`](./DESIGN_POLAR_PATH.md) §1 and §3.  
-3. Then polished replay CLI and the rest of the ready gate → Polar listing (CoS).
+1. Three code-review passes on the Polar implement PR.  
+2. Then polished replay CLI and the rest of the ready gate → Polar listing (CoS).
 
 ## Kill watch (from DECISION)
 
@@ -42,4 +42,4 @@
 - Support &gt;2h/wk day 60  
 - Buyers demand hosted gateway → **stop**; do not pivot to services on Polar  
 
-*Stripe merged at f25f235. Polar design greenlit (PQ1/PQ2 closed, PD1–PD4 accepted). Design PR to merge. Polar implement is a separate later PR.*
+*Stripe merged at f25f235. Polar design merged (PQ1/PQ2 closed, PD1–PD4 accepted). Polar implement in progress on `cursor/polar-webhook-path-9fc9`. Soft-WTP OFF. No Polar listing. LICENSE unchanged.*

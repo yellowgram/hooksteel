@@ -260,5 +260,4 @@ independent_expert_review:
     authorized_by: yellowgram
     authorized_on: 2026-09-26
     pr_url: https://github.com/yellowgram/hooksteel/pull/5
-    # GitHub assigns the squash SHA at merge time. Filled on main after squash.
-    sha: pending_squash
+    sha: c6a4012dd25d1aff64f19223669453ffdec2058a

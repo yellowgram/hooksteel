@@ -13,23 +13,22 @@
 
 **GO given** from DECISION.md #1 (digital-product-hunt). Primary Polar cash path for 60–90d. Soft-WTP OFF. No Lock/Audit/services. Polar stays dark until ready gate.
 
-**Founder GREENLIT** cycle-2 design locks (NQ1–NQ3 at recommended answers; H2/H3 demotions applied). See [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md) §1 + §4.
+**Founder GREENLIT** cycle-2 Stripe design locks (NQ1–NQ3 at recommended answers; H2/H3 demotions applied). See [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md) §1 + §4.
 
 ## Phase
 
-**Stripe path PR #1 — CR2 P1s fixed on the branch; halted for founder merge (no auto-merge).**
+**Stripe path merged. Polar path design×3 done; halted for founder review before any Polar implement.**
 
-- PR: https://github.com/yellowgram/hooksteel/pull/1 (`cursor/stripe-path-chaos-658e`)
-- Adversarial pack: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md) (first CR×3) and [`COS_CODE_REVIEW_PR1.yaml`](./COS_CODE_REVIEW_PR1.yaml) (CR2)
-- First-review P1s and P2s stay fixed. This pass fixes only CR2-A-P1-001 (replay clears `processed_at`), CR2-A-P1-002 (`grant_credit` throws on missing money fields), and CR2-B-P1-001 (production ignores crash hooks).
-- Deferred known limits, not fixed this pass: CR2-A-P2-001, CR2-A-P2-002, CR2-B-P2-001, CR2-B-P2-002, CR2-C-P2-001, CR2-C-P2-002.
-- Design contract remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Soft-WTP / Lock / Audit / hosted gateway still OFF. No Polar.
-- Not in this tree: Polar verify, polished replay CLI, landing, Polar listing. Founder merges; no auto-merge.
+- Stripe path is on `main` at `f25f235` (`Stripe path: exactly-once webhook side effects + chaos suite`). PR: https://github.com/yellowgram/hooksteel/pull/1
+- Design contract for that slice remains [`DESIGN_STRIPE_PATH.md`](./DESIGN_STRIPE_PATH.md). Code-review packs: [`CODE_REVIEW_STRIPE_PATH_PR1.md`](./CODE_REVIEW_STRIPE_PATH_PR1.md), [`COS_CODE_REVIEW_PR1.yaml`](./COS_CODE_REVIEW_PR1.yaml).
+- Polar design×3: [`DESIGN_POLAR_PATH.md`](./DESIGN_POLAR_PATH.md). Verify is stdlib dual-key HMAC (no Polar SDK). One founder question (PQ1, legacy `polar_whs_` prefix) with a recommended `whsec_`-only default. Refund window still deferred.
+- No Polar application code in this phase. Soft-WTP / Lock / Audit / hosted gateway still OFF. No Polar listing / KYC.
 
 ## Next
 
-1. **Founder** reviews the fix commit on PR #1 and merges when satisfied.  
-2. Then Polar path, polished replay CLI, ready-gate rest → Polar listing (CoS).
+1. **Founder** reviews [`DESIGN_POLAR_PATH.md`](./DESIGN_POLAR_PATH.md) (PQ1 especially).  
+2. After that review, Polar implement (verify + handle + fixtures + example route + adapter map) under 3 code-review passes. Do not start it from this design PR.  
+3. Then polished replay CLI and the rest of the ready gate → Polar listing (CoS).
 
 ## Kill watch (from DECISION)
 
@@ -39,4 +38,4 @@
 - Support &gt;2h/wk day 60  
 - Buyers demand hosted gateway → **stop**; do not pivot to services on Polar  
 
-*Stripe path PR #1 — CR2 P1s fixed on the branch; halted for founder merge (no auto-merge).*
+*Stripe merged at f25f235. Polar design×3 halted for founder review. No Polar implement yet.*

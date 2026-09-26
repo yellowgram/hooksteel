@@ -6,7 +6,7 @@
 **Base:** `main` @ `09c4f88d21dae3fc01af6cae27456246b898626c` (Polar path merged, PR #3). Stripe path, Polar verify / `handlePolar`, outbox, drain, replay mutation, five chaos files, and LICENSE stay.  
 **Repo:** https://github.com/yellowgram/hooksteel  
 **This pass:** **Design only.** No application code. No scripts. Soft-WTP OFF. Polar listing dark. No Lock/Audit/services. No hosted gateway. Refund window stays deferred.  
-**Standing practice:** 3 progressive adversarial **design** iterations in §2. **§1 is the lock** after those iterations. **Implement is halted** until the founder greenlights §1 and answers §3. Implement is a separate later PR.  
+**Standing practice:** 3 progressive adversarial **design** iterations in §2. **Founder GREENLIT** 2026-09-26. PQ1 and PQ2 are locked in §3. RD1 and RD2 stay known limits for the implement README. **Implement is a separate later PR** — not this design change.  
 **Date:** 2026-09-26 ET  
 **Evidence read that day:** `src/outbox/replay.ts`, `scripts/outbox-drain.ts`, `migrations/003_dead_letters.sql`, `migrations/004_dead_letters_outbox_unique.sql`, `tests/unit/drain.test.ts`, `package.json` scripts, README drain paragraph, `DESIGN_STRIPE_PATH.md` §1.9, `COS_CODE_REVIEW_PR1.yaml` CR2-A-P2-002, `MINIMUM_SUPPORT_CHECKLIST.md` §C.18 and §G, `MVP_SCOPE.md` replay responsibilities.
 
@@ -301,7 +301,7 @@ No new `GLOSSARY.md`. No Polar listing copy. Listing stays dark.
 | Polar PQ1 / PD1–PD4 | Already merged at `09c4f88`. This slice does not edit verify or `handlePolar`. |
 | Refund 14 vs 30 | Still deferred. Glossary names the difference and does not pick the number. |
 | Soft-WTP / Lock / Audit / hosted gateway | Off. |
-| MVP_SCOPE “log who/when” | Satisfied by the execute JSON (id, outbox id, adapter) on the operator’s terminal. No `replayed_by` column and no migration. Buyer auth is possession of `DATABASE_URL`. |
+| MVP_SCOPE “log who/when” | **PQ2 locked:** execute stdout JSON (`deadLetterId`, `outboxId`, `adapter`) is the operator note. No `--operator` flag. No `replayed_by` column / migration. Whoever holds `DATABASE_URL` can run it. |
 | MVP_SCOPE “dry-run prints intended adapter calls” | Superseded by the shipped dry-run, which prints bound `UPDATE`s plus `adapter`. This slice prints that object. It does not invent an adapter-call preview, because the payload is not in the return value. |
 
 ---
@@ -369,18 +369,18 @@ Each iteration attacks the design as it stood after the previous one. Accepted r
 
 | Accepted | Rationale |
 | --- | --- |
-| npm scripts only. No `package.json` `"bin"`. No new dependency. | `hooksteel-replay` in §1.9 was the name of a later slice. This slice’s brief is `npm run`. PQ1 asks the founder to confirm that supersession. Until then, implement stays halted. |
+| npm scripts only. No `package.json` `"bin"`. No new dependency. | `hooksteel-replay` in §1.9 was the name of a later slice. This slice’s brief is `npm run`. Founder locked that supersession on 2026-09-26 (PQ1). See §3. |
 | README + `BUYER_START_HERE` get the four-step runbook and the glossary sentence | MINIMUM_SUPPORT §C.18 and §G.34–§G.35. The design PR does not edit those buyer files. The implement PR does. |
 | Glossary distinguishes replay from a Polar purchase refund and does not pick 14 vs 30 | The window is an explicit non-goal. Naming the two words is the support fix. |
 | Argv unit test only. Chaos files untouched. | Mutation proof already exists. A CLI chaos file would be a sixth scenario or a disguise of one. |
 | `src/index.ts` unchanged | The three functions and `ReplayRefusedError` are already exported. The script imports the source files the way the drain script does. |
-| Execute JSON is the who/when note | MVP_SCOPE asked for a local operator note. An audit column is a migration. |
+| Execute JSON is the who/when note | MVP_SCOPE asked for a local operator note. An audit column is a migration. Founder locked terminal JSON only on 2026-09-26 (PQ2). See §3. |
 | Live drain may claim the reopened row; `--once` is for when no loop is running | `available_at = now()` is the shipped write. Refusing execute while any lock exists would stall replay behind unrelated work and is a new semantic. |
-| STATUS on this design PR: Polar merged at `09c4f88`; next is this design; implement halted | Process lock. This PR does not implement. |
+| STATUS on this design PR: Polar merged at `09c4f88`; replay design greenlit; implement is a separate later PR | Process lock. This PR does not implement. |
 
 | Rejected | Why it stays out |
 | --- | --- |
-| `hooksteel-replay` binary, `inspect` subcommand, interactive TUI | Extra surface. List is inspect. PQ1 is the only naming question. |
+| `hooksteel-replay` binary, `inspect` subcommand, interactive TUI | Extra surface. List is inspect. PQ1 locked: three npm scripts, no bin, no inspect. |
 | Sixth chaos file, fuzz, or a chaos case that execs the CLI against Postgres | Cap is five. Argv does not need a database. |
 | Worker UI, Grafana, hosted drain, execute that loops `drainOnce` until idle | R12. Buyer owns supervision. §G.36 stays a doc pointer, not a dashboard. |
 | Editing verify, `handlePolar`, `handle`, drain, migrations, adapters | Out of slice. A Polar dead letter is an outbox row. |
@@ -389,38 +389,52 @@ Each iteration attacks the design as it stood after the previous one. Accepted r
 | Refund toggle 14 vs 30, `order.refunded` clawback | Deferred. Glossary only. |
 | Zip, checksum, landing page, 60s demo, Polar listing, KYC | Ready gate, still later. Listing stays dark. |
 | Soft-WTP, Lock, Audit, services, hosted gateway | Off. |
-| Implement-now inside this design PR | Founder has not greenlit §1. Scripts land in a later PR. |
-| `replayed_by` / `replay_audit` table | Migration. Stdout is the note. |
+| Implement-now inside this design PR | Founder greenlit the design. Implement is a separate later PR. |
+| `replayed_by` / `replay_audit` table | Migration. PQ2 locked: terminal JSON only. |
 | Dry-run text that previews `grant_credit(payload)` | Payload is not on `ReplayDryRun`. Previewing it needs a new read and prints PII. |
 
 ---
 
 ## (3) Open questions for founder
 
-Implement stays **halted** until these are answered in writing. Silence does not start the implement PR. Recommended answers are below if you want a default to accept or reject. They are not pre-applied.
+**Founder GREENLIT** 2026-09-26. No open product questions remain for this slice. PQ1 and PQ2 are locked below. The recommendation row is what was accepted. Implement is a **separate later PR** — not this design change. RD1 and RD2 stay known limits for the implement README. Do not edit `src/outbox/replay.ts` to address them.
 
-### PQ1 — OPEN: command surface vs `DESIGN_STRIPE_PATH.md` §1.9
+### PQ1 — LOCKED: `three_npm_scripts`
 
 | | |
 | --- | --- |
 | Question | §1.9 names `hooksteel-replay list-dead`, `inspect <id>`, `dry-run`, and `execute`. This slice’s brief is three `npm run` commands and no inspect binary. Which surface does the implement PR build? |
 | **Recommendation** | **Three npm scripts:** `replay:list`, `replay:dry-run`, `replay:execute`. No `package.json` `"bin"`. No `inspect` subcommand. `replay:list` is the inspect step. §1.9’s mutation text stays. Its CLI spelling is superseded by §1 of this doc. |
-| If you want the other shape | Say so before implement. A `bin` plus `inspect` is a different slice (new query if inspect loads payload). Do not add it under a silent reading of §1.9. |
-| Not in this question | New mutation, `--force`, or replay of events that never entered `billing_events`. |
+| **Answer** | **A / `three_npm_scripts`.** Locked 2026-09-26. |
+| Lock | - `package.json` scripts only: `replay:list`, `replay:dry-run`, `replay:execute`<br>- One `scripts/replay-cli.ts`; same tsx+dotenv as `outbox:drain`<br>- No bin / no `hooksteel-replay` / no inspect subcommand<br>- list is inspect; `DESIGN_STRIPE_PATH` §1.9 mutation holds; its CLI spelling is superseded |
+| Not in this answer | New mutation, `--force`, or replay of events that never entered `billing_events`. |
 
-### PQ2 — OPEN: is terminal JSON enough for “log who/when”?
+### PQ2 — LOCKED: `terminal_json_only`
 
 | | |
 | --- | --- |
 | Question | `MVP_SCOPE.md` lists “log who/when (local operator note)” on the replay CLI. A real actor column needs a migration. Is the execute JSON (`deadLetterId`, `outboxId`, `adapter`) on the operator’s terminal enough for v0.1? |
 | **Recommendation** | **Yes. Stdout only.** No `--operator` flag, no `replayed_by` column, no new table. Whoever can read `DATABASE_URL` can run the command. Buyer owns that access. Yellowgram is not the on-call. |
-| If you want a column now | That is a later slice. It is not authorized by a greenlight of §1. |
-| Not in this question | The refund window. That number stays deferred either way. |
+| **Answer** | **`terminal_json_only`.** Locked 2026-09-26. |
+| Lock | - Execute stdout JSON (`deadLetterId`, `outboxId`, `adapter`) is the operator note<br>- No `--operator` flag<br>- No `replayed_by` column / migration<br>- Whoever holds `DATABASE_URL` can run it |
+| Not in this answer | The refund window. That number stays deferred. |
+
+### RD1 and RD2 — known limits for the implement README
+
+Unchanged by this greenlight. They are README known limits. They are not a patch to `src/outbox/replay.ts`. Required wording stays the §1.6 block (CR2-A-P2-002).
+
+| ID | Known limit | Implement action |
+| --- | --- | --- |
+| **RD1** | Dry-run keeps bound `$1` SQL. `outboxId` and `deadLetterId` are separate fields. The three `$1`s are not the same row. | Copy §1.6 into README known limits. Do not relabel `statementsFor`. CR2-A-P2-002 stays deferred. |
+| **RD2** | Statement 2 binds the billing-event id. `ReplayDryRun` does not return that id. | Same README sentence. Do not add `billingEventId` to the dry-run type. |
 
 ### Closed — do not reopen in implement
 
 | Topic | Lock |
 | --- | --- |
+| PQ1 | **`three_npm_scripts`.** `replay:list`, `replay:dry-run`, `replay:execute`. One `scripts/replay-cli.ts`. No bin. No inspect. |
+| PQ2 | **`terminal_json_only`.** Execute JSON is the operator note. No `--operator`. No `replayed_by`. |
+| RD1 / RD2 | Known limits for the implement README. Do not edit `src/outbox/replay.ts`. |
 | Mutation | Shipped `replayExecute` / `replayDryRun` / `listDeadLetters` only. |
 | CR2-A-P2-002 | Deferred. Bound `$1`. Ids in separate fields. No edit to `statementsFor`. |
 | Events that never entered `billing_events` | Existing refusal. Keep the message. No raw-body replay. |
@@ -430,7 +444,7 @@ Implement stays **halted** until these are answered in writing. Silence does not
 | LICENSE | Byte-identical. |
 | Refund 14 vs 30 | Deferred. Glossary states replay ≠ Polar purchase refund. |
 | Polar listing / KYC / Soft-WTP / Lock / Audit / gateway | Dark / off. |
-| Implement inside the design PR | **No.** |
+| Implement inside the design PR | **No.** Separate later PR. |
 
 No separate `DESIGN_REPLAY_CLI_OPEN.md`.
 
@@ -450,7 +464,7 @@ Stripe and Polar checklist rows that already pass stay as they are. This table i
 | §G.36 — metrics, no hosted dashboard | **Inherited.** No Grafana in this slice. |
 | §D.23 — idempotent adapter covered by tests | **Inherited** `drain.test.ts`. CLI test does not re-prove the mutation. |
 | §F.32 — refund policy aligned with the Polar toggle | **Untouched.** Listing is dark. Glossary does not invent the number. |
-| MVP_SCOPE replay — list, dry-run, refuse unsigned, idempotent re-drive | **Met** by wrapping the shipped functions. “Print intended adapter calls” is superseded (§1.7). “Log who/when” is PQ2. |
+| MVP_SCOPE replay — list, dry-run, refuse unsigned, idempotent re-drive | **Met** by wrapping the shipped functions. “Print intended adapter calls” is superseded (§1.7). “Log who/when” is PQ2 locked (`terminal_json_only`). |
 | BUYER_NEEDS §11 / §31 — refund awareness; dry-run first; never replay signature failures | **Met** by the glossary, the argv one-id rule, and the existing refusal. |
 | BUYER_NEEDS §30 — a human owns triage | **Buyer-owned.** The runbook says yellowgram is not that human. |
 | Ready gate — zip, checksum, landing, 60s demo, Polar listing | **Still outside.** Not pulled forward. |
@@ -464,14 +478,14 @@ Stripe and Polar checklist rows that already pass stay as they are. This table i
 | Editing `src/outbox/replay.ts` or `drain.ts` | Mutation and dry-run shape are the contract. CR2-A-P2-002 stays deferred. |
 | Editing verify, `handle`, `handlePolar`, adapters, migrations, `src/index.ts`, LICENSE | Out of slice. Exports already include the three functions. |
 | Sixth chaos file or a chaos edit | Five-file cap. Argv test is unit-only. |
-| `bin` / `hooksteel-replay` / `inspect` unless PQ1 is answered that way | Default recommendation is three npm scripts. |
+| `bin` / `hooksteel-replay` / `inspect` | PQ1 locked: three npm scripts. No bin. No inspect subcommand. |
 | `--force`, `--all`, `--drain`, confirm prompts | New semantics or a second writer. |
 | Spawning the drain or calling the adapter from the CLI | Drain runs the adapter. |
 | Interpolating ids into SQL text | Bound `$1` stays. Ids stay fields. |
 | Printing `payload_snapshot` | Not returned. PII. |
 | Replaying provider event ids or raw bodies that never became `billing_events` | Refusal already exists. No side door. |
 | Filtering the list to open rows inside the CLI | Hides replay history. |
-| `replayed_by` migration | PQ2 recommendation is stdout. A column is a later slice even if you want one. |
+| `replayed_by` migration | PQ2 locked: terminal JSON only. No column. |
 | Worker UI, Grafana, hosted drain | R12 / kill criterion. |
 | CR3 P2 drive-by, refund number, Polar-org LICENSE line | Deferred elsewhere. |
 | Soft-WTP, Lock, Audit, services, Polar listing, KYC | Off / dark. |
@@ -482,17 +496,17 @@ Stripe and Polar checklist rows that already pass stay as they are. This table i
 
 ## (6) Success criteria (later implement pass)
 
-These apply only after the founder greenlights §1 and answers PQ1 and PQ2. They are not a license to implement from this design PR.
+Founder GREENLIT this design on 2026-09-26. PQ1 and PQ2 are locked in §3. These criteria are for a **separate later PR**. They are not a license to implement inside this design change.
 
-1. `package.json` adds the three scripts in §1.1 and no dependencies. No `bin` field, unless PQ1 was answered as “build the binary.”
+1. `package.json` adds the three scripts in §1.1 and no dependencies. No `bin` field (PQ1).
 2. `scripts/replay-cli.ts` matches §1.2–§1.3: `parseReplayArgs`, entrypoint guard, JSON stdout, usage stderr, `closePool`, calls only the three existing functions. `ReplayRefusedError` text is unchanged.
 3. Dry-run output contains the three `$1` statements and does not contain the dead-letter id or the outbox id inside those strings. `git diff` for `src/outbox/replay.ts` is empty.
 4. Execute of one id does not import `drain.ts` or the adapter registry. A missing id, two ids, or `--force` exits 1 with no query.
 5. `tests/unit/replay-cli.test.ts` covers the argv table in §1.3 and does not open Postgres. `tests/chaos/` is still exactly the five files. Existing drain replay tests still pass.
-6. README `## Replay` and `BUYER_START_HERE.md` step 7 match §1.6, including the glossary sentence and the CR2-A-P2-002 known limit.
+6. README `## Replay` and `BUYER_START_HERE.md` step 7 match §1.6, including the glossary sentence. RD1 and RD2 are copied into README known limits. `src/outbox/replay.ts` is not edited to “fix” them.
 7. `git diff` is empty for `migrations/`, `src/webhooks/`, `src/adapters/`, `src/outbox/drain.ts`, `src/index.ts`, `LICENSE`, and `tests/chaos/`.
-8. `docs/STATUS.md` on that later PR records implement in progress only after greenlight. It does not start Polar listing, a refund number, or the ready-gate zip.
+8. That later PR does not start Polar listing, a refund number, or the ready-gate zip. RD1 and RD2 stay README known limits.
 
 ---
 
-*Last updated: 2026-09-26 ET — design×3 only. §1 locked pending founder greenlight. PQ1 command surface. PQ2 stdout vs audit column. Implement halted. Polar merged at `09c4f88`. Soft-WTP OFF. Polar listing dark.*
+*Last updated: 2026-09-26 ET — founder GREENLIT. PQ1 `three_npm_scripts`. PQ2 `terminal_json_only`. RD1/RD2 remain implement-README known limits; do not edit `replay.ts`. Design PR merges as docs. Replay CLI implement is a separate later PR. No application code in this pass. Polar merged at `09c4f88`. Soft-WTP OFF. Polar listing dark.*

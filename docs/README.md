@@ -16,7 +16,7 @@
 | `BUYER_NEEDS_BEYOND_CHECKLIST.md` — buyer/operator-owned needs | Polar delivery artifacts (when ready) |
 | `DESIGN_STRIPE_PATH.md` — Stripe path + 5 chaos (cycle-1 + cycle-2 locks merged) | Stripe path code on `main` @ `f25f235`: migrations, handler, drain, chaos tests |
 | `DESIGN_POLAR_PATH.md` — Polar path design×3, founder greenlit (PQ1/PQ2 closed, PD1–PD4 locks) | Polar verify + `handlePolar` merged at `09c4f88` (PR #3). CR×3 pack: [`CODE_REVIEW_POLAR_PATH_PR3.md`](./CODE_REVIEW_POLAR_PATH_PR3.md) (**APPROVE**, no P0/P1). |
-| `DESIGN_REPLAY_CLI.md` — replay CLI design×3 (§1 lock, PQ1/PQ2 open) | **Not implemented.** Design only. Implement halted. |
+| `DESIGN_REPLAY_CLI.md` — replay CLI design×3, founder greenlit 2026-09-26 (PQ1 `three_npm_scripts`, PQ2 `terminal_json_only`) | **Not implemented.** Design only. Implement is a separate later PR. |
 | `COS_POLAR_PATH_DESIGN_REVIEW.yaml` — CoS design review; PD1–PD4 accepted | — |
 | `DESIGN_REVIEW_CYCLE2_JUDGEMENT.md` — HookSteel accept/reject of CoS cycle-2 packet | — |
 | This `README.md` — agent pointer | — |
@@ -31,7 +31,7 @@
 - Polar org (Suthirth solutions) stays **dark until ready gate** (see `MVP_SCOPE.md`).
 - Stripe path is **merged** on `main` (`f25f235`). Further kit code still goes through **3 code-review** passes.
 - Polar path **design×3 is founder-greenlit** and the implement is **merged** at `09c4f88` ([`DESIGN_POLAR_PATH.md`](./DESIGN_POLAR_PATH.md) §3: PQ1 `whsec_` only, PQ2 LICENSE unchanged, PD1–PD4 accepted). No Polar SDK as a required dependency.
-- Replay CLI is **design×3 only** ([`DESIGN_REPLAY_CLI.md`](./DESIGN_REPLAY_CLI.md) §1). Three `npm run` commands over the shipped replay functions. **Implement halted** until founder answers PQ1 and PQ2. No application code on the design PR.
+- Replay CLI **design×3 is founder-greenlit** ([`DESIGN_REPLAY_CLI.md`](./DESIGN_REPLAY_CLI.md) §3: PQ1 `three_npm_scripts`, PQ2 `terminal_json_only`). RD1/RD2 stay implement-README known limits. Do not edit `src/outbox/replay.ts`. Implement is a separate later PR. No application code on the design PR.
 - No Soft-WTP / Lock / Audit / hosted gateway. Polar listing stays dark.
 - ICP: Global English only. Contact: hello@yellowgram.dev · www.yellowgram.dev.
 
@@ -41,4 +41,4 @@
 - Ops/operator depth model: `/workspace/keel/MINIMUM_OPS_CHECKLIST.md`, `OPERATOR_NEEDS_BEYOND_CHECKLIST.md`
 - Product lock: `/workspace/income/digital-product-hunt/DECISION.md` §#1 HookSteel
 
-*Last updated: 2026-09-26 ET — Stripe path merged at f25f235; Polar path merged at 09c4f88; replay CLI design×3, implement halted.*
+*Last updated: 2026-09-26 ET — Stripe path merged at f25f235; Polar path merged at 09c4f88; replay CLI design greenlit (PQ1/PQ2 locked); implement is a separate later PR.*

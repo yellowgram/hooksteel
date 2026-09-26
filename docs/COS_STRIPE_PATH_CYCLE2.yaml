@@ -1,0 +1,515 @@
+# HookSteel — CoS packet
+# Cycle-2 adversarial design review + APPLY-READY design updates
+# Source: yellowgram/hooksteel docs @ sha 66891396b9764538c2169f2ed2c8c66102222855
+# Date: 2026-09-26
+# Soft-WTP OFF. No application code. No Polar. Halt remains until founder GO after locks land in DESIGN_STRIPE_PATH.md §1.
+
+schema_version: 3
+product: HookSteel
+slice: stripe_path_plus_five_chaos
+packet_type: adversarial_design_review_plus_design_updates
+audience: CoS
+reviewer: grok
+review_cycle: 2
+completeness: >
+  v1: review prose only. v2: apply-ready design_updates[].
+  v3: NQ1–NQ3 closed at the recommended answers and treated as design locks.
+  CoS merges them. Founder override only by explicit written reversal before GO.
+
+standing_constraints:
+  - exactly_5_chaos
+  - no_hosted_gateway
+  - no_polar_sdk_on_stripe_path
+  - no_soft_wtp
+  - no_lock_audit_services
+  - polar_dark_until_ready_gate
+  - refund_14_vs_30_deferred
+  - commercial_license_single_app
+  - no_side_effects_before_commit
+  - http_400_poison_500_transient_200_duplicate
+
+cos_instruction: |
+  1. Do not implement application code.
+  2. Apply every design_updates[] item with apply: required into DESIGN_STRIPE_PATH.md §1.
+     Replace the named target_section. Do not paraphrase.
+  3. NQ1–NQ3 are closed at recommended answers (see founder_decisions_locked).
+     Merge them. Do not wait for a separate founder thread unless founder
+     explicitly reverses one in writing before GO.
+  4. Append iterations[] as DESIGN_STRIPE_PATH.md §4 "Cycle 2 delta log".
+  5. Replace STATUS.md phase with status_md_patch.phase.
+  6. DESIGN_STRIPE_PATH.md §3 should list ZERO open product questions for this
+     slice except refund 14 vs 30 (deferred, not this slice).
+  7. Rejected items stay rejected.
+
+assertive_verdict: |
+  Cycle-1 design is a correct textbook outbox and is not implementable as written.
+  Nine P0 locks below must land in §1 before founder GO. Building now bakes
+  stuck jobs after worker crash, Stripe signature failures on the advertised
+  Next route, and chaos tests that cannot fail or that fake a crash in RAM.
+
+design_updates:
+  - id: DU-layout
+    apply: required
+    target_section: "§1.1 Module layout"
+    source_findings: [I3-P1-example-route-location, I3-P1-framework-agnostic-readme, I3-P1-chaos-not-in-prod-graph]
+    founder_decision: NQ1_examples_next
+    action: replace_layout_rules_and_tree_paths
+    lock: |
+      Core kit is a Node library + drain script. Next is an example only.
+      Move advertised route to examples/next/app/api/webhooks/stripe/route.ts.
+      Root package.json must not depend on next.
+      Handler lives at src/webhooks/stripe/handler.ts and is called as
+        handle({ rawBody: string, signature: string | null })
+      Route (example) does only:
+        const rawBody = await request.text();
+        const signature = request.headers.get('stripe-signature');
+        return handle({ rawBody, signature });
+      Never request.json() on this route.
+      src/chaos/* is imported only from tests/*. Production index does not
+      export chaos. Env gate alone is not sufficient.
+      README includes an 8-line Node/Hono/Express snippet calling the same handle().
+    tree_delta:
+      add:
+        - examples/next/app/api/webhooks/stripe/route.ts
+        - src/db/schema_migrations tracking via hooksteel_schema_migrations
+      move:
+        from: app/api/webhooks/stripe/route.ts
+        to: examples/next/app/api/webhooks/stripe/route.ts
+      keep:
+        - src/webhooks/stripe/handler.ts
+        - src/webhooks/stripe/verify.ts
+        - src/webhooks/stripe/mapAdapters.ts
+        - src/outbox/drain.ts
+        - scripts/outbox-drain.ts
+        - tests/chaos/01-05
+
+  - id: DU-ddl-status-ignored
+    apply: required
+    target_section: "§1.2 billing_events.status CHECK"
+    source_findings: [I1-P1-parent-status-machine, NQ3]
+    founder_decision: NQ3_yes_add_ignored
+    lock: |
+      billing_events.status CHECK must include 'ignored'.
+      Allowed v0.1 values: received, outboxed, ignored.
+      'failed' and 'dead' are reserved — do not write them in v0.1.
+      Writers:
+        - INSERT default received
+        - same txn: if mapAdapters returns ≥1 row → outboxed + outbox inserts
+        - same txn: if mapAdapters returns [] → ignored, zero outbox, HTTP 200
+        - drain: when no child outbox remains with completed_at IS NULL,
+          set billing_events.processed_at = now()
+        - drain does not write failed/dead onto billing_events
+          (dead_letters is the failure table)
+
+  - id: DU-ddl-lease
+    apply: required
+    target_section: "§1.2 outbox + §1.7 drain"
+    source_findings: [I1-P0-lease-reclaim, I1-P2-indexes]
+    lock: |
+      No new column required. Frozen claim SQL predicate:
+        completed_at IS NULL
+        AND available_at <= now()
+        AND (locked_at IS NULL OR locked_at < now() - make_interval(secs => lease_seconds))
+      Plus FOR UPDATE SKIP LOCKED.
+      OUTBOX_LEASE_MS default 30000.
+      Drain index may stay (available_at) WHERE completed_at IS NULL.
+      Reclaim filter is in the query, not the index.
+
+  - id: DU-attempts-backoff
+    apply: required
+    target_section: "§1.7 Minimal outbox drain"
+    source_findings: [I1-P0-attempts-accounting, I1-P1-backoff-formula, I1-P1-claim-batch]
+    lock: |
+      Claim statement (one row or batch) must atomically:
+        set locked_at = now(), locked_by = OUTBOX_WORKER_ID,
+        attempts = attempts + 1
+      using the reclaim predicate above.
+      After increment, if attempts > OUTBOX_MAX_ATTEMPTS (default 5):
+        do not execute adapter; take dead-letter path.
+      On adapter throw (attempts still ≤ max):
+        available_at = now() + interval '1 second' * LEAST(60, 2 ^ attempts)
+        last_error = message
+        locked_at = NULL, locked_by = NULL
+      On adapter success:
+        completed_at = now(); locked_at = NULL
+      --once processes up to OUTBOX_BATCH_SIZE (default 10) rows sequentially
+      in one process, then exits. Tests loop --once until idle.
+      No in-process parallel adapter execution in v0.1.
+      Multi-process OK via SKIP LOCKED.
+
+  - id: DU-dead-letter-and-replay
+    apply: required
+    target_section: "§1.7 dead-letter policy + §1.9 replay"
+    source_findings: [I1-P0-replay-mutation]
+    lock: |
+      Terminal policy (confirmed):
+        INSERT dead_letters (outbox_id, billing_event_id, reason, payload_snapshot)
+        UPDATE outbox SET completed_at = now(), last_error = 'dead_lettered',
+          locked_at = NULL, locked_by = NULL
+      Replay execute <dead_letter_id> mutation (schema contract now, CLI later):
+        REFUSE if dead_letters.replayed_at IS NOT NULL (no --force in v0.1)
+        REFUSE if billing_event row missing
+        REFUSE if the event never entered billing_events (signature failures)
+        BEGIN
+          UPDATE outbox SET
+            completed_at = NULL, last_error = NULL,
+            available_at = now(), locked_at = NULL, locked_by = NULL,
+            attempts = 0
+          WHERE id = dead.outbox_id
+          UPDATE dead_letters SET replayed_at = now() WHERE id = ...
+        COMMIT
+        Then run normal drain. Do not call adapter inside the replay process.
+      Dry-run prints intended UPDATE + adapter name; zero writes.
+
+  - id: DU-handler-http-raw-body
+    apply: required
+    target_section: "§1.3 Handler sequence + §1.4 HTTP contract"
+    source_findings: [I2-P0-raw-body-next, I1-P1-txn-rollback-on-abort]
+    lock: |
+      HTTP status table from cycle-1 is UNCHANGED:
+        missing/placeholder/non-whsec secret → 400 no store
+        signature fail → 400 no store
+        livemode mismatch → 400 no store
+        first verify+insert+outbox → 200
+        duplicate provider_event_id → 200 no new rows
+        DB/txn/unexpected after verify → 500 rolled back
+      ADD: unmapped event type → 200, row status ignored, zero outbox
+      Raw body is mandatory input to verify. JSON parse before verify is a
+      buyer footgun and a failed signature, not a kit bug.
+      Handler wraps DB work in try/finally: if COMMIT did not run, ROLLBACK
+      before returning the connection to the pool.
+      Chaos #4 must assert the retry INSERT is not blocked by idle-in-transaction.
+
+  - id: DU-verify-and-livemode
+    apply: required
+    target_section: "§1.3 verify + §1.5 env + §3 Q1"
+    source_findings: [I2-P0-verify-dependency, I2-P0-livemode-source, I2-P1-placeholder-secret]
+    lock: |
+      Verify MUST use stripe.webhooks.constructEvent(rawBody, signature, secret).
+      Thin HMAC helper is rejected for v0.1.
+      Livemode: compare event.livemode to STRIPE_EXPECT_LIVEMODE.
+      If STRIPE_EXPECT_LIVEMODE unset, default false (test-mode kit).
+      Do not infer livemode from sk_ live/test prefix.
+      STRIPE_SECRET_KEY is NOT required for webhook verify, chaos, or drain.
+      In .env.example it is commented optional: "only if your adapters call Stripe API".
+      Placeholder detector → 400 no store:
+        missing, empty, or exact {whsec_replace_me, replace_me, changeme, test}
+        or secret that does not start with whsec_
+      Never log the secret value.
+
+  - id: DU-adapter-map-and-payload
+    apply: required
+    target_section: "§1.6 Adapter stubs + map"
+    source_findings: [I2-P1-event-map-empty, I2-P1-payload-shape]
+    lock: |
+      Default map (config module, not magic):
+        checkout.session.completed → [grant_credit, send_email]
+        checkout.session.async_payment_succeeded → [grant_credit, send_email]
+        invoice.paid → [grant_credit]
+        customer.subscription.deleted → []   # persist only
+        invite_github → opt-in only, not in default map
+      Persist every verified event. Empty map ⇒ status ignored, HTTP 200.
+      One outbox row per (event, adapter). Same adapter twice on one event
+      is a buyer config error (unique idempotency_key will reject).
+      idempotency_key = provider + '|' + provider_event_id + '|' + adapter
+      Outbox payload shapes:
+        session completed / async_payment_succeeded:
+          {session_id, customer, customer_email, amount_total, currency,
+           payment_status, mode}
+        invoice.paid:
+          {invoice_id, customer, customer_email, amount_paid, currency}
+      grant_credit reads amount_total or amount_paid + currency + customer.
+      send_email reads customer_email; missing email → adapter throw → retry/DL.
+      Adapters that call external APIs SHOULD pass idempotencyKey to that API
+      when the vendor supports it. Kit uniqueness does not make Resend idempotent
+      by itself.
+
+  - id: DU-chaos-proofs
+    apply: required
+    target_section: "§1.8 Test plan"
+    source_findings: [I3-P0-chaos5-durable-log, I3-P0-chaos2-substance, I2-P1-fixture-signatures]
+    lock: |
+      Still exactly 5 named files. Postgres for all five. No live Stripe job.
+      Signatures minted at test runtime from unsigned fixture bodies + test whsec_
+      via stripe.webhooks.generateTestHeaderString (or equivalent).
+      Do not check in a timestamped Stripe-Signature header.
+      Test-only table adapter_invocations (
+        idempotency_key TEXT PRIMARY KEY,
+        adapter TEXT NOT NULL,
+        recorded_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+      Stub execute writes that row on a SEPARATE connection from the drain
+      txn so the write survives a simulated crash. Production adapters must
+      not write this table. Table created by test setup, not by buyer migrate.
+      #1 Duplicate: POST same signed fixture 4× concurrent.
+         Pass: 1 billing_events row; 1 adapter_invocations row per mapped adapter.
+      #2 Out-of-order + concurrent:
+         Deliver B then A (distinct evt ids) AND concurrent A+B plus duplicate A.
+         Pass: 2 event rows; correct outbox counts; zero deadlocks;
+         1 invocation per mapped adapter per event.
+         Title must say uniqueness/deadlock, not "ordering works".
+         Kit still does not promise global total order.
+      #3 Signature fail: tamper one byte after mint → 400; 0 events; 0 outbox.
+      #4 Handler timeout: abort after verify before commit; retry same event.
+         Pass: first attempt leaves 0 committed rows; retry inserts once;
+         1 invocation after drain; no idle-in-transaction blocking retry.
+      #5 Mid-fulfillment crash: after event+outbox commit, stub writes
+         adapter_invocations then throw/kill BEFORE outbox.completed_at.
+         Re-drain. Pass: adapter_invocations COUNT = 1 for that key.
+      Timeouts in tests ≤100ms + AbortSignal. Lease 30s documented;
+      tests may shorten lease via env.
+
+  - id: DU-migrate
+    apply: required
+    target_section: "§1.1 migrate.ts + new 000 migration"
+    source_findings: [I3-P0-migrate-versioning]
+    lock: |
+      Table hooksteel_schema_migrations (
+        id TEXT PRIMARY KEY,
+        applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+      migrate.ts applies SQL files in lex order iff id not present,
+      one transaction per file. SQL files use plain CREATE TABLE
+      (no IF NOT EXISTS) so a half-apply is visible.
+      File ids: 000_schema_migrations.sql, 001_billing_events.sql,
+      002_outbox.sql, 003_dead_letters.sql.
+      CI: empty Postgres → migrate → test.
+
+  - id: DU-env
+    apply: required
+    target_section: "§1.5 .env.example"
+    source_findings: [I2-P0-livemode-source, I1-P0-lease-reclaim, I1-P0-attempts-accounting]
+    replace_sketch: |
+      DATABASE_URL=postgres://postgres:postgres@localhost:5432/hooksteel
+      STRIPE_WEBHOOK_SECRET=whsec_replace_me
+      # STRIPE_EXPECT_LIVEMODE=false
+      # STRIPE_SECRET_KEY=sk_test_replace_me   # optional; adapters only; unused by webhook
+      NEXT_PUBLIC_APP_URL=http://localhost:3000
+      OUTBOX_WORKER_ID=local-dev-1
+      # OUTBOX_MAX_ATTEMPTS=5
+      # OUTBOX_LEASE_MS=30000
+      # OUTBOX_BATCH_SIZE=10
+      ALLOW_DEMO_CONTROLS=false
+      ALLOW_CHAOS_INJECT=false
+      # POLAR_WEBHOOK_SECRET=
+    notes:
+      - ALLOW_CHAOS_INJECT does not load src/chaos into production exports
+      - production index must not import chaos even if this flag is true
+
+  - id: DU-pii-connect-timeout-docs
+    apply: required
+    target_section: "§1.11 README known limits + troubleshooting"
+    source_findings: [I2-P1-pii-retention, I2-P2-connect, I2-P2-timeout-budget, I3-P2-hookdeck-pointer-is-outline-only, I3-P1-license-org-definition]
+    founder_decision: NQ2_single_app_one_prod_stripe_account
+    lock: |
+      README known limits must include:
+        - full Stripe JSONB is PII; kit has no purger; buyer owns retention
+        - Connect: uniqueness OK (evt ids global); adapters read event.account;
+          no stripe_account column in v0.1
+        - verify+txn target < 2s; cold remote DB → 500 + Stripe retry is correct
+        - Hookdeck 6-bullet outline from MVP_SCOPE pasted verbatim
+        - troubleshooting #1: raw body + CLI whsec vs Dashboard whsec
+      LICENSE single-app sentence:
+        one production application and one production Stripe account
+        (test+live of that account count as one).
+        Second production product or second live Stripe account = Multi-app later.
+
+  - id: DU-ci
+    apply: required
+    target_section: "§1.8 CI + §3 Q4"
+    source_findings: [I3-P1-ci-shape]
+    lock: |
+      When implement is unlocked, first commit includes
+      .github/workflows/chaos-postgres.yml
+        services: postgres:16
+        npm ci && npm run migrate && npm test
+      engines.node = 20. Lockfile committed.
+      Next is not a root dependency.
+
+  - id: DU-status
+    apply: required
+    target_section: docs/STATUS.md phase + next
+    source_findings: [I3-P1-status-doc-honesty]
+    lock: |
+      Phase line MUST become:
+        Stripe path design — cycle 2 locks in; halted for founder GO on P0s.
+      Remove "design done / implement next" until founder GO after merge.
+
+founder_decisions_locked:
+  - id: NQ1
+    question: Where does the Next.js route live?
+    recommendation: examples_next
+    locked_answer: examples_next
+    means: >
+      Core kit is a Node library + drain script at repo root.
+      Advertised route lives at examples/next/app/api/webhooks/stripe/route.ts.
+      Root package.json does not depend on next.
+      npm test does not boot Next.
+    applied_in: DU-layout
+    blocks_implement: false
+    override_before_go: >
+      Founder may force in-root Next in writing. Raw-body lock still applies.
+      Do not add next as a requirement for the chaos suite.
+
+  - id: NQ2
+    question: What does Single-app mean on the license and Polar listing?
+    recommendation: yes_one_prod_app_one_prod_stripe_account
+    locked_answer: yes_one_prod_app_one_prod_stripe_account
+    means: >
+      Single-app = one production application and one production Stripe account.
+      Test + live keys of that same account count as one.
+      A second production product or a second live Stripe account requires
+      the later Multi-app SKU. Not a GitHub-org count. Not a legal-entity count.
+    applied_in: DU-pii-connect-timeout-docs
+    blocks_implement: false
+    listing_sentence: >
+      Single-app license: one production application and one production Stripe
+      account (test + live of that account count as one).
+
+  - id: NQ3
+    question: Add billing_events.status value ignored now?
+    recommendation: yes
+    locked_answer: yes_add_ignored
+    means: >
+      CHECK allows received, outboxed, ignored in v0.1.
+      Verified event with empty adapter map → status ignored, zero outbox, HTTP 200.
+      failed and dead stay in comments as reserved; do not write them in v0.1.
+    applied_in: DU-ddl-status-ignored
+    blocks_implement: true
+    override_before_go: >
+      Reversal would keep unmapped events as received with zero outbox and
+      must document that received-with-zero-outbox means ignored. Do not
+      ship two meanings of received.
+
+new_open_questions_for_founder: []
+
+closed_open_questions:
+  - id: 1
+    was: constructEvent vs thin HMAC
+    now: constructEvent required
+  - id: 2
+    was: invite_github default or opt-in
+    now: opt-in
+  - id: 3
+    was: dead-letter terminal policy
+    now: dead_letter + completed_at sentinel + replay mutation specified
+  - id: 4
+    was: package manager / Next pin
+    now: Node 20 locked; Next not a root dependency; Next 15 only inside examples/next
+  - id: 5
+    was: refund 14 vs 30
+    now: still deferred — do not reopen
+  - id: NQ1
+    was: examples/next vs in-root Next
+    now: examples/next + root Node library
+  - id: NQ2
+    was: Single-app definition
+    now: one production app + one production Stripe account (test+live pair = one)
+  - id: NQ3
+    was: add ignored status
+    now: add ignored; unmapped verified events use it
+
+p0_implement_blockers:
+  - DU-ddl-lease
+  - DU-attempts-backoff
+  - DU-dead-letter-and-replay
+  - DU-handler-http-raw-body
+  - DU-verify-and-livemode
+  - DU-chaos-proofs
+  - DU-migrate
+  - DU-ddl-status-ignored
+  - DU-layout
+
+iterations:
+  - id: 1
+    expert: distributed_systems_outbox
+    attack_thesis: >
+      Cycle-1 locked SKIP LOCKED + completed_at then hand-waved lease TTL.
+      Dead worker leaves rows invisible. attempts timing unspecified.
+      Replay had a name and no mutation. Parent status values never written.
+    findings:
+      - {id: I1-P0-lease-reclaim, severity: P0, accepted: true, update: DU-ddl-lease}
+      - {id: I1-P0-attempts-accounting, severity: P0, accepted: true, update: DU-attempts-backoff}
+      - {id: I1-P0-replay-mutation, severity: P0, accepted: true, update: DU-dead-letter-and-replay}
+      - {id: I1-P1-parent-status-machine, severity: P1, accepted: true, update: DU-ddl-status-ignored}
+      - {id: I1-P1-backoff-formula, severity: P1, accepted: true, update: DU-attempts-backoff}
+      - {id: I1-P1-txn-rollback-on-abort, severity: P1, accepted: true, update: DU-handler-http-raw-body}
+      - {id: I1-P1-claim-batch, severity: P1, accepted: true, update: DU-attempts-backoff}
+      - {id: I1-P2-indexes, severity: P2, accepted: true, update: DU-ddl-lease}
+    rejected:
+      - SERIALIZABLE isolation
+      - LISTEN/NOTIFY required in v0.1
+      - lease_expires_at column mandatory
+      - write billing_events.failed on first adapter throw
+
+  - id: 2
+    expert: stripe_contract_and_security
+    attack_thesis: >
+      Advertised App Router route never locked request.text().
+      sk_ required for a whsec-only path. Unmapped types unspecified.
+      Checked-in signatures rot under constructEvent tolerance.
+    findings:
+      - {id: I2-P0-raw-body-next, severity: P0, accepted: true, update: DU-handler-http-raw-body}
+      - {id: I2-P0-verify-dependency, severity: P0, accepted: true, update: DU-verify-and-livemode}
+      - {id: I2-P0-livemode-source, severity: P0, accepted: true, update: DU-verify-and-livemode}
+      - {id: I2-P1-placeholder-secret, severity: P1, accepted: true, update: DU-verify-and-livemode}
+      - {id: I2-P1-event-map-empty, severity: P1, accepted: true, update: DU-adapter-map-and-payload}
+      - {id: I2-P1-fixture-signatures, severity: P1, accepted: true, update: DU-chaos-proofs}
+      - {id: I2-P1-payload-shape, severity: P1, accepted: true, update: DU-adapter-map-and-payload}
+      - {id: I2-P1-pii-retention, severity: P1, accepted: true, update: DU-pii-connect-timeout-docs}
+      - {id: I2-P2-connect, severity: P2, accepted: true, update: DU-pii-connect-timeout-docs}
+      - {id: I2-P2-timeout-budget, severity: P2, accepted: true, update: DU-pii-connect-timeout-docs}
+    rejected:
+      - Hand-rolled HMAC
+      - Require sk_ in webhook process
+      - Drop unmapped events
+      - Redacted payloads only in v0.1
+      - PCI opinion that outbox equals billing correctness
+
+  - id: 3
+    expert: kit_ship_and_support_load
+    attack_thesis: >
+      Chaos #2 cannot fail. Chaos #5 can be faked in RAM.
+      migrate.ts bricks second run. In-root Next implies the kit is a Next app.
+      STATUS.md already says design done.
+    findings:
+      - {id: I3-P0-chaos5-durable-log, severity: P0, accepted: true, update: DU-chaos-proofs}
+      - {id: I3-P0-chaos2-substance, severity: P0, accepted: true, update: DU-chaos-proofs}
+      - {id: I3-P0-migrate-versioning, severity: P0, accepted: true, update: DU-migrate}
+      - {id: I3-P1-chaos-not-in-prod-graph, severity: P1, accepted: true, update: DU-layout}
+      - {id: I3-P1-framework-agnostic-readme, severity: P1, accepted: true, update: DU-layout}
+      - {id: I3-P1-license-org-definition, severity: P1, accepted: true, update: DU-pii-connect-timeout-docs}
+      - {id: I3-P1-ci-shape, severity: P1, accepted: true, update: DU-ci}
+      - {id: I3-P1-example-route-location, severity: P1, accepted: true, update: DU-layout}
+      - {id: I3-P1-status-doc-honesty, severity: P1, accepted: true, update: DU-status}
+      - {id: I3-P2-hookdeck-pointer-is-outline-only, severity: P2, accepted: true, update: DU-pii-connect-timeout-docs}
+    rejected:
+      - Next as core dependency
+      - Sixth chaos scenario
+      - Grafana / worker UI
+      - Public MIT extract
+      - Implement now and fix leases in code review
+
+status_md_patch:
+  phase: "Stripe path design — cycle 2 locks in (NQ1–NQ3 at recommended answers); halted for founder GO to implement"
+  next:
+    - CoS applies design_updates[] + founder_decisions_locked into DESIGN_STRIPE_PATH.md §1
+    - CoS appends iterations[] as §4
+    - CoS writes NQ1–NQ3 into §3 as CLOSED at recommended answers
+    - Founder GO to implement (or written reversal of NQ1/NQ2/NQ3 before GO)
+    - Then implement under 3 code-review passes
+
+layman_result_also_covered_here:
+  receptionist_and_clerk_model: true
+  stuck_slip_after_clerk_faints: DU-ddl-lease
+  replay_button_unwired: DU-dead-letter-and-replay
+  next_json_breaks_stripe_signature: DU-handler-http-raw-body
+  sk_not_needed_for_webhook: DU-verify-and-livemode
+  unmapped_events_were_unspecified: DU-adapter-map-and-payload
+  chaos2_cannot_fail: DU-chaos-proofs
+  chaos5_fake_in_ram: DU-chaos-proofs
+  migrate_second_run_bricks: DU-migrate
+  do_not_implement_yet: true
+  nq1_examples_next: locked
+  nq2_single_app_one_stripe_account: locked
+  nq3_status_ignored: locked

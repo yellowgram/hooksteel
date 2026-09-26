@@ -1,0 +1,251 @@
+# HookSteel — CoS packet
+# Adversarial DISTRIBUTION review of the LaunchGate-approved 60s demo clip
+# Subject: release tag clip-60s-approved
+# MP4: https://github.com/yellowgram/hooksteel/releases/download/clip-60s-approved/hooksteel-60s-demo.mp4
+# SHA-256: bef2df21ffb4cac1b1ffeb59c12218d055be9e307b46d98858bd7fb8ce5e6d07
+# Date: 2026-09-26
+# Soft-WTP OFF. Polar listing stays dark. Do not reseal the product zip.
+
+schema_version: 1
+product: HookSteel
+packet_type: demo_60s_clip_distribution_review
+audience: CoS
+reviewer: grok
+subject:
+  kind: github_release_asset
+  tag: clip-60s-approved
+  asset: hooksteel-60s-demo.mp4
+  captions: hooksteel-60s-demo.srt
+  duration_s: 49.3
+  sha256: bef2df21ffb4cac1b1ffeb59c12218d055be9e307b46d98858bd7fb8ce5e6d07
+  release_url: https://github.com/yellowgram/hooksteel/releases/tag/clip-60s-approved
+  mp4_url: https://github.com/yellowgram/hooksteel/releases/download/clip-60s-approved/hooksteel-60s-demo.mp4
+  srt_url: https://github.com/yellowgram/hooksteel/releases/download/clip-60s-approved/hooksteel-60s-demo.srt
+
+standing_constraints:
+  - no_soft_wtp
+  - polar_listing_dark
+  - refund_30d
+  - do_not_reseal_zip
+  - clip_lives_on_release_tag
+  - launchgate_film_hash_holds
+  - no_distribution_on_raw_take
+
+launchgate_film:
+  verdict: APPROVED_AS_PROOF_HASH_ONLY
+  meaning: >
+    LaunchGate film gate is satisfied for the proof hash on tag
+    clip-60s-approved. That is not a distribution or Polar-go-live approval.
+  tag: clip-60s-approved
+  sha256: bef2df21ffb4cac1b1ffeb59c12218d055be9e307b46d98858bd7fb8ce5e6d07
+
+polar:
+  status: DARK
+  may_list: false
+  reason: >
+    Raw take must not light Polar. Buyer master must exist first, then founder
+    distribution post, then founder types go-live.
+
+zip:
+  reseal: false
+  note: Clip lives on the release tag. Do not reseal the product zip for this review.
+
+counts:
+  P0: 1
+  P1: 7
+  P2: 6
+
+verdict: REQUEST_CHANGES_FOR_DISTRIBUTION
+
+assertive_verdict: |
+  LaunchGate film APPROVED_AS_PROOF_HASH_ONLY on clip-60s-approved
+  (SHA bef2df21…). That hash is the locked proof tape.
+  Do not light Polar. Do not run the X / Show HN / builder distribution post
+  on this raw take. Cut a buyer master from the same tape that lands every
+  P1 below, with locked VO and honesty line copied verbatim.
+  Polar stays dark until buyer master + founder distribution post + go-live.
+
+cos_instruction: |
+  1. Commit this file as docs/COS_DEMO_60S_CLIP_REVIEW.yaml on main.
+  2. Do not open Polar. Do not post the raw take for distribution.
+  3. Do not reseal the product zip. Clip stays on tag clip-60s-approved.
+  4. Hand HookSteel (or editor) this packet. Buyer cut must come from the
+     same tape (same SHA source take), not a re-film unless the take fails a P1.
+  5. Locked VO and honesty_line below are verbatim. Editors must not paraphrase.
+  6. After buyer master exists, founder posts once, then may type go-live.
+     Only then may CoS list on Polar (refund 30d).
+  7. Keep every item in do_not[].
+
+do_not:
+  - light_polar_on_raw_take
+  - distribution_post_on_raw_take
+  - reseal_product_zip_for_clip
+  - paraphrase_locked_vo
+  - paraphrase_honesty_line
+  - drop_any_of_four_pass_lines
+  - drop_polar_half_of_clip
+  - drop_stripe_half_of_clip
+  - treat_launchgate_film_approve_as_go_live
+  - soft_wtp
+
+locked_vo:
+  note: Copy these lines. Do not paraphrase.
+  burn_first_open: We double-provisioned after a webhook 500.
+  burn_first_follow: Same event, second delivery, credits twice.
+  honesty_line: Use Hookdeck for ingress. Keep this outbox after commit.
+  honesty_line_alt_allowed: use them for ingress; this is the outbox you keep.
+  honesty_placement: must appear in the first 10 seconds of the buyer master
+  four_pass_lines_hold_on_screen:
+    - "duplicate delivery: same signed event 4× concurrent yields one row and one invocation per adapter"
+    - "polar duplicate delivery: same signed order.paid 4× concurrent yields one row and one invocation per adapter"
+    - "crash after adapter_invocations write and before completed_at re-drains to count 1"
+    - "polar crash after adapter_invocations write and before completed_at re-drains to count 1"
+  grant_credit_isolation: >
+    On screen / VO must make grant_credit count 1 unmistakable
+    (stripe|evt_dup_1|grant_credit once; polar|msg_polar_dup_1|grant_credit once;
+    mid-fulfillment re-drain stays at 1). Do not let send_email blur the count.
+
+iterations:
+  - id: 1
+    expert: burn_and_honesty_first_10s
+    attack_thesis: >
+      Buyers bounce if the first 10s are terminal noise. Burn and Hookdeck
+      honesty must land before the chaos scroll.
+    findings:
+      - id: CLIP-P0-001
+        severity: P0
+        accepted: true
+        issue: Raw take must not light Polar or carry the distribution post
+        evidence: >
+          LaunchGate approved proof hash only. DEMO_60S order is clip → post →
+          Polar. Shipping the raw take as the buyer asset skips the buyer cut.
+        change_required: >
+          Block Polar list and block X/HN/builder posts until a buyer master
+          that satisfies all P1s exists. Keep listing dark.
+      - id: CLIP-P1-001
+        severity: P1
+        accepted: true
+        issue: Burn-first VO missing or late as the open
+        evidence: Proof SRT opens with burn, but buyer master must lead with it.
+        change_required: >
+          Buyer master opens on locked_vo.burn_first_open then burn_first_follow.
+          No cold terminal before burn.
+      - id: CLIP-P1-006
+        severity: P1
+        accepted: true
+        issue: Honesty line not in the first 10 seconds
+        evidence: Proof SRT places Hookdeck honesty near 00:38–00:43.
+        change_required: >
+          Place locked_vo.honesty_line (or honesty_line_alt_allowed) inside
+          the first 10s of the buyer master. Do not paraphrase.
+
+  - id: 2
+    expert: four_pass_lines_and_grant_credit_count
+    attack_thesis: >
+      If any of the four pass lines drops, or grant_credit is not isolated to
+      count 1, the clip fails the kill criterion vs Stripe docs / Hookdeck.
+    findings:
+      - id: CLIP-P1-002
+        severity: P1
+        accepted: true
+        issue: Four pass lines must all remain on screen in order
+        evidence: docs/DEMO_60S.md kill criterion + on-camera order.
+        change_required: >
+          Hold all four locked_vo.four_pass_lines_hold_on_screen strings, in
+          that order, in the same buyer master. Do not drop Polar or Stripe.
+      - id: CLIP-P1-005
+        severity: P1
+        accepted: true
+        issue: grant_credit count 1 not isolated for the buyer eye
+        evidence: >
+          Two adapters (grant_credit + send_email) can read as two grants.
+          Mid-fulfillment re-drain-to-1 is the differentiator.
+        change_required: >
+          Isolate grant_credit count 1 on screen and in VO per
+          locked_vo.grant_credit_isolation. Call out count 1 after re-drain.
+
+  - id: 3
+    expert: captions_title_end_card
+    attack_thesis: >
+      Silent autoplay and timeline scrubbers need burn-in captions plus title
+      and end cards or the proof is unread off-feed.
+    findings:
+      - id: CLIP-P1-003
+        severity: P1
+        accepted: true
+        issue: Burn-in captions required on buyer master
+        evidence: Soft-muted feeds discard sidecar SRT.
+        change_required: >
+          Burn captions into the picture for the buyer master. Keep the .srt
+          as a sidecar on the release asset too.
+      - id: CLIP-P1-004
+        severity: P1
+        accepted: true
+        issue: Missing title card and end card
+        evidence: Raw take is continuous terminal with no product frame.
+        change_required: >
+          Title card (HookSteel + one-line promise) and end card (repo URL +
+          "Polar listing dark until go-live" / buy path when live). No Soft-WTP.
+
+  - id: 4
+    expert: distribution_gate_order
+    attack_thesis: >
+      Posting before a buyer master, or listing before the post, burns the
+      one-shot distribution.
+    findings:
+      - id: CLIP-P1-007
+        severity: P1
+        accepted: true
+        issue: Buyer master must exist before X / Show HN / Polar
+        evidence: DEMO_60S after-approve order; Polar deliverables gate.
+        change_required: >
+          Sequence: buyer master (this packet P1s) → founder distribution post
+          → founder types go-live → CoS lists Polar (refund 30d). No reorder.
+
+  - id: 5
+    expert: polish_p2_distribution_hygiene
+    attack_thesis: >
+      Lower-severity hygiene that should not block the cut but should land
+      with the buyer master if cheap.
+    findings:
+      - id: CLIP-P2-001
+        severity: P2
+        accepted: true
+        issue: Fixture ids hard to read at phone width
+        change_required: Brief on-screen callout or zoom on evt_dup_1 / msg_polar_dup_1 when spoken.
+      - id: CLIP-P2-002
+        severity: P2
+        accepted: true
+        issue: No chapter timestamps in release notes for X thread
+        change_required: Add 0:00 burn / honesty, chaos, rollback, close timestamps on the buyer-master release body.
+      - id: CLIP-P2-003
+        severity: P2
+        accepted: true
+        issue: Audio loudness not normalized for feed compressors
+        change_required: Normalize VO to typical social loudness; keep terminal clicks under VO.
+      - id: CLIP-P2-004
+        severity: P2
+        accepted: true
+        issue: Buyer-master filename collisions with proof asset
+        change_required: Name buyer master distinctly (e.g. hooksteel-60s-buyer.mp4); leave proof asset on clip-60s-approved untouched.
+      - id: CLIP-P2-005
+        severity: P2
+        accepted: true
+        issue: docs/DEMO_60S.md still reads as pre-film script-only
+        change_required: After buyer master ships, update DEMO_60S status lines to point at proof tag vs buyer master without rewriting the kill criterion.
+      - id: CLIP-P2-006
+        severity: P2
+        accepted: true
+        issue: End card missing checksum pointer
+        change_required: End card or description links SHA-256 of the buyer master (and notes proof SHA stays on clip-60s-approved).
+
+findings_index:
+  P0: [CLIP-P0-001]
+  P1: [CLIP-P1-001, CLIP-P1-002, CLIP-P1-003, CLIP-P1-004, CLIP-P1-005, CLIP-P1-006, CLIP-P1-007]
+  P2: [CLIP-P2-001, CLIP-P2-002, CLIP-P2-003, CLIP-P2-004, CLIP-P2-005, CLIP-P2-006]
+
+required_next:
+  - Produce buyer master from the same tape satisfying all P1s (P2s if cheap).
+  - Do not distribute the raw take.
+  - Polar remains DARK until buyer master + founder post + go-live.
+  - Do not reseal zip.

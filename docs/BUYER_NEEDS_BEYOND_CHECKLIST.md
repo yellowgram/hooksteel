@@ -2,7 +2,7 @@
 
 **Filename:** `BUYER_NEEDS_BEYOND_CHECKLIST.md` (kit buyers; dual title = Buyer / Operator)  
 **Audience:** buyer of the **$89–129 Polar zip / private GitHub** (indie SaaS founder / integrator / ops) — not founder income rails  
-**Baseline treated as covered:** `/workspace/income/hooksteel/MINIMUM_SUPPORT_CHECKLIST.md` (v3)  
+**Baseline treated as covered:** `docs/MINIMUM_SUPPORT_CHECKLIST.md` (v3) in this repository  
 **Method:** three sequential adversarial expert iterations *after* treating the minimum-support checklist as covered; each adds concrete buyer-owned needs, kills fluff.  
 **Naming:** BUYER_NEEDS (buyer of the kit). Operator needs = how that buyer runs outbox/replay in *their* prod (keel-inspired depth; Polar digital-kit shape from credit-ledger).  
 **Date:** 2026-09-26 ET — design-only; no code/git/outreach/PRs. Soft-WTP OFF. No Lock/Audit/services. Polar dark until ready (yellowgram concern — not a buyer deliverable).

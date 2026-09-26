@@ -1,25 +1,38 @@
 # HookSteel — CODE REVIEW ×3: Ready-gate PR #6
 
-**Verdict: APPROVE WITH P2 DEFER**
+**Verdict after the fix passes: APPROVE.** The tables below are the review as first written. Every in-slice row was then fixed on this branch before the zip seal. Do not treat a "Defer" cell as open work.
+
+**Purchase-refund window stays 30 days. Listing stays dark. Do not merge from this file. Do not list on Polar.**
+
+The SHA-256 of `release/hooksteel-0.1.0.zip` is the table in `docs/CHECKSUMS.md` (that file is not inside the zip). `npm run pack:release` reprints that digest when the only later changes are `docs/CHECKSUMS.md` and `release/`.
+
+Out of slice, unchanged on purpose:
+
+- `src/outbox/replay.ts` dry-run `$1` labels (CR2-A-P2-002). Fixing them means editing that file.
+- `LICENSE`. It still counts one production Stripe account and does not add a Polar-account axis (PQ2).
+
+**Original verdict, superseded: APPROVE WITH P2 DEFER**
 
 **PR:** https://github.com/yellowgram/hooksteel/pull/6  
 **Branch:** `cursor/ready-gate-support-release-54a3` → `main`  
-**Head reviewed:** `5f828483f36905ef6517a453c634f02223ac8236`  
+**First-review head:** `5f828483f36905ef6517a453c634f02223ac8236`  
 **Base:** `main` @ `8dc6e10164818415f0c0f87d410eec813db94847` (Stripe + Polar + outbox + replay CLI)  
 **Date:** 2026-09-26  
-**CI at review:** `chaos-postgres` **pass** on this head. Run: [36276399895](https://github.com/yellowgram/hooksteel/actions/runs/36276399895) (`# tests 54`, `# fail 0`).  
-**Zip SHA-256:** `61ef4c29e3222b28d1f6e1b377e973812fde69c42f73dee0aa51334a9b3ab09c` — **matches** `docs/CHECKSUMS.md`. Independent rebuild of this head (git archive + pinned comment) produced the same digest and the same 125 entry metadata.  
+**CI at first review:** `chaos-postgres` **pass** on that head. Run: [36276399895](https://github.com/yellowgram/hooksteel/actions/runs/36276399895) (`# tests 54`, `# fail 0`). That run does not include the later `npm run demo:60s` step.  
+**First-review zip (replaced when these fixes were sealed):** `61ef4c29e3222b28d1f6e1b377e973812fde69c42f73dee0aa51334a9b3ab09c`. That digest matched `docs/CHECKSUMS.md` only at the first-review head. The digest to ship is the table in `docs/CHECKSUMS.md` after the pack.  
 **Polar listing:** not touched. This review does not list, publish, start KYC, or open Checkout.
 
-No product-code fixes. No P0. No P1. P2s below are not merge blockers.
+No edits to verify, handle, drain, migrations, adapters, `LICENSE`, or `src/outbox/replay.ts`. No sixth chaos file.
 
-This file is the review packet. It is **not** inside the sealed zip. `npm run pack:release` after this commit will not reprint `61ef4c29…`, because the script archives `HEAD` and this path is not in the omit list. Upload the committed zip. Do not rebuild unless the founder wants a new seal.
+This packet is inside the zip built from the commit that contains it. `docs/CHECKSUMS.md` and `release/` stay out of that zip.
 
 ---
 
 ## Merge recommendation
 
-**APPROVE WITH P2 DEFER.** Do not merge from this review. Founder greenlights.
+**Superseded by the verdict at the top: APPROVE.** The sentence below is the first-review recommendation, kept so the tables have their original context.
+
+**First-review recommendation: APPROVE WITH P2 DEFER.** Do not merge from this review. Founder greenlights.
 
 | Gate | Result |
 | --- | --- |
@@ -109,7 +122,7 @@ This file is the review packet. It is **not** inside the sealed zip. `npm run pa
 
 ### Not a blocker
 
-Rebuilding after **this review commit** changes the digest. That is the pack script working as documented, not a corrupt zip. The seal to ship is the file whose SHA is `61ef4c29e3222b28d1f6e1b377e973812fde69c42f73dee0aa51334a9b3ab09c`.
+The first-review seal was `61ef4c29e3222b28d1f6e1b377e973812fde69c42f73dee0aa51334a9b3ab09c`. Doc fixes after that head required a new seal. The digest to ship is `docs/CHECKSUMS.md`.
 
 ---
 
@@ -123,7 +136,7 @@ Not opened by this review.
 - A sixth chaos file, or a new demo suite
 - Edits to verify, handle, drain, migrations, adapters, `LICENSE`, or `src/outbox/replay.ts`
 - A Polar SDK dependency
-- Repacking `release/hooksteel-0.1.0.zip` to absorb this review file
+- Leaving the pre-fix zip in place after these doc fixes (the seal was rebuilt so the zip matches the fixed tree)
 
 ---
 

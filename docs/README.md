@@ -37,8 +37,10 @@
 
 ## Pattern sources
 
-- Primary Polar digital-kit shape: `/workspace/income/credit-ledger-shim/`
-- Ops/operator depth model: `/workspace/keel/MINIMUM_OPS_CHECKLIST.md`, `OPERATOR_NEEDS_BEYOND_CHECKLIST.md`
-- Product lock: `/workspace/income/digital-product-hunt/DECISION.md` §#1 HookSteel
+These notes name outside patterns. They are not paths in this repository, and they are not buyer install steps.
 
-*Last updated: 2026-09-26 ET — Stripe path merged at f25f235; Polar path merged at 09c4f88; replay CLI implement merged at c6a4012. Ready-gate docs (support, demo script, landing, zip + SHA) are in progress. Listing dark. Purchase-refund window 30 days.*
+- Polar digital-kit shape: credit-ledger minimum-support checklist
+- Operator depth: keel minimum-ops checklist
+- Product lock: digital-product-hunt decision #1 (HookSteel)
+
+*Last updated: 2026-09-26 ET — Stripe path merged at f25f235; Polar path merged at 09c4f88; replay CLI implement merged at c6a4012. Ready-gate docs are in this tree (`SUPPORT.md`, `docs/DEMO_60S.md`, `docs/LANDING.md`, `docs/POLAR_DELIVERABLES.md`, `docs/REFUND_GLOSSARY.md`, `docs/CHECKSUMS.md`, `CHANGELOG.md`). Listing stays dark until the founder-approved clip and the distribution post. Purchase-refund window 30 days.*

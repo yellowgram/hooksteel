@@ -5,7 +5,7 @@
 **Product:** HookSteel — Billing Event Reliability Kit — Postgres `billing_events` + outbox + dead_letters; Stripe + Polar signed handlers; transactional outbox worker; exactly 5 chaos scenarios; replay CLI; adapter stubs; Hookdeck honesty. Buyer’s Stripe/Polar + DB. Not hosted SaaS. Not Hookdeck.  
 **Income path:** One Polar SKU (Single-app at launch); private repo `yellowgram/hooksteel`; Release **v0.1.0** zip CoS-uploaded to Polar when ready gate clears (GitHub URL not public). Polar org **Suthirth solutions** — **dark until ready**.  
 **Goal:** Keep founder support near zero (≤2 h/week, 60-day Issues, no SLA) by making strangers self-serve before they open an Issue.  
-**Standing note:** Later implement work uses **3 design + 3 code-review** adversarial passes. **This pass is design-only** — docs under `/workspace/income/hooksteel/`; do not change kit application code here. Closing gaps from this checklist later also requires **3+3**.  
+**Standing note:** This checklist was written as design-only. The kit now lives in this repository. Do not change verify, handle, drain, migrations, adapters, `LICENSE`, or `src/outbox/replay.ts` from a checklist pass. Later product code still goes through **3 design + 3 code-review** passes.  
 **Models mirrored:** credit-ledger MINIMUM_SUPPORT (primary Polar digital-kit shape); keel MINIMUM_OPS (ops/supervision depth for worker + dead_letter triage).
 
 ---
@@ -128,17 +128,17 @@
 - **Credit-ledger conflation** (“include reserve/finalize”) — Separate product; killed from HookSteel min-support.
 - **India-ICP customization** — Global English only; killed.
 
-**Remaining gaps vs ready gate** (implement later under **3 design + 3 code-review**)
+**Ready-gate status** (the rows below used to say this work was not built; that is no longer true)
 
-| Ready-gate item | Checklist coverage | Gap |
+| Ready-gate item | Checklist coverage | Where it stands |
 | --- | --- | --- |
-| 5 chaos green on Postgres CI | §D.20 | **Code + CI not built yet** |
-| Stripe + Polar paths + fixtures | §A.1, §B, §D.21 | **Implement under 3+3; Stripe path next** |
-| Outbox worker + replay CLI | §B.10, §G.33–35 | **Design locked; code TBD** |
-| 60s demo | §A.3 | **Script/recording TBD** |
-| Hookdeck honesty | §C.15 | **Copy outline in MVP_SCOPE; landing TBD** |
-| Commercial license | §F.31 | **LICENSE file TBD at ship** |
-| Polar | §F + STATUS | **Dark until above green** |
+| 5 chaos green on Postgres CI | §D.20 | On `main`. `.github/workflows/chaos-postgres.yml` runs migrate, `npm run demo:60s`, and `npm test` on Postgres 16. |
+| Stripe + Polar paths + fixtures | §A.1, §B, §D.21 | On `main`. `handle` and `handlePolar`. No Polar SDK. |
+| Outbox worker + replay CLI | §B.10, §G.33–35 | On `main`. `npm run outbox:drain`, `replay:list`, `replay:dry-run`, `replay:execute`. |
+| 60s demo | §A.3 | Script is `docs/DEMO_60S.md`. `npm run demo:60s` runs chaos `01` and `05` only. The founder still has to film and approve the one clip. A recording is not in the repo. |
+| Hookdeck honesty | §C.15 | `README.md`, `docs/LANDING.md`, and `docs/POLAR_DELIVERABLES.md`. |
+| Commercial license | §F.31 | `LICENSE` is in the tree. Single-app. |
+| Polar | §F + STATUS | Listing stays dark until the founder-approved clip and the distribution post. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post. |
 
 ---
 
@@ -176,4 +176,4 @@
 | Support boundary | Kept: 60-day/no SLA/≤2h, out-of-scope pack, no Lock/Audit/Soft-WTP, license, refund toggle align (§F) |
 | — | **New (keel-inspired):** worker supervision + dead_letter triage + replay runbook + thin observability (§G) |
 
-*Last updated: 2026-09-26 ET — design-only; no code/git/outreach/PRs/Polar in this pass.*
+*Last updated: 2026-09-26 ET — checklist text started as design-only. Kit code, five chaos files, replay CLI, and ready-gate docs are in this repository. Listing stays dark. Purchase-refund window 30 days.*

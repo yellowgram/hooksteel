@@ -1,6 +1,6 @@
 # HookSteel
 
-**Billing Event Reliability Kit** — owned code so a Stripe webhook side effect runs after commit, once, even when Stripe delivers the same event again.
+**Billing Event Reliability Kit** — owned code for Stripe and Polar webhooks. The same billing event, delivered again, keeps one outbox row per adapter. Side effects run after that transaction commits. Pass the idempotency key through to any external API. Replay can run an adapter again on purpose.
 
 | | |
 |---|---|

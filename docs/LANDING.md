@@ -22,7 +22,7 @@ You run it on your database. Your Stripe account and your Polar account stay you
 
 ## What it is not
 
-Not a hosted webhook gateway. Not Hookdeck. Not a yellowgram-operated ingress. Not Lock, Audit, or implementation services. Not Soft-WTP. Not Credit Ledger. Not a client library you must install in order to verify Stripe.
+Not a hosted webhook gateway. Not Hookdeck. Not a yellowgram-operated ingress. Not Lock, Audit, or implementation services. Not Soft-WTP. Not Credit Ledger. Stripe signature checks use the `stripe` package this kit already depends on. Polar signature checks use Node `crypto`, not a Polar SDK.
 
 Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the download and private GitHub access only.
 
@@ -54,5 +54,7 @@ Polar checkout is **dark**. There is no purchase URL in this copy.
 ## Support
 
 Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
+
+The purchase-refund window is 30 days. That clock is not the 60-day support window, not the replay CLI, and not a Polar `order.refunded` webhook.
 
 [SUPPORT.md](../SUPPORT.md) · [Refund glossary](./REFUND_GLOSSARY.md)

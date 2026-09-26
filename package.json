@@ -2,7 +2,7 @@
   "name": "hooksteel",
   "version": "0.1.0",
   "private": true,
-  "description": "Billing event reliability kit: Stripe signed webhooks, same-transaction outbox, minimal drain.",
+  "description": "Billing event reliability kit: Stripe and Polar signed webhooks, same-transaction outbox, minimal drain.",
   "type": "module",
   "engines": {
     "node": ">=20"

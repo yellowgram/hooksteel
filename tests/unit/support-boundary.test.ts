@@ -44,6 +44,8 @@ test('purchase refund window is 30 days on the policy surfaces', () => {
     'docs/POLAR_DELIVERABLES.md',
     'CHANGELOG.md',
     'docs/STATUS.md',
+    'docs/LANDING.md',
+    '.github/ISSUE_TEMPLATE/bug_support.yml',
   ];
   for (const file of files) {
     const text = readFileSync(file, 'utf8');

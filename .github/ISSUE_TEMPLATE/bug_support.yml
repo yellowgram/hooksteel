@@ -10,6 +10,8 @@ body:
 
         If your request matches that out-of-scope sentence, do not open this Issue. Maintainer auto-reply (then close): the two paragraphs above. Full text: SUPPORT.md.
 
+        Purchase refunds are not Issues. The purchase-refund window is 30 days. Replay is not that refund. `order.refunded` does not claw back credit. See docs/REFUND_GLOSSARY.md.
+
         Chaos test names that count are listed in SUPPORT.md. Live-mode event ids and live secrets are not accepted.
 
   - type: input

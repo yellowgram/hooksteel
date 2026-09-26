@@ -13,5 +13,15 @@ Sold as Polar zip / private GitHub access. **Not** a hosted webhook gateway. **N
 | Contact | hello@yellowgram.dev |
 | Site | https://www.yellowgram.dev |
 
-Scaffold in progress. Polar listing stays dark until the ready gate in the product decision pack clears.
+## Design pack (review)
+
+Product decision docs live under [`docs/`](./docs/):
+
+- [STATUS](./docs/STATUS.md)
+- [MVP scope](./docs/MVP_SCOPE.md)
+- [MINIMUM_SUPPORT checklist](./docs/MINIMUM_SUPPORT_CHECKLIST.md)
+- [Buyer / operator needs](./docs/BUYER_NEEDS_BEYOND_CHECKLIST.md)
+- [**DESIGN — Stripe path + chaos (halt for review)**](./docs/DESIGN_STRIPE_PATH.md)
+
+Scaffold / application code lands after founder clears the Stripe-path design. Polar listing stays dark until the ready gate.
 

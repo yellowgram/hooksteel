@@ -1,0 +1,38 @@
+# HookSteel — design pack (agents)
+
+**Product:** HookSteel — Billing Event Reliability Kit  
+**This directory:** `/workspace/income/hooksteel/` — **design-only** docs for yellowgram agents and founder.  
+**Application / shippable kit code:** private GitHub repo [`yellowgram/hooksteel`](https://github.com/yellowgram/hooksteel) (empty until implement passes). **Do not** treat this folder as the buyer zip.
+
+---
+
+## What lives here vs the private repo
+
+| Here (`/workspace/income/hooksteel/`) | Private repo `yellowgram/hooksteel` |
+| --- | --- |
+| `STATUS.md` — GO, phase, next | Application source (schemas, handlers, worker, CLI, tests) |
+| `MVP_SCOPE.md` — In/Out/Later, schema sketch, ready gate | Buyer-facing `README`, `BUYER_START_HERE`, LICENSE, `.env.example` |
+| `MINIMUM_SUPPORT_CHECKLIST.md` — stranger self-serve bar (v3) | CI, Postgres chaos jobs, release zips |
+| `BUYER_NEEDS_BEYOND_CHECKLIST.md` — buyer/operator-owned needs | Polar delivery artifacts (when ready) |
+| `DESIGN_STRIPE_PATH.md` — Stripe path + 5 chaos (3 design iters; halt before implement) | — |
+| This `README.md` — agent pointer | — |
+
+**Not here:** git remotes for income docs, Polar KYC, live keys, Soft-WTP, Lock/Audit, hosted gateway.
+
+---
+
+## Standing rules
+
+- Soft-WTP **OFF**. No Lock / Audit / services on Polar.
+- Polar org (Suthirth solutions) stays **dark until ready gate** (see `MVP_SCOPE.md`).
+- Implement / close checklist gaps with **3 design + 3 code-review** adversarial passes (3+3 non-negotiable).
+- Stripe path **design done** (`DESIGN_STRIPE_PATH.md`); implement only after founder GO (see `STATUS.md`).
+- ICP: Global English only. Contact: hello@yellowgram.dev · www.yellowgram.dev.
+
+## Pattern sources
+
+- Primary Polar digital-kit shape: `/workspace/income/credit-ledger-shim/`
+- Ops/operator depth model: `/workspace/keel/MINIMUM_OPS_CHECKLIST.md`, `OPERATOR_NEEDS_BEYOND_CHECKLIST.md`
+- Product lock: `/workspace/income/digital-product-hunt/DECISION.md` §#1 HookSteel
+
+*Last updated: 2026-09-26 ET.*

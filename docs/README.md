@@ -8,7 +8,7 @@
 
 ## What lives here vs the private repo
 
-| Here (`/workspace/income/hooksteel/`) | Private repo `yellowgram/hooksteel` |
+| Here (`docs/` in this repo) | Private repo `yellowgram/hooksteel` |
 | --- | --- |
 | `STATUS.md` — GO, phase, next | Application source (schemas, handlers, worker, CLI, tests) |
 | `MVP_SCOPE.md` — In/Out/Later, schema sketch, ready gate | Buyer-facing `README`, `BUYER_START_HERE`, LICENSE, `.env.example` |

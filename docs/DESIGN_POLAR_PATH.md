@@ -5,7 +5,8 @@
 **Slice:** Polar signed webhook → same-txn `billing_events` (`provider='polar'`) + `outbox` → **existing** drain / replay. Verify + handle + fixtures + `examples/next` route + Polar adapter map.  
 **Base:** `main` @ `f25f235` (Stripe path merged). Schema, outbox, drain, replay, five chaos files, and the Stripe handler stay.  
 **Repo:** https://github.com/yellowgram/hooksteel  
-**This pass:** **Design only.** No application code. No Polar SDK forced into buyer apps. Soft-WTP OFF. No Lock/Audit/services. No hosted gateway. No Polar listing/KYC. Refund window stays deferred.  
+**This pass:** **Design only.** No application code. No Polar SDK forced into buyer apps. Soft-WTP OFF. No Lock/Audit/services. No hosted gateway. No Polar listing/KYC.  
+**Purchase-refund window (current policy):** **30 days**, founder lock 2026-09-26. See [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md). This Polar-path slice did not choose that number. Do not copy a rail default over 30 days. Listing stays dark. `order.refunded` clawback stays out of the kit.  
 **Standing practice:** 3 progressive adversarial **design** iterations in §2. **Founder GREENLIT** 2026-09-26. PQ1 and PQ2 are closed in §3. CoS PD1–PD4 are implement locks. **Implement is a separate later PR** — not this design change.  
 **Date:** 2026-09-26 ET  
 **Evidence read that day:** Polar delivery docs, Polar TypeScript SDK `webhooks.ts` on `master`, Standard Webhooks spec, Polar OpenAPI `2026-04`, Polar sandbox + events docs, Polar issue #13519.
@@ -468,7 +469,7 @@ Iteration 1 left the MAC as “HMAC-SHA256 the body with the secret.” Iteratio
 | Sixth chaos file, fuzz, or running all five themes under both HMAC schemes | Cap is five. Unit tests cover the second key. |
 | Rewriting `grant_credit` / adding `amount_net` as a second required field | `total_amount` maps onto `amount_total`. `net_amount` (pre-tax) is a different product choice and is not the default. |
 | Default-ignore `subscription_cycle` | Not documented as “do not fulfill.” Buyers opt out in config. |
-| `order.refunded` → automatic credit reversal | Refund **window** (14 vs 30) is deferred. Clawback logic is a new money path. |
+| `order.refunded` → automatic credit reversal | Clawback stays out of the kit. Purchase-refund window is **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). |
 | Slack/Discord delivery formats | Dashboard Raw is the integration. Other formats fail `invalid_payload`. |
 | Polished replay CLI, worker supervisor, Grafana | Replay mutation already shipped. This slice does not reopen it. |
 | Hosted gateway / yellowgram retry proxy “because Polar disables endpoints” | Kill criterion. Document the 10-strike rule instead. |
@@ -482,7 +483,7 @@ Iteration 1 left the MAC as “HMAC-SHA256 the body with the secret.” Iteratio
 
 ## (3) Open questions for founder
 
-**Founder GREENLIT.** No open product questions remain for this slice. PQ1 and PQ2 are answered locks. CoS findings PD1–PD4 from [`COS_POLAR_PATH_DESIGN_REVIEW.yaml`](./COS_POLAR_PATH_DESIGN_REVIEW.yaml) are accepted as implement locks. Refund window 14 vs 30 stays deferred.
+**Founder GREENLIT.** No open product questions remain for this slice. PQ1 and PQ2 are answered locks. CoS findings PD1–PD4 from [`COS_POLAR_PATH_DESIGN_REVIEW.yaml`](./COS_POLAR_PATH_DESIGN_REVIEW.yaml) are accepted as implement locks. Purchase-refund window is **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). This slice did not pick that number.
 
 ### PQ1 — CLOSED: `whsec_` only
 
@@ -518,7 +519,7 @@ Iteration 1 left the MAC as “HMAC-SHA256 the body with the secret.” Iteratio
 | --- | --- |
 | PQ1 secret prefix | **`whsec_` only.** |
 | PQ2 LICENSE | **Byte-identical** on the implement PR. Polar-org clause deferred. |
-| Refund window 14 vs 30 | **Still deferred.** Not a Polar-path blocker. |
+| Refund window | **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). Not a Polar-path blocker. This slice did not pick the number. |
 | Which HMAC keys | **Both**, per §1.1 and PD2. |
 | Livemode payload field | **Absent.** PD1 documents the unsigned column. Do not invent a field. |
 | HTTP 200 / 400 / 500 | Frozen in §1.4. |
@@ -548,7 +549,7 @@ Checklist items the Stripe slice already satisfies (Postgres CI, engines, zip/ch
 | §B.11 — no Polar SDK in the buyer app core | **Met.** This is the verify lock. |
 | §B.12 — buyer registers the endpoint; no Host-header tricks | **Met.** Raw format called out. IP list is a doc pointer, not a code gate. |
 | §C.14 troubleshooting item (2) Polar secret mix-up | **In the implement README outline** (§1.9): key era, `polar_whs_`, raw body, Raw vs Slack. |
-| §C.18 / §F.32 — purchase refund vs replay; 14 vs 30 | **Untouched.** Refund window stays deferred. Replay stays the CLI word. |
+| §C.18 / §F.32 — purchase refund vs replay | **30 days** in [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md). Replay stays the CLI word. This slice did not edit the glossary. |
 | §D.23 — idempotent adapter contract | **Inherited.** Same stubs, same `idempotency_key` shape. |
 | §F.31 — Single-app license one-liner | **Unchanged file.** |
 | §G — worker, dead letter, replay | **Inherited.** No Polar-specific worker. |
@@ -571,7 +572,7 @@ Ready-gate items still outside this slice: 60s demo recording, landing, checksum
 | Sixth chaos file or a new scenario name | MVP cap. Proof rides inside the five themes + unit tests. |
 | Hosted worker, yellowgram ingress, retry proxy | Not a gateway product |
 | Polar listing, KYC, sandbox-org setup, Soft-WTP, Lock, Audit, services | Dark / off |
-| Refund window 14 vs 30, and `order.refunded` clawback | Deferred. Persist the refund event as `ignored` only. |
+| `order.refunded` clawback | Stays out. Persist the event as `ignored` only. Purchase-refund window is **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). |
 | LICENSE rewrite, including a Polar-org Single-app gloss | Commercial text unchanged |
 | Deduping on `data.id` | Collides event types |
 | Default adapters on `order.updated`, `checkout.updated`, or `order.created` | Double-fulfill or unpaid grant (H2 spirit) |

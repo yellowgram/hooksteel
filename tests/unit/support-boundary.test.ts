@@ -60,7 +60,7 @@ test('purchase refund window is 30 days on the policy surfaces', () => {
 test('the 60s clip is one Stripe and Polar take, and Polar waits on distribution', () => {
   const clip = 'CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post.';
   const breath = 'use them for ingress; this is the outbox you keep';
-  for (const file of ['docs/DEMO_60S.md', 'docs/POLAR_DELIVERABLES.md', 'docs/STATUS.md', 'docs/LANDING.md']) {
+  for (const file of ['docs/DEMO_60S.md', 'docs/POLAR_DELIVERABLES.md', 'docs/STATUS.md', 'docs/LANDING.md', 'release/README.md']) {
     const text = readFileSync(file, 'utf8');
     assert.equal(text.includes(clip), true, file);
     assert.equal(text.includes(breath), true, file);

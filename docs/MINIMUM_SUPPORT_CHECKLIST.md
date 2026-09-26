@@ -16,7 +16,7 @@
 
 1. **Offline proof (≤10 min, no live Stripe/Polar network, no live keys)** — From the unzipped `v0.1.0` tree: `npm install → npm test` (or documented equivalent) green against **fixtures** that exercise Stripe + Polar signature verification paths with canned payloads/secrets. Document exact commands. Strangers must prove “same event 4× → one side effect” without booking the founder.
 2. **Postgres CI path documented beside offline** — Same suite (or the 5 chaos scenarios) also runs on Postgres in CI. README states: offline fast path proves logic; Postgres CI is the ship gate. Be honest if offline uses an embedded/test DB — do not claim SQLite file = production HA for the outbox worker.
-3. **60s demo script in-repo** — Scripted steps (or recorded demo checklist) that show duplicate delivery → one adapter execution. Demo must beat “ask Cursor + Stripe docs” on the outbox/rollback angle. Kill criterion if this cannot land.
+3. **60s demo script in-repo** — One clip, not two provider demos. Script: `docs/DEMO_60S.md`. Command: `npm run demo:60s` (existing chaos files `01-duplicate-delivery` and `05-db-rollback-mid-fulfillment` only; do not add a sixth chaos file). Same event four times → one side effect, rollback mid-fulfillment, Stripe and Polar in that same clip. Kill criterion: if that clip cannot beat the Stripe docs and the Hookdeck homepage, do not list. A Stripe-only or Polar-only recording is not the gate.
 4. **Optional live CLI paths (documented, not required for first 10 min)** — Stripe CLI `listen` + Polar test webhook docs for buyers who want real provider round-trips after fixtures go green. Card/`sk_test_` only; never require live mode for support eligibility.
 5. **Adapter stub graduation note in the happy path** — One short “you are done with stubs when…”: replace `grant_credit` / `send_email` / `invite_github` stubs with *your* implementations; keep idempotency keys; leave demo/no-op adapters out of production deploys.
 
@@ -114,8 +114,8 @@
 | Elevate Hookdeck honesty + known limits into listing-linked requirements | Wrong-buyer purchase → refund/support regardless of demo quality |
 | Add §G worker supervision + dead_letter triage + replay runbook + thin observability | Integrators assume webhook 200 = fulfillment done |
 | Out-of-scope auto-reply pack (hosted, Lock/Audit, Soft-WTP, live-key debug, fuzz expansion) | Enforces support boundary under phone-first hours |
-| Align Polar refund toggle with chosen 14–30 day window | **Founder flag:** rail default ≠ product policy |
-| 60s demo script as checklist item tied to kill criterion | Cannot beat Cursor → do not Polar |
+| Align Polar refund toggle with the purchase-refund window | **Founder lock 2026-09-26: 30 days.** See `docs/REFUND_GLOSSARY.md`. Do not copy a rail default over 30 days. |
+| 60s demo script as checklist item tied to kill criterion | One Stripe+Polar clip. If it cannot beat the Stripe docs and the Hookdeck homepage, do not list. |
 | Dual Stripe+Polar fixture paths called out in §A/§D | Single-provider kit fails DECISION differentiation |
 
 **Killed / demoted**

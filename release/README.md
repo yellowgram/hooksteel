@@ -1,6 +1,8 @@
 # Release asset
 
-`hooksteel-0.1.0.zip` is the file CoS uploads to GitHub Release `v0.1.0` and, later, to Polar. The product listing stays dark until the founder says otherwise.
+`hooksteel-0.1.0.zip` is the file CoS uploads to GitHub Release `v0.1.0` and, only after the gate below, to Polar.
+
+The listing stays dark until the founder-approved clip and the distribution post both exist. One clip, not two provider demos: same event four times → one side effect, rollback mid-fulfillment, Stripe and Polar in that same clip (`docs/DEMO_60S.md`). If that clip cannot beat the Stripe docs and the Hookdeck homepage, do not list. Then post where the burn already happened (X, Show HN, Stripe/Polar builder chats): "we double-provisioned after a 500." Same breath: use them for ingress; this is the outbox you keep. Only then is Polar the cash register. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post.
 
 The SHA-256 lives in `docs/CHECKSUMS.md`. That file is not inside the zip.
 

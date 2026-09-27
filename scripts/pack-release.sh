@@ -68,6 +68,7 @@ with zipfile.ZipFile(zip_path) as zf:
         print("zip comment was not pinned", file=sys.stderr)
         Path(zip_path).unlink(missing_ok=True)
         sys.exit(1)
+    payloads = {path: zf.read(path) for path in names if not path.endswith("/")}
 
 def base(path: str) -> str:
     return path.rstrip("/").split("/")[-1]
@@ -91,7 +92,7 @@ for path in names:
     if b.endswith(".zip"):
         bad.append(("nested-zip", path))
     if not path.endswith("/"):
-        data = zf.read(path)
+        data = payloads[path]
         checkout_host = b"buy" + b".polar.sh"
         checkout_id = b"polar" + b"_cl_"
         if checkout_host in data or checkout_id in data:

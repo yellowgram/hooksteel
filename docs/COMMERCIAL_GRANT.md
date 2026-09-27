@@ -42,10 +42,10 @@ With this grant, the named organization may use the named tag commercially as ab
 
 Tags and zips already shipped under an older license (for example MIT, or a prior custom commercial license) are **not rewritten**. Rights already granted for those sealed artifacts are not clawed back. New purchases and new tags use this grant + PolyForm Noncommercial fence.
 
+| Tag | Sealed zip SHA-256 | License on that artifact |
+| --- | --- | --- |
+| `v0.1.0` | `dddcfe5dca204cd92b2c1b2a10adbb99515d0552a4a5947693aff34a29573a65` | Prior custom commercial kit license. Rights for that sealed artifact are not clawed back. |
+
 ## Operator responsibility
 
 HookSteel is provided **as is**. You remain responsible for production correctness, compliance, and decisions made from its outputs. This is not legal, tax, or accounting advice.
-
----
-
-*Fill placeholders before merge: PRODUCT_NAME, SUPPORT_WINDOW, PRICE_NOTE. Keep Soft-WTP off. Keep checkout URLs out of README/zip.*

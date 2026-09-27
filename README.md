@@ -218,7 +218,7 @@ If migrate fails, fix the database and re-run. Do not hand-edit a file that only
 5. Use both when — Hookdeck in front, HookSteel inside (optional; document; do not require).
 6. Do not buy HookSteel if — you want yellowgram to host your webhooks.
 
-Landing copy with the same six points: [docs/LANDING.md](./docs/LANDING.md). That file is not a deployed site. The Polar call to action stays a placeholder while the listing is dark.
+Landing copy with the same six points: [docs/LANDING.md](./docs/LANDING.md). That file is not a deployed site. The Polar listing is live and sells `hooksteel-0.1.1.zip` (founding $89 → list $129; SHA-256 in `docs/CHECKSUMS.md`). No Polar checkout URL in this README.
 
 ## Known limits
 

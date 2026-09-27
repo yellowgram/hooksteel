@@ -10,7 +10,7 @@ License fence patch. No product behavior change. Not a hosted gateway. Soft-WTP 
 - Paid commercial production use is the Suthirth Commercial Grant in `docs/COMMERCIAL_GRANT.md`: one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant.
 - Price and refund lock is `docs/COMMERCIAL_LOCK.md`. Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Purchase-refund window is 30 days.
 - The fence does not claw back rights on already-distributed `hooksteel-0.1.0.zip` copies. That zip is not rewritten. Tag `v0.1.0` is not moved.
-- `release/hooksteel-0.1.1.zip` is packed on the branch. GitHub Release tag `v0.1.1` is not cut in the License Gate freeze-to-land window. Live Polar stays on 0.1.0 until CoS republish after this fence is on `main`.
+- `release/hooksteel-0.1.1.zip` is packed on the branch. GitHub Release tag `v0.1.1` is not created. This change does not alter the Polar product.
 
 ### Break notes
 

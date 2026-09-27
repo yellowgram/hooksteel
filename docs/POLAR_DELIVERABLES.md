@@ -8,9 +8,9 @@ The purchase-refund window is locked at 30 days. Soft-WTP is off. This packet is
 
 Public license: PolyForm Noncommercial 1.0.0 in `LICENSE` (source-available; not OSI open source; not MIT). Paid commercial production use: the Suthirth Commercial Grant in `docs/COMMERCIAL_GRANT.md`. Price lock: `docs/COMMERCIAL_LOCK.md`. No coupon.
 
-`npm run pack:release` writes `release/hooksteel-0.1.1.zip`. It does not rewrite `release/hooksteel-0.1.0.zip`. Do not create GitHub Release tag `v0.1.1` in the License Gate freeze-to-land window. Do not merge until LaunchGate CR and License Gate freeze.
+`npm run pack:release` writes `release/hooksteel-0.1.1.zip`. It does not rewrite `release/hooksteel-0.1.0.zip`. This pull request does not create GitHub Release tag `v0.1.1`.
 
-Live Polar stays on `hooksteel-0.1.0.zip` until CoS republish after this fence is on `main`. Do not unlist. Do not edit the Polar product from this pull request. No checkout URL belongs in this packet, the README, or the zip.
+This pull request does not change the Polar product. It does not request a freeze, an unlist, a republish, a price change, or a visibility change. Three confirms are still open. No checkout URL belongs in this packet, the README, or the zip.
 
 ## Do not list
 
@@ -50,7 +50,7 @@ Do not paste this into a visible product while the listing is dark, there is no 
 
 HookSteel is owned code for Stripe and Polar webhooks. The same billing event four times still produces one side effect. The outbox row is written in the same database transaction as the event. Adapters run after that transaction commits.
 
-You get a private GitHub repository and a zip. The live Polar file stays `hooksteel-0.1.0.zip` until CoS republish after the 0.1.1 license fence is on `main`. The fence pack is `hooksteel-0.1.1.zip`. Do not unlist from this packet. You run Postgres. Your Stripe account and your Polar account stay yours. There is no hosted webhook gateway in this purchase.
+You get a private GitHub repository and a zip. The sealed file is `hooksteel-0.1.0.zip`. The fence pack on this branch is `hooksteel-0.1.1.zip`. This packet does not change the Polar product. You run Postgres. Your Stripe account and your Polar account stay yours. There is no hosted webhook gateway in this purchase.
 
 **Price:** Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. Soft-WTP is off. The purchase-refund window is 30 days. **License:** PolyForm Noncommercial 1.0.0 for the public tree (source-available; not OSI open source; not MIT). Paid commercial production use is the Suthirth Commercial Grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See `LICENSE` and `docs/COMMERCIAL_GRANT.md`.
 
@@ -58,7 +58,7 @@ You get a private GitHub repository and a zip. The live Polar file stays `hookst
 
 **Known limits:** exactly five chaos scenarios (no fuzzing); no hosted gateway; adapters are stubs you replace; uniqueness is per provider event id, not a global total order across providers; Polar `order.refunded` is stored and ignored (no credit clawback); the kit does not certify PCI, charge correctness, or tax. Patches are not a perpetual rewrite. Soft-WTP is off.
 
-**Delivery:** access to the private repository `yellowgram/hooksteel`, plus the zip. Until CoS republish after the fence is on `main`, the live file stays `hooksteel-0.1.0.zip`. The fence pack is `hooksteel-0.1.1.zip`. Do not unlist. The zip has no `node_modules`, no `.env`, no `.git`, and no database dump. It does include `.env.example`. Confirm the SHA-256 in the file description against the matching row in `docs/CHECKSUMS.md` (that checksum file is published beside the zip, not inside it). Do not put a checkout URL in the file description.
+**Delivery:** access to the private repository `yellowgram/hooksteel`, plus the zip. The sealed file is `hooksteel-0.1.0.zip`. The fence pack on this branch is `hooksteel-0.1.1.zip`. This packet does not change the Polar product. The zip has no `node_modules`, no `.env`, no `.git`, and no database dump. It does include `.env.example`. Confirm the SHA-256 in the file description against the matching row in `docs/CHECKSUMS.md` (that checksum file is published beside the zip, not inside it). Do not put a checkout URL in the file description.
 
 **Support:** Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
 
@@ -81,12 +81,12 @@ Same six points: `README.md` and `docs/LANDING.md`.
 
 ## How delivery works
 
-Live Polar, until CoS republish after the fence is on `main`, is still version `0.1.0`:
+The sealed artifact is version `0.1.0`:
 
 1. Private GitHub: `yellowgram/hooksteel`. Not a public clone URL.
-2. Sealed file: `release/hooksteel-0.1.0.zip`. Do not rewrite it. Do not move tag `v0.1.0`. Buyers of that release should see the name `hooksteel-0.1.0.zip`.
+2. Sealed file: `release/hooksteel-0.1.0.zip`. This pull request does not rewrite it and does not move tag `v0.1.0`. Buyers of that release should see the name `hooksteel-0.1.0.zip`.
 
-The license-fence pack on this branch is `release/hooksteel-0.1.1.zip`. Do not attach it to the live Polar product from this pull request. Do not create GitHub Release tag `v0.1.1` yet. Do not unlist.
+The license-fence pack on this branch is `release/hooksteel-0.1.1.zip`. This pull request does not attach it to Polar and does not create GitHub Release tag `v0.1.1`.
 
 Build (already run for the file on this branch; re-run only to reproduce):
 

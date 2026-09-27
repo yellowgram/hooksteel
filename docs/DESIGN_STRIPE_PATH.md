@@ -8,7 +8,7 @@
 **Standing practice:** 3 progressive adversarial **design** iterations (cycle 1) + cycle-2 CoS locks merged after founder greenlight. Code reviews come later after implementation.  
 **Date:** 2026-09-26 ET  
 **Cycle 2:** Locks merged into §1. Founder GREENLIT. Implement unlocked under 3 code-review passes on `yellowgram/hooksteel`.  
-**Purchase-refund window (current policy):** **30 days**, founder lock 2026-09-26. See [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md). This Stripe slice did not choose that number. Do not copy a rail default over 30 days. Listing stays dark.
+**Purchase-refund window (current policy):** **14 days**, founder lock 2026-09-26. See [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md). This Stripe slice did not choose that number. Do not copy a rail default over 14 days. Listing stays dark.
 
 ---
 
@@ -22,7 +22,7 @@
 | Minimal outbox drain (enough for chaos #5 + duplicate proof) | Polar listing / KYC |
 | Fixture-based tests + **exactly 5** chaos scenarios green; Postgres CI target documented | Full production worker supervision polish beyond minimal drain |
 | Adapter stubs: `grant_credit` / `send_email` / `invite_github` | Soft-WTP, Lock, Audit, services |
-| `.env.example`, commercial LICENSE stub (credit-ledger tone), README section for Stripe path | Purchase-refund window is **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). This slice did not pick it. |
+| `.env.example`, commercial LICENSE stub (credit-ledger tone), README section for Stripe path | Purchase-refund window is **14 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). This slice did not pick it. |
 
 **Schema must not block Polar:** `provider` column includes `'polar'`; Polar verify can land next without migration rewrites.
 
@@ -523,7 +523,7 @@ Founder GREENLIT cycle-2 locks. When implement runs under 3 code-review passes, 
 - Fuzzing or a 6th chaos scenario (R11).  
 - Multi-app license SKU.  
 - Credit Ledger product surface.  
-- Purchase-refund window is **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). This slice did not pick it. Not a Stripe-path blocker.  
+- Purchase-refund window is **14 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). This slice did not pick it. Not a Stripe-path blocker.  
 - Global total-order guarantees across events/providers.  
 - Warranty of billing correctness / PCI certification via outbox (R9).  
 - SERIALIZABLE isolation (R1), LISTEN/NOTIFY required (R2), `lease_expires_at` column (R3), parent `failed` on adapter throw (R4).  
@@ -587,7 +587,7 @@ Founder GREENLIT cycle-2 locks. When implement runs under 3 code-review passes, 
 | LICENSE + `.env.example` + README Stripe section in-slice | Buyer-facing honesty early |
 | Adapter map is **config**, stubs are obvious no-ops | Stub graduation (BUYER_NEEDS) |
 | Explicit non-goals list + Hookdeck pointer in README outline | Kill criterion #5 deflector |
-| Purchase-refund window **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)); this slice did not pick it | Not a design blocker |
+| Purchase-refund window **14 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)); this slice did not pick it | Not a design blocker |
 
 **Rejected in Iter 3:** Building Polar verify “while we’re here.” Building Grafana dashboards. Abstract message-bus beyond Postgres outbox. Auth product for adapters. India-ICP copy. Soft-WTP waitlist hooks. Cloud-agent implement command packs inside this design file (halt gate).
 
@@ -597,7 +597,7 @@ Founder GREENLIT cycle-2 locks. When implement runs under 3 code-review passes, 
 
 **ZERO open product questions for this slice** except:
 
-- Purchase-refund window is **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). Not open inside this slice. Do not reopen it here.
+- Purchase-refund window is **14 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). Not open inside this slice. Do not reopen it here.
 
 ### CLOSED at recommended answers (founder greenlight of cycle-2 locks)
 

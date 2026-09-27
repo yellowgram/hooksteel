@@ -2,7 +2,7 @@
 
 **Listing stays dark.** Do not publish. Do not start KYC. Do not open Checkout. Do not attach this zip to a live product. Org: **Suthirth solutions**. Repo: private `yellowgram/hooksteel`. Contact: hello@yellowgram.dev · https://www.yellowgram.dev
 
-The purchase-refund window is locked at 30 days. Soft-WTP is off. This packet is the copy and the file handoff. It is not permission to publish.
+The purchase-refund window is locked at 14 days. Soft-WTP is off. This packet is the copy and the file handoff. It is not permission to publish.
 
 ## License fence (0.1.1)
 
@@ -52,7 +52,7 @@ HookSteel is owned code for Stripe and Polar webhooks. The same billing event fo
 
 You get a private GitHub repository and a zip. The sealed file is `hooksteel-0.1.0.zip`. The fence pack on this branch is `hooksteel-0.1.1.zip`. This packet does not change the Polar product. You run Postgres. Your Stripe account and your Polar account stay yours. There is no hosted webhook gateway in this purchase.
 
-**Price:** Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. Soft-WTP is off. The purchase-refund window is 30 days. **License:** PolyForm Noncommercial 1.0.0 for the public tree (source-available; not OSI open source; not MIT). Paid commercial production use is the Suthirth Commercial Grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See `LICENSE` and `docs/COMMERCIAL_GRANT.md`.
+**Price:** Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. Soft-WTP is off. The purchase-refund window is 14 days. **License:** PolyForm Noncommercial 1.0.0 for the public tree (source-available; not OSI open source; not MIT). Paid commercial production use is the Suthirth Commercial Grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See `LICENSE` and `docs/COMMERCIAL_GRANT.md`.
 
 **Use Hookdeck when** you need hosted ingress, fan-out, a team dashboard, or you do not want to run an outbox worker. **Use HookSteel when** the fear is a side effect that already ran inside a transaction that then rolls back, and you want that code in your repo for Stripe and Polar. Use both only if you want Hookdeck in front and this kit inside. Do not buy HookSteel if you want yellowgram to host your webhooks.
 
@@ -64,7 +64,7 @@ You get a private GitHub repository and a zip. The sealed file is `hooksteel-0.1
 
 **Not included:** Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the download and private GitHub access only.
 
-A Polar purchase refund, the replay CLI, and a provider `order.refunded` webhook are three different things. The purchase-refund window is 30 days. Replay is not that refund. `order.refunded` is stored and ignored and does not claw back credit.
+A Polar purchase refund, the replay CLI, and a provider `order.refunded` webhook are three different things. The purchase-refund window is 14 days. Replay is not that refund. `order.refunded` is stored and ignored and does not claw back credit.
 
 ---
 
@@ -159,12 +159,12 @@ Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes
 2. Founding window: first **10 licenses** OR **30 days after go-live**, whichever comes first; then set that same product to **$129**.
 3. One SKU. Do not run two Polar products. Do not invent a coupon. Do not open a second product at $129 while the $89 product is still up.
 4. Soft-WTP stays off. No waitlist benefit. No "email me forever updates" benefit.
-5. Purchase-refund window is **30 days**. Set the Polar refund toggle to 30 days before the listing goes light. Do not publish to set it.
+5. Purchase-refund window is **14 days**. Set the Polar refund toggle to 14 days before the listing goes light. Do not publish to set it.
 6. Stop if the clip, the post, or the typed go-live is missing. Do not start KYC or Checkout to get ahead of that word.
 
 ## Refund toggle
 
-**30 days. Founder lock 2026-09-26.** Before the listing goes light, set the Polar refund toggle to 30 days. You may set that toggle on the unpublished product. Do not publish. Do not start KYC or Checkout. Do not leave a rail default that is not 30 days. Listing stays dark.
+**14 days. Founder lock 2026-09-26.** Before the listing goes light, set the Polar refund toggle to 14 days. You may set that toggle on the unpublished product. Do not publish. Do not start KYC or Checkout. Do not leave a rail default that is not 14 days. Listing stays dark.
 
 Glossary: `docs/REFUND_GLOSSARY.md`.
 
@@ -192,7 +192,7 @@ HookSteel 0.1.0 — Billing Event Reliability Kit
 Stripe + Polar signed webhooks, same-transaction outbox, drain, replay CLI, five Postgres chaos scenarios.
 0.1.0 zip: commercial kit terms inside that sealed zip. Do not rewrite this release as PolyForm.
 Not a hosted gateway. Soft-WTP off.
-Purchase-refund window: 30 days. That is not the replay CLI. `order.refunded` does not claw back credit.
+Purchase-refund window: 14 days. That is not the replay CLI. `order.refunded` does not claw back credit.
 
 SHA-256 (hooksteel-0.1.0.zip): <paste the sealed 0.1.0 row in docs/CHECKSUMS.md>
 
@@ -200,7 +200,7 @@ Changelog: CHANGELOG.md
 Support: SUPPORT.md
 ```
 
-6. Stop. Do not upload the asset to a **visible** Polar product. Do not start KYC or Checkout. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post. Listing stays dark until the founder types go-live. The purchase-refund window is already 30 days. Set the Polar refund toggle to 30 days before the listing goes light. Do not publish in order to set it. Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Soft-WTP stays off.
+6. Stop. Do not upload the asset to a **visible** Polar product. Do not start KYC or Checkout. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post. Listing stays dark until the founder types go-live. The purchase-refund window is already 14 days. Set the Polar refund toggle to 14 days before the listing goes light. Do not publish in order to set it. Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Soft-WTP stays off.
 
 ## Still dark
 

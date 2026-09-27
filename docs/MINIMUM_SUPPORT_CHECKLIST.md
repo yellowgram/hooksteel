@@ -37,7 +37,7 @@
 15. **Hookdeck honesty section stays prominent** — Same outline as MVP_SCOPE (ingress vs in-app outbox). Polar listing links it. Deflects “make this hosted” Issues into a product decision, not a free feature build. Kill criterion if buyers demand hosted gateway → stop; do not pivot to services on Polar.
 16. **Known limits block required (ship + listing)** — Exactly 5 chaos scenarios (no fuzz); public license PolyForm Noncommercial 1.0.0 plus the Suthirth Commercial Grant (one organization, the purchased named tag; prior Single-app kit language folds into that one-organization grant); no hosted gateway; side effects are buyer-owned adapters; ordering policy for out-of-order is documented as “unique-id + outbox,” not global total order across providers; 12mo patches (when stated) ≠ perpetual rewrite. Listing must not contradict README. Not OSI open source. Not MIT.
 17. **Issue template that forces repro** — Require: kit semver / zip checksum or tag `v0.1.0`, Node version, OS, DB engine, failing **test name** (prefer chaos scenario name) or provider **test-mode** event id, redacted env **booleans only** (no secrets). Missing repro → auto comment + close after N days. No live secrets pasted — template states this.
-18. **Purchase refund vs provider “replay” glossary** — Kit purchase refund window is **30 days** (founder lock 2026-09-26). CoS sets the Polar refund toggle to 30 days before the listing goes light. Listing stays dark. “Replay” = CLI re-drive of billing events / dead letters — not a money refund. Two different words; one support fire if conflated. `order.refunded` stays ignored and does not claw back credit.
+18. **Purchase refund vs provider “replay” glossary** — Kit purchase refund window is **14 days** (founder lock 2026-09-26). CoS sets the Polar refund toggle to 14 days before the listing goes light. Listing stays dark. “Replay” = CLI re-drive of billing events / dead letters — not a money refund. Two different words; one support fire if conflated. `order.refunded` stays ignored and does not claw back credit.
 19. **Private-repo Issues access path documented for CoS** — Buyers need a written way onto Issues for 60 days (Polar GitHub benefit auto-invite, collaborator invite, or handoff). Without this, “support” is a Polar chat that is not in the product boundary. Repo: `yellowgram/hooksteel`.
 
 ### D. Tests / CI that keep strangers off your calendar
@@ -60,7 +60,7 @@
 29. **Out-of-scope auto-reply ready** — Hosted gateway / yellowgram-operated ingress; Hookdeck feature parity as a service; Lock/Audit; Soft-WTP outreach; implementation services; “debug my production live keys”; India-local ICP customization; adding unbounded chaos/fuzz as free work; Credit Ledger product conflation. Template closes these without founder improvisation.
 30. **No Lock / Audit / Soft-WTP / services doors on Polar** — Listing and docs state: this product is the download + private GitHub access only. Do not advertise services that are not sold. Polar AUP: human services not primary offering.
 31. **License one-liner visible** — Public license is PolyForm Noncommercial 1.0.0 (`LICENSE`; source-available; not OSI open source; not MIT). Paid commercial production use is the Suthirth Commercial Grant (`docs/COMMERCIAL_GRANT.md`): one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. No resale as competing boilerplate. No warranty for billing correctness in buyer prod. One SKU. A second organization is outside the grant.
-32. **Purchase refund policy aligned with Polar toggle** — **Founder lock 2026-09-26: 30 days.** README, `BUYER_START_HERE`, `docs/REFUND_GLOSSARY.md`, and `docs/POLAR_DELIVERABLES.md` state 30 days. CoS sets the Polar refund toggle to 30 days before the listing goes light. Do not publish to set it. Do not leave a rail default that is not 30 days. Listing stays dark.
+32. **Purchase refund policy aligned with Polar toggle** — **Founder lock 2026-09-26: 14 days.** README, `BUYER_START_HERE`, `docs/REFUND_GLOSSARY.md`, and `docs/POLAR_DELIVERABLES.md` state 14 days. CoS sets the Polar refund toggle to 14 days before the listing goes light. Do not publish to set it. Do not leave a rail default that is not 14 days. Listing stays dark.
 
 ### G. Ops: outbox worker supervision, dead_letter triage, replay runbook
 
@@ -114,7 +114,7 @@
 | Elevate Hookdeck honesty + known limits into listing-linked requirements | Wrong-buyer purchase → refund/support regardless of demo quality |
 | Add §G worker supervision + dead_letter triage + replay runbook + thin observability | Integrators assume webhook 200 = fulfillment done |
 | Out-of-scope auto-reply pack (hosted, Lock/Audit, Soft-WTP, live-key debug, fuzz expansion) | Enforces support boundary under phone-first hours |
-| Align Polar refund toggle with the purchase-refund window | **Founder lock 2026-09-26: 30 days.** See `docs/REFUND_GLOSSARY.md`. Do not copy a rail default over 30 days. |
+| Align Polar refund toggle with the purchase-refund window | **Founder lock 2026-09-26: 14 days.** See `docs/REFUND_GLOSSARY.md`. Do not copy a rail default over 14 days. |
 | 60s demo script as checklist item tied to kill criterion | One Stripe+Polar clip. If it cannot beat the Stripe docs and the Hookdeck homepage, do not list. |
 | Dual Stripe+Polar fixture paths called out in §A/§D | Single-provider kit fails DECISION differentiation |
 
@@ -176,4 +176,4 @@
 | Support boundary | Kept: 60-day/no SLA/≤2h, out-of-scope pack, no Lock/Audit/Soft-WTP, license, refund toggle align (§F) |
 | — | **New (keel-inspired):** worker supervision + dead_letter triage + replay runbook + thin observability (§G) |
 
-*Last updated: 2026-09-26 ET — checklist text started as design-only. Kit code, five chaos files, replay CLI, and ready-gate docs are in this repository. Listing stays dark. Purchase-refund window 30 days.*
+*Last updated: 2026-09-26 ET — checklist text started as design-only. Kit code, five chaos files, replay CLI, and ready-gate docs are in this repository. Listing stays dark. Purchase-refund window 14 days.*

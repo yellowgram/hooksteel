@@ -177,7 +177,7 @@ npm run replay:execute -- <dead_letter_id>
 npm run outbox:drain -- --once
 ```
 
-**Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. **Replay is not a Polar purchase refund.** A Polar refund returns the money paid for this kit. The purchase-refund window is 30 days. `order.refunded` stays ignored and does not claw back credit. The three names are separated in [docs/REFUND_GLOSSARY.md](./docs/REFUND_GLOSSARY.md).
+**Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. **Replay is not a Polar purchase refund.** A Polar refund returns the money paid for this kit. The purchase-refund window is 14 days. `order.refunded` stays ignored and does not claw back credit. The three names are separated in [docs/REFUND_GLOSSARY.md](./docs/REFUND_GLOSSARY.md).
 
 **Inspect** is `replay:list`. Read `reason`, `adapter`, and `replayed_at`. `replayed_at: null` is open. Rows that already have `replayed_at` set stay in the list. v0.1 drain writes `max_attempts` and `poison`. `timeout` and `adapter_error` are reserved and this drain does not write them.
 
@@ -367,7 +367,7 @@ Not a hosted gateway. Soft-WTP is off. No coupon. Price and refund lock: [docs/C
 
 - [SUPPORT](./SUPPORT.md) — 60-day boundary
 - [60s demo script](./docs/DEMO_60S.md) — script only; founder films later
-- [Refund glossary](./docs/REFUND_GLOSSARY.md) — 30-day purchase refund, replay CLI, and `order.refunded`
+- [Refund glossary](./docs/REFUND_GLOSSARY.md) — 14-day purchase refund, replay CLI, and `order.refunded`
 - [Landing copy](./docs/LANDING.md) — Hookdeck honesty; not a deployed site
 - [Changelog](./CHANGELOG.md) · [Checksums](./docs/CHECKSUMS.md)
 - [Polar deliverables (CoS, listing stays dark)](./docs/POLAR_DELIVERABLES.md)

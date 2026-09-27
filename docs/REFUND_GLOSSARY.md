@@ -2,7 +2,7 @@
 
 Three different words. Mixing them up is a support fire.
 
-The purchase-refund window is **30 days** (founder lock 2026-09-26). CoS sets the Polar refund toggle to 30 days before the listing goes light. Listing stays dark. Do not publish from this page. Do not copy a different rail default over 30 days.
+The purchase-refund window is **14 days** (founder lock 2026-09-26). CoS sets the Polar refund toggle to 14 days before the listing goes light. Listing stays dark. Do not publish from this page. Do not copy a different rail default over 14 days.
 
 Support length is a separate clock: GitHub Issues for 60 days from purchase (`SUPPORT.md`). That is not a money-back window.
 
@@ -11,7 +11,7 @@ Support length is a separate clock: GitHub Issues for 60 days from purchase (`SU
 Money returned for buying the HookSteel kit on Polar (org **Suthirth solutions**, when a listing exists).
 
 - It is a Polar dashboard action on the **kit order**.
-- The window is **30 days**. Before the listing goes light, CoS sets the Polar refund toggle to 30 days. Do not turn the listing on to do that.
+- The window is **14 days**. Before the listing goes light, CoS sets the Polar refund toggle to 14 days. Do not turn the listing on to do that.
 - It does not run the replay CLI.
 - It does not delete `billing_events` rows in the buyer's database.
 
@@ -40,6 +40,6 @@ v0.1 stores `order.refunded` as `ignored` (empty adapter map). It does not claw 
 
 | What the person said | What it is |
 | --- | --- |
-| "Refund my $89" / "I want my money back for the kit" | Polar purchase refund. Window is 30 days. Not an Issue, and not the CLI. |
+| "Refund my $89" / "I want my money back for the kit" | Polar purchase refund. Window is 14 days. Not an Issue, and not the CLI. |
 | "Replay this dead letter" / `npm run replay:execute` | Replay CLI. No money moves. |
 | "The customer's order was refunded" / Polar sends `order.refunded` | Provider webhook. Ignored in v0.1. No credit clawback. |

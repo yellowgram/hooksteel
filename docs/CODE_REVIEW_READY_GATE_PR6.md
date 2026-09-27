@@ -2,7 +2,7 @@
 
 **Verdict after the fix passes: APPROVE.** The tables below are the review as first written. Every in-slice row was then fixed on this branch before the zip seal. Do not treat a "Defer" cell as open work.
 
-**Purchase-refund window stays 30 days. Listing stays dark. Do not merge from this file. Do not list on Polar.**
+**Purchase-refund window stays 14 days. Listing stays dark. Do not merge from this file. Do not list on Polar.**
 
 The SHA-256 of `release/hooksteel-0.1.0.zip` is the table in `docs/CHECKSUMS.md` (that file is not inside the zip). `npm run pack:release` reprints that digest when the only later changes are `docs/CHECKSUMS.md` and `release/`.
 
@@ -44,16 +44,16 @@ This packet is inside the zip built from the commit that contains it. `docs/CHEC
 
 ## CR1 — Content and lock fidelity
 
-**Lens:** Does the ready-gate copy match the founder lock (one dual-provider clip, distribution before Polar, 30-day purchase refund, Soft-WTP off, listing dark)?
+**Lens:** Does the ready-gate copy match the founder lock (one dual-provider clip, distribution before Polar, 14-day purchase refund, Soft-WTP off, listing dark)?
 
-**Attack thesis:** A docs pack can say "listing dark" in the CoS packet and still leave a second page that says list now, 14 days, Soft-WTP, or a Stripe-only demo.
+**Attack thesis:** A docs pack can say "listing dark" in the CoS packet and still leave a second page that says list now, a purchase-refund window other than 14 days, Soft-WTP, or a Stripe-only demo.
 
 ### What holds
 
 - `docs/DEMO_60S.md`, `docs/POLAR_DELIVERABLES.md`, `docs/LANDING.md`, and `docs/STATUS.md` all carry the same three locks: one continuous Stripe+Polar clip, kill if it cannot beat the Stripe docs and the Hookdeck homepage, and "CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post." `tests/unit/support-boundary.test.ts` asserts that sentence, the Hookdeck line, and `npm run demo:60s` on those four files. CI ok 50 is that test.
 - `package.json` `demo:60s` is only `tests/chaos/01-duplicate-delivery.test.ts` and `tests/chaos/05-db-rollback-mid-fulfillment.test.ts`. Five chaos files remain. No sixth suite.
 - Each of those two files runs Stripe, then Polar. The four narrated names match the `test()` titles exactly, including `4×`.
-- Purchase-refund window is **30 days** on `README.md`, `BUYER_START_HERE.md`, `docs/REFUND_GLOSSARY.md`, `SUPPORT.md`, `docs/POLAR_DELIVERABLES.md`, `CHANGELOG.md`, and `docs/STATUS.md`. Those files do not say `14 days` or `14–30`. The unit test locks that. Support stays a separate 60-day Issues clock. Replay and `order.refunded` are named as not that refund.
+- Purchase-refund window is **14 days** on `README.md`, `BUYER_START_HERE.md`, `docs/REFUND_GLOSSARY.md`, `SUPPORT.md`, `docs/POLAR_DELIVERABLES.md`, `CHANGELOG.md`, `docs/STATUS.md`, and `docs/COMMERCIAL_LOCK.md`. Those files do not say the purchase-refund window is `30 days` or `14–30`. Founding-price text may still say 30 days after go-live. The unit test locks the purchase-refund number. Support stays a separate 60-day Issues clock. Replay and `order.refunded` are named as not that refund.
 - Soft-WTP is off on the listing draft, landing, changelog, status, and demo footer. No Lock, Audit, hosted gateway, or consulting bump. No "list now".
 - Distribution order is clip → X / Show HN / builder chats ("we double-provisioned after a 500", Hookdeck honesty in the same breath) → Polar as cash register. Same order in the demo script, the Polar packet, landing, and status next-steps.
 
@@ -62,7 +62,7 @@ This packet is inside the zip built from the commit that contains it. `docs/CHEC
 | ID | Severity | File | Summary | Recommendation |
 | --- | --- | --- | --- | --- |
 | CR1-P2-001 | P2 | `docs/MINIMUM_SUPPORT_CHECKLIST.md` | §A.3 still says the demo must beat "ask Cursor + Stripe docs". It does not require one Stripe+Polar clip or the Hookdeck homepage. This PR edited the refund lines in the same file and left this kill sentence. The CoS runbook (the four files above) has the locked bar. | Defer. Not a merge blocker. Optional later: one sentence pointing §A.3 at `docs/DEMO_60S.md`. |
-| CR1-P2-002 | P2 | `docs/DESIGN_POLAR_PATH.md`, `docs/DESIGN_REPLAY_CLI.md` | Design-time text still says the refund window is deferred and "14 vs 30" in the present tense (Polar path §3 non-goals; replay design non-goals). That was true for those slices. The ready-gate policy surfaces now lock 30 days. | Defer. Do not rewrite the design record. Optional later: a single "superseded 2026-09-26 by `docs/REFUND_GLOSSARY.md`" line. |
+| CR1-P2-002 | P2 | `docs/DESIGN_POLAR_PATH.md`, `docs/DESIGN_REPLAY_CLI.md` | Design-time text still says the refund window is deferred and "14 vs 30" in the present tense (Polar path §3 non-goals; replay design non-goals). That was true for those slices. The ready-gate policy surfaces now lock 14 days. | Defer. Do not rewrite the design record. Optional later: a single "superseded 2026-09-26 by `docs/REFUND_GLOSSARY.md`" line. |
 | CR1-P2-003 | P2 | `release/README.md` | Says the listing stays dark "until the founder says otherwise" and does not restate clip-then-post. The next line points at `docs/POLAR_DELIVERABLES.md`, which does. | Defer. |
 
 ---
@@ -71,7 +71,7 @@ This packet is inside the zip built from the commit that contains it. `docs/CHEC
 
 **Lens:** Take the claims CR1 accepted and check them against the kit on this branch (main plus this pack). Overclaims, broken links, secrets in the zip, license drift.
 
-**Attack thesis:** The listing can promise exactly-once side effects, a Polar SDK-free core, a 30-day refund, and a clean zip while the code, the license, or the archive says something else.
+**Attack thesis:** The listing can promise exactly-once side effects, a Polar SDK-free core, a 14-day refund, and a clean zip while the code, the license, or the archive says something else.
 
 ### What holds
 
@@ -91,8 +91,8 @@ This packet is inside the zip built from the commit that contains it. `docs/CHEC
 | CR2-P2-001 | P2 | `README.md` | Lede says a Stripe side effect runs "once". Shipped proof is one row and one outbox key per adapter under duplicate delivery. The same README later documents lease overlap past `OUTBOX_LEASE_MS`, external APIs that are not idempotent just because the outbox key exists, and replay running the adapter again. Polar paste-ready copy scopes the promise to "four times → one side effect", which chaos #1 shows. | Defer. Do not treat the lede as a new exactly-once certification, and do not edit drain or replay to "fix" it. |
 | CR2-P2-002 | P2 | `package.json` | `"description"` is Stripe-only ("Stripe signed webhooks…"). Pre-existing. It ships in the zip. Changelog and README body are Stripe and Polar. | Defer. |
 | CR2-P2-003 | P2 | `docs/LANDING.md` | "Not a client library you must install in order to verify Stripe" can be read as "no Stripe SDK". The kit depends on `stripe` and forbids a Polar SDK. The same file correctly says there is no Polar SDK in the buyer app. | Defer. |
-| CR2-P2-004 | P2 | `.github/ISSUE_TEMPLATE/bug_support.yml` | Template does not say purchase refunds are not Issues. `SUPPORT.md` and `docs/REFUND_GLOSSARY.md` do, including the 30-day window. | Defer. |
-| CR2-P2-005 | P2 | `docs/LANDING.md` | Landing copy never states "30 days". It links the glossary. The refund unit test does not read this file. The Polar paste-ready listing does state 30 days. Not a wrong window. | Defer. |
+| CR2-P2-004 | P2 | `.github/ISSUE_TEMPLATE/bug_support.yml` | Template does not say purchase refunds are not Issues. `SUPPORT.md` and `docs/REFUND_GLOSSARY.md` do, including the 14-day window. | Defer. |
+| CR2-P2-005 | P2 | `docs/LANDING.md` | Landing copy states the purchase-refund window is 14 days and links the glossary. The refund unit test reads this file. The Polar paste-ready listing states 14 days. Not a wrong window. | Defer. |
 
 ---
 
@@ -106,11 +106,11 @@ This packet is inside the zip built from the commit that contains it. `docs/CHEC
 
 - Committed `sha256sum release/hooksteel-0.1.0.zip` equals `docs/CHECKSUMS.md`. A from-scratch `git archive --mtime=2026-09-26T00:00:00Z` of this head, excluding `docs/CHECKSUMS.md` and `release/`, then setting the zip comment to `hooksteel-0.1.0`, matched that digest and every entry's CRC, size, date, and attributes. Git 2.43, Python 3.12, this VM.
 - Commit `5f82848` changes only `docs/CHECKSUMS.md` and the zip. That is why a rebuild of this head matches. The pack script refuses a dirty tree outside those two paths.
-- Changelog 0.1.0 matches the tree: Stripe `handle`, Polar `handlePolar` with two HMAC eras and no Polar SDK, `outbox:drain`, `replay:list` / `replay:dry-run` / `replay:execute`, five chaos files with Polar cases inside them, `invite_github` opt-in, `order.refunded` ignored, Soft-WTP off, listing dark, 30-day purchase refund, no prior release. Cited SHAs `f25f235`, `09c4f88`, and `c6a4012` are ancestors of this head. GitHub Release `v0.1.0` is not cut. The changelog says that.
+- Changelog 0.1.0 matches the tree: Stripe `handle`, Polar `handlePolar` with two HMAC eras and no Polar SDK, `outbox:drain`, `replay:list` / `replay:dry-run` / `replay:execute`, five chaos files with Polar cases inside them, `invite_github` opt-in, `order.refunded` ignored, Soft-WTP off, listing dark, 14-day purchase refund, no prior release. Cited SHAs `f25f235`, `09c4f88`, and `c6a4012` are ancestors of this head. GitHub Release `v0.1.0` is not cut. The changelog says that.
 - CI run 36276399895 on this head: migrate, typecheck, `npm test`, 54 tests, 0 fail. Includes the four demo tests (Stripe then Polar inside each file) and the three ready-gate unit tests. `tsx --test` on a throwaway failing test exited 1 (tsx 4.23.15 in this VM; the repo lockfile was not reinstalled here).
 - Reporter order for the clip: stub files run with `tsx --test --test-concurrency=1` printed the four names as TAP `ok 1`…`ok 4` in the locked order. CI shows the real file 01 as `ok 1` then `ok 2` (Stripe duplicate, then Polar duplicate) and file 05 as `ok 9` then `ok 10` (Stripe crash, then Polar crash) inside the full suite. `01` sorts before `05`, so a path sort cannot swap the two files.
 - This VM has no Postgres, so `npm run demo:60s` was not executed here. The two files it runs are part of the green CI `npm test`. `beforeEach` truncates `billing_events`, `outbox`, `dead_letters`, and `adapter_invocations`, so the Polar case does not see the Stripe rows.
-- CoS packet still says: do not paste the draft into a visible product, do not start KYC or Checkout, set the refund toggle to 30 days on the unpublished product, do not publish in order to set it. Nothing in this review asks CoS to list.
+- CoS packet still says: do not paste the draft into a visible product, do not start KYC or Checkout, set the refund toggle to 14 days on the unpublished product, do not publish in order to set it. Nothing in this review asks CoS to list.
 
 ### Findings
 

@@ -11,7 +11,7 @@ Price and terms lock for the Polar kit. This file is not a checkout page. It has
 | Founding price | $89 USD |
 | List price | $129 USD |
 | Founding window | First 10 licenses OR 30 days after go-live, whichever comes first; then $129 |
-| Purchase-refund window | 30 days |
+| Purchase-refund window | 14 days |
 | SKU | One. Do not run two Polar products. Do not invent a coupon. |
 | Soft-WTP | Off. No waitlist. No updates-for-life benefit. |
 | Not offered | Lock, Audit, hosted gateway, implementation services |

@@ -56,6 +56,6 @@ Polar checkout is **dark**. There is no purchase URL in this copy.
 
 Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
 
-The purchase-refund window is 30 days. That clock is not the 60-day support window, not the replay CLI, and not a Polar `order.refunded` webhook.
+The purchase-refund window is 14 days. That clock is not the 60-day support window, not the replay CLI, and not a Polar `order.refunded` webhook.
 
 [SUPPORT.md](../SUPPORT.md) · [Refund glossary](./REFUND_GLOSSARY.md)

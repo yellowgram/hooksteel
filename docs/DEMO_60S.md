@@ -64,4 +64,4 @@ Order, and no step skipped:
 
 ## Not in this file
 
-No recording yet. No live keys. No Polar checkout. Soft-WTP off. The purchase-refund window stays 30 days. This clip is not that refund. Listing stays dark.
+No recording yet. No live keys. No Polar checkout. Soft-WTP off. The purchase-refund window stays 14 days. This clip is not that refund. Listing stays dark.

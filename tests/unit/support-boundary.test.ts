@@ -35,7 +35,7 @@ test('support boundary text is identical where buyers and CoS read it', () => {
   }
 });
 
-test('purchase refund window is 30 days on the policy surfaces', () => {
+test('purchase refund window is 14 days on the policy surfaces', () => {
   const files = [
     'README.md',
     'BUYER_START_HERE.md',
@@ -45,13 +45,16 @@ test('purchase refund window is 30 days on the policy surfaces', () => {
     'CHANGELOG.md',
     'docs/STATUS.md',
     'docs/LANDING.md',
+    'docs/COMMERCIAL_LOCK.md',
     '.github/ISSUE_TEMPLATE/bug_support.yml',
   ];
   for (const file of files) {
-    const text = readFileSync(file, 'utf8');
-    assert.equal(text.includes('30 days'), true, file);
-    assert.equal(text.includes('14 days'), false, file);
-    assert.equal(text.includes('14–30'), false, file);
+    const raw = readFileSync(file, 'utf8');
+    const text = raw.replaceAll('30 days after go-live', '');
+    assert.equal(text.includes('14 days'), true, file);
+    assert.equal(text.includes('30 days'), false, file);
+    assert.equal(text.includes('30-day'), false, file);
+    assert.equal(raw.includes('14–30'), false, file);
   }
   const glossary = readFileSync('docs/REFUND_GLOSSARY.md', 'utf8');
   assert.match(glossary, /order\.refunded/);

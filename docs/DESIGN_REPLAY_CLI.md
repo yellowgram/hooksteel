@@ -1,3 +1,5 @@
+> **Historical note (pre-go-live).** This document records the replay-CLI design pass of 2026-09-26. As of 2026-09-27 the Polar listing is live and sells `hooksteel-0.1.1.zip` (SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`). https://github.com/yellowgram/hooksteel is public and source-available. GitHub Release `v0.1.1` is published. Sentences below that say the listing stays dark, do not publish, or the repo is private describe that pass. They are not current commercial status. Soft-WTP stays off. Purchase-refund window stays 14 days. This note does not change Polar settings.
+
 # HookSteel — DESIGN: replay CLI
 
 **Owner:** yellowgram  
@@ -5,8 +7,8 @@
 **Slice:** Three `npm run` commands that list dead letters, dry-run one id, and execute one id. They call the shipped `listDeadLetters`, `replayDryRun`, and `replayExecute`. Then the existing drain runs the adapter.  
 **Base:** `main` @ `09c4f88d21dae3fc01af6cae27456246b898626c` (Polar path merged, PR #3). Stripe path, Polar verify / `handlePolar`, outbox, drain, replay mutation, five chaos files, and LICENSE stay.  
 **Repo:** https://github.com/yellowgram/hooksteel  
-**This pass:** **Design only.** No application code. No scripts. Soft-WTP OFF. Polar listing dark. No Lock/Audit/services. No hosted gateway.  
-**Purchase-refund window (current policy):** **14 days**, founder lock 2026-09-26. See [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md). This replay-CLI slice did not choose that number. Replay is not that refund. `order.refunded` does not claw back credit. Listing stays dark.  
+**This pass:** **Design only.** No application code. No scripts. Soft-WTP OFF. The Polar listing was still dark on this pass. No Lock/Audit/services. No hosted gateway.  
+**Purchase-refund window (current policy):** **14 days**, founder lock 2026-09-26. See [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md). This replay-CLI slice did not choose that number. Replay is not that refund. `order.refunded` does not claw back credit. At this design pass the listing was still dark; the historical note at the top is the current commercial status.  
 **Standing practice:** 3 progressive adversarial **design** iterations in §2. **Founder GREENLIT** 2026-09-26. PQ1 and PQ2 are locked in §3. RD1 and RD2 stay known limits for the implement README. **Implement is a separate later PR** — not this design change.  
 **Date:** 2026-09-26 ET  
 **Evidence read that day:** `src/outbox/replay.ts`, `scripts/outbox-drain.ts`, `migrations/003_dead_letters.sql`, `migrations/004_dead_letters_outbox_unique.sql`, `tests/unit/drain.test.ts`, `package.json` scripts, README drain paragraph, `DESIGN_STRIPE_PATH.md` §1.9, `COS_CODE_REVIEW_PR1.yaml` CR2-A-P2-002, `MINIMUM_SUPPORT_CHECKLIST.md` §C.18 and §G, `MVP_SCOPE.md` replay responsibilities.
@@ -286,7 +288,7 @@ Prose the implement section must include:
 7. Dead letters: `npm run replay:list`, then `npm run replay:dry-run -- <dead_letter_id>`, then `npm run replay:execute -- <dead_letter_id>`, then `npm run outbox:drain -- --once`. The drain runs the adapter. Replay is not a Polar purchase refund.
 ```
 
-No new `GLOSSARY.md`. No Polar listing copy. Listing stays dark.
+No new `GLOSSARY.md`. No Polar listing copy in this design pass. The listing was still dark on 2026-09-26.
 
 ### 1.7 Inherited locks this slice does not reopen
 
@@ -388,7 +390,7 @@ Each iteration attacks the design as it stood after the previous one. Accepted r
 | LICENSE Polar-org clause | Polar PQ2: LICENSE stays byte-identical until a listing decision. |
 | CR3-B-P2-001, CR3-C-P2-001 | Deferred at Polar merge. Not replay work. |
 | `order.refunded` clawback | Stays out. Purchase-refund window is **14 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). |
-| Zip, checksum, landing page, 60s demo, Polar listing, KYC | Ready gate, still later. Listing stays dark. |
+| Zip, checksum, landing page, 60s demo, Polar listing, KYC | Ready gate, still later on this 2026-09-26 pass. The listing was still dark then. |
 | Soft-WTP, Lock, Audit, services, hosted gateway | Off. |
 | Implement-now inside this design PR | Founder greenlit the design. Implement is a separate later PR. |
 | `replayed_by` / `replay_audit` table | Migration. PQ2 locked: terminal JSON only. |
@@ -510,4 +512,4 @@ Founder GREENLIT this design on 2026-09-26. PQ1 and PQ2 are locked in §3. These
 
 ---
 
-*Last updated: 2026-09-26 ET — founder GREENLIT. PQ1 `three_npm_scripts`. PQ2 `terminal_json_only`. RD1/RD2 remain implement-README known limits; do not edit `replay.ts`. Design PR merges as docs. Replay CLI implement is a separate later PR. No application code in this pass. Polar merged at `09c4f88`. Soft-WTP OFF. Polar listing dark.*
+*Last updated: 2026-09-26 ET for the design pass — founder GREENLIT. PQ1 `three_npm_scripts`. PQ2 `terminal_json_only`. RD1/RD2 remain implement-README known limits; do not edit `replay.ts`. Design PR merges as docs. Replay CLI implement is a separate later PR. No application code in this pass. Polar merged at `09c4f88`. Soft-WTP OFF. The Polar listing was still dark on this pass; it is live as of 2026-09-27 (see the historical note).*

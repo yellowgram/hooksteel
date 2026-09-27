@@ -1,8 +1,10 @@
+> **Historical note (pre-go-live).** This file is the ready-gate review of PR #6. As of 2026-09-27 the Polar listing is live and sells `hooksteel-0.1.1.zip` (SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`). https://github.com/yellowgram/hooksteel is public and source-available. GitHub Release `v0.1.1` is published. Sentences below that say the listing stays dark, do not publish, do not list, or that a release is not cut describe that review. They are not current commercial status. Soft-WTP stays off. Purchase-refund window stays 14 days. This note does not change Polar settings.
+
 # HookSteel — CODE REVIEW ×3: Ready-gate PR #6
 
 **Verdict after the fix passes: APPROVE.** The tables below are the review as first written. Every in-slice row was then fixed on this branch before the zip seal. Do not treat a "Defer" cell as open work.
 
-**Purchase-refund window stays 14 days. Listing stays dark. Do not merge from this file. Do not list on Polar.**
+**Purchase-refund window stays 14 days.** The review, as written, also said the listing stayed dark and not to list from this file. That instruction closed at go-live on 2026-09-27. Do not merge application code from this review file.
 
 The SHA-256 of `release/hooksteel-0.1.0.zip` is the table in `docs/CHECKSUMS.md` (that file is not inside the zip). `npm run pack:release` reprints that digest when the only later changes are `docs/CHECKSUMS.md` and `release/`.
 

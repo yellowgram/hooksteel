@@ -2,7 +2,7 @@
 
 **Product:** HookSteel — Billing Event Reliability Kit  
 **Contact:** hello@yellowgram.dev · https://www.yellowgram.dev  
-**Repo:** https://github.com/yellowgram/hooksteel (private)
+**Repo:** https://github.com/yellowgram/hooksteel (public, source-available)
 
 ## Boundary
 
@@ -16,7 +16,7 @@ The same boundary is in `README.md`, `BUYER_START_HERE.md`, `docs/POLAR_DELIVERA
 
 ## What to include
 
-- Kit semver, git tag, and checksum (`v0.1.0` and the SHA-256 in `docs/CHECKSUMS.md`)
+- Kit semver, git tag, and checksum (live sell file `v0.1.1` / `hooksteel-0.1.1.zip` and the SHA-256 in `docs/CHECKSUMS.md`; sealed `v0.1.0` stays grandfathered)
 - Node version (`node -v`), operating system, and database engine (Postgres version)
 - One failing chaos test name from the list below, or a **test-mode** provider event id (`evt_…` from Stripe test mode, or a Polar test-mode `webhook-id`)
 - Redacted environment booleans only: `true`, `false`, or unset. Never the secret string.
@@ -42,7 +42,7 @@ There are five chaos files. Polar cases live inside those files. A request to ad
 
 ## Out of scope
 
-Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the download and private GitHub access only.
+Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
 
 ## Auto-reply
 
@@ -50,7 +50,7 @@ Paste this and close when the request is out of scope or has no repro:
 
 > Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
 >
-> Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the download and private GitHub access only.
+> Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
 >
 > If you are inside 60 days and this is an in-scope kit bug, reopen with the template: kit semver, tag, and checksum; Node; OS; DB; a failing chaos test name or a test-mode event id; and redacted booleans only.
 

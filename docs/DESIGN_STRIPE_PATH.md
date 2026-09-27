@@ -1,3 +1,5 @@
+> **Historical note (pre-go-live).** This document records the Stripe-path design pass of 2026-09-26. As of 2026-09-27 the Polar listing is live and sells `hooksteel-0.1.1.zip` (SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`). https://github.com/yellowgram/hooksteel is public and source-available. GitHub Release `v0.1.1` is published. Sentences below that say the listing stays dark, do not publish, or the repo is private describe that pass. They are not current commercial status. Soft-WTP stays off. Purchase-refund window stays 14 days. This note does not change Polar settings.
+
 # HookSteel — DESIGN: Stripe path + chaos suite (5 scenarios)
 
 **Owner:** yellowgram  
@@ -8,7 +10,7 @@
 **Standing practice:** 3 progressive adversarial **design** iterations (cycle 1) + cycle-2 CoS locks merged after founder greenlight. Code reviews come later after implementation.  
 **Date:** 2026-09-26 ET  
 **Cycle 2:** Locks merged into §1. Founder GREENLIT. Implement unlocked under 3 code-review passes on `yellowgram/hooksteel`.  
-**Purchase-refund window (current policy):** **14 days**, founder lock 2026-09-26. See [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md). This Stripe slice did not choose that number. Do not copy a rail default over 14 days. Listing stays dark.
+**Purchase-refund window (current policy):** **14 days**, founder lock 2026-09-26. See [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md). This Stripe slice did not choose that number. Do not copy a rail default over 14 days. At this design pass the listing was still dark; the historical note at the top is the current commercial status.
 
 ---
 
@@ -458,7 +460,7 @@ Full CLI = later slice; schema `replayed_at` + mutation locked now.
 
 ### 1.10 LICENSE stub (credit-ledger tone — text to ship later)
 
-**Superseded 2026-09-27.** The paragraphs below are the v0.1.0 design stub. They are not the public license. The public license is `LICENSE` (PolyForm Noncommercial 1.0.0; source-available; not an OSI-approved open source license; not MIT). Paid commercial use is `docs/COMMERCIAL_GRANT.md`.
+**Superseded 2026-09-27.** The paragraphs below are the v0.1.0 design stub. They are not the public license. The public license is `LICENSE` (PolyForm Noncommercial 1.0.0; source-available; not an OSI-approved open source license; not MIT). Paid commercial use is `docs/COMMERCIAL_GRANT.md`. The stub also describes a private repository. Delivery is the public source-available repository plus the Polar zip `hooksteel-0.1.1.zip`.
 
 Commercial kit license — HookSteel  
 

@@ -2,16 +2,16 @@
 
 Three different words. Mixing them up is a support fire.
 
-The purchase-refund window is **14 days** (founder lock 2026-09-26). CoS sets the Polar refund toggle to 14 days before the listing goes light. Listing stays dark. Do not publish from this page. Do not copy a different rail default over 14 days.
+The purchase-refund window is **14 days** (founder lock 2026-09-26). The Polar listing is live and the refund window stays 14 days. Do not change it. Do not copy a different rail default over 14 days. This page is not a checkout URL.
 
 Support length is a separate clock: GitHub Issues for 60 days from purchase (`SUPPORT.md`). That is not a money-back window.
 
 ## Polar purchase refund
 
-Money returned for buying the HookSteel kit on Polar (org **Suthirth solutions**, when a listing exists).
+Money returned for buying the HookSteel kit on Polar (org **Suthirth solutions**). The Polar listing is live.
 
 - It is a Polar dashboard action on the **kit order**.
-- The window is **14 days**. Before the listing goes light, CoS sets the Polar refund toggle to 14 days. Do not turn the listing on to do that.
+- The window is **14 days**. Do not change it.
 - It does not run the replay CLI.
 - It does not delete `billing_events` rows in the buyer's database.
 

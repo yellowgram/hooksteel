@@ -9,9 +9,12 @@
 | SKU | One. Do not run two Polar products. |
 | Contact | hello@yellowgram.dev |
 | Site | https://www.yellowgram.dev |
+| Repo | https://github.com/yellowgram/hooksteel (public, source-available) |
+| Sell file | `hooksteel-0.1.1.zip` |
+| SHA-256 | `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` |
 | License | PolyForm Noncommercial 1.0.0 (source-available; not OSI; not MIT). Paid commercial use: Suthirth Commercial Grant |
 
-Not a hosted gateway. Soft-WTP off. Polar listing dark until the ready gate. Stripe and Polar webhooks both verify into the same outbox. `billing_events.provider` already allows `'polar'`.
+Not a hosted gateway. Soft-WTP off. The Polar listing is live and sells `hooksteel-0.1.1.zip`. Delivery is this public source-available repository plus that zip. No Polar checkout URL in this README. Stripe and Polar webhooks both verify into the same outbox. `billing_events.provider` already allows `'polar'`.
 
 ## What HookSteel guarantees
 
@@ -373,7 +376,7 @@ Not a hosted gateway. Soft-WTP is off. No coupon. Price and refund lock: [docs/C
 - [Refund glossary](./docs/REFUND_GLOSSARY.md) — 14-day purchase refund, replay CLI, and `order.refunded`
 - [Landing copy](./docs/LANDING.md) — Hookdeck honesty; not a deployed site
 - [Changelog](./CHANGELOG.md) · [Checksums](./docs/CHECKSUMS.md)
-- [Polar deliverables (CoS, listing stays dark)](./docs/POLAR_DELIVERABLES.md)
+- [Polar deliverables (CoS, listing live)](./docs/POLAR_DELIVERABLES.md)
 - [Suthirth Commercial Grant](./docs/COMMERCIAL_GRANT.md) · [Commercial lock](./docs/COMMERCIAL_LOCK.md)
 - [STATUS](./docs/STATUS.md)
 - [DESIGN — Stripe path + chaos](./docs/DESIGN_STRIPE_PATH.md) — §1 is the contract this tree implements

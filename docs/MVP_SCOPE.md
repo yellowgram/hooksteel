@@ -3,11 +3,11 @@
 **Owner:** yellowgram  
 **Product:** HookSteel — Billing Event Reliability Kit  
 **Price:** $89 founding → $129 list. One SKU. No coupon. Public license from 0.1.1: PolyForm Noncommercial 1.0.0 (source-available; not OSI open source; not MIT). Paid commercial use: Suthirth Commercial Grant.  
-**Deliverable:** Private GitHub (`yellowgram/hooksteel`) + zip. **Not** a hosted Hookdeck clone. **Not** services / Lock / Audit. Soft-WTP OFF.  
+**Deliverable:** Public source-available GitHub (https://github.com/yellowgram/hooksteel) plus the Polar zip `hooksteel-0.1.1.zip`. **Not** a hosted Hookdeck clone. **Not** services / Lock / Audit. Soft-WTP OFF.  
 **ICP:** Global-English indie/SaaS founders on Stripe and/or Polar. **No India-ICP.**  
 **Contact:** hello@yellowgram.dev · www.yellowgram.dev  
-**Polar:** Suthirth solutions — **dark until ready gate**. CoS owns listing when shippable.  
-**Date:** 2026-09-26 ET — design-only.
+**Polar:** Suthirth solutions. The Polar listing is live as of 2026-09-27. CoS owns the listing. This scope note does not change Polar settings.  
+**Date:** 2026-09-26 ET design lock. Commercial status updated 2026-09-27.
 
 ---
 
@@ -40,7 +40,7 @@
 - Multi-app $249 SKU at launch (optional later)
 - Perpetual update entitlement beyond stated patch window (design: 12mo patches per DECISION price band; pin in license/changelog when shipped)
 - Credit-ledger product surface (separate kit) — HookSteel is reliability layer only
-- Live Polar Checkout / KYC before ready gate
+- Opening Polar Checkout before the ready gate (historical for the design pass; the listing is live as of 2026-09-27)
 
 ## Later (post-ready / post-launch candidates — not MVP)
 
@@ -173,7 +173,7 @@ Stubs ship with no-op / console / in-memory implementations. Buyer wires real St
 - [ ] 60s demo recorded/approved (“same event 4× → one side effect”)  
 - [ ] Landing / README with Hookdeck “use them when…” honesty  
 - [ ] Commercial license (no resale as competing kit)  
-- [ ] **Then:** Polar org + GitHub benefit + Checkout (CoS; Suthirth solutions)
+- [x] **Then:** Polar org (Suthirth solutions). Listing is live as of 2026-09-27. Delivery is the public source-available repository plus `hooksteel-0.1.1.zip`. No private-repo invite. No checkout URL in this file.
 
 ---
 

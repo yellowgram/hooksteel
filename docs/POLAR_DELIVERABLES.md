@@ -1,29 +1,16 @@
 # Polar deliverables — CoS packet
 
-**Listing stays dark.** Do not publish. Do not start KYC. Do not open Checkout. Do not attach this zip to a live product. Org: **Suthirth solutions**. Repo: private `yellowgram/hooksteel`. Contact: hello@yellowgram.dev · https://www.yellowgram.dev
+**LIVE as of 2026-09-27.** The Polar listing is live and sells `hooksteel-0.1.1.zip`. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` (`docs/CHECKSUMS.md`). GitHub Release [`v0.1.1`](https://github.com/yellowgram/hooksteel/releases/tag/v0.1.1) is published. Founding **$89** for the first 10 licenses OR 30 days after go-live, whichever comes first; then list **$129**. One SKU. Purchase-refund window **14 days**. Soft-WTP is off. No coupon.
 
-The purchase-refund window is locked at 14 days. Soft-WTP is off. This packet is the copy and the file handoff. It is not permission to publish.
+Org: **Suthirth solutions**. Repo: public source-available https://github.com/yellowgram/hooksteel. Contact: hello@yellowgram.dev · https://www.yellowgram.dev
 
-## License fence (0.1.1)
+This packet does not change Polar product settings, price, or the refund window. It does not add a checkout URL. Delivery is the public source-available repository plus the zip from Polar.
 
-Public license: PolyForm Noncommercial 1.0.0 in `LICENSE` (source-available; not OSI open source; not MIT). Paid commercial production use: the Suthirth Commercial Grant in `docs/COMMERCIAL_GRANT.md`. Price lock: `docs/COMMERCIAL_LOCK.md`. No coupon.
+## License
 
-`npm run pack:release` writes `release/hooksteel-0.1.1.zip`. It does not rewrite `release/hooksteel-0.1.0.zip`. This pull request does not create GitHub Release tag `v0.1.1`.
+Public license: PolyForm Noncommercial 1.0.0 in `LICENSE` (source-available; not OSI open source; not MIT). Paid commercial production use: the Suthirth Commercial Grant in `docs/COMMERCIAL_GRANT.md`. Price lock: `docs/COMMERCIAL_LOCK.md`.
 
-This pull request does not change the Polar product. It does not request a freeze, an unlist, a republish, a price change, or a visibility change. Three confirms are still open. No checkout URL belongs in this packet, the README, or the zip.
-
-## Do not list
-
-CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post. Listing also stays dark until the founder types go-live. Clip and post are not that word.
-
-Order locked:
-
-1. Founder-approved clip. One clip, not two provider demos. Same event four times → one side effect, rollback mid-fulfillment, Stripe and Polar in that same clip. Script: `docs/DEMO_60S.md`. If that clip cannot beat the Stripe docs and the Hookdeck homepage, do not list.
-2. Distribution post, where the burn already happened. Channels: a tight X thread, Show HN, and Stripe/Polar builder chats. Shape: "we double-provisioned after a 500." Same breath: use them for ingress; this is the outbox you keep.
-3. Founder types go-live.
-4. Only then is Polar the cash register. Not before. One SKU.
-
-Missing the clip, the post, or go-live means do not list. A cover image does not replace any of them. Do not start KYC or Checkout from this packet.
+`npm run pack:release` can rebuild `release/hooksteel-0.1.1.zip` from `HEAD`. Do not run it to refresh these docs, and do not upload a new zip over the live Polar file. A docs change would move the digest. The live file stays the already published `hooksteel-0.1.1.zip` with the SHA above. The script does not rewrite `release/hooksteel-0.1.0.zip` and does not move tag `v0.1.0`. That 0.1.0 zip and tag stay grandfathered.
 
 ## Product
 
@@ -36,6 +23,8 @@ Missing the clip, the post, or go-live means do not list. A cover image does not
 | Founding window | Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. |
 | SKU | One Polar product. Do not open a second product to change the price. |
 | License | PolyForm Noncommercial 1.0.0 (`LICENSE`; source-available; not OSI open source; not MIT). Paid commercial use: Suthirth Commercial Grant (`docs/COMMERCIAL_GRANT.md`) — one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. |
+| Sell file | `hooksteel-0.1.1.zip` |
+| SHA-256 | `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` |
 | Not on this listing | Multi-app, Lock, Audit, Soft-WTP, hosted gateway, implementation services, Credit Ledger |
 
 Soft-WTP is **off**. Do not add a waitlist, a "email me forever updates" benefit, or an outreach toggle.
@@ -44,13 +33,13 @@ No Lock product. No Audit product. Do not add those names as benefits or bumps.
 
 ## Paste-ready listing draft
 
-Do not paste this into a visible product while the listing is dark, there is no founder-approved clip, and there is no distribution post.
+The listing is already live. Use this text when the description needs to match the sell file. Do not paste a Polar checkout URL into the README, the zip, or buyer Quickstart.
 
 ---
 
 HookSteel is owned code for Stripe and Polar webhooks. The same billing event four times still produces one side effect. The outbox row is written in the same database transaction as the event. Adapters run after that transaction commits.
 
-You get a private GitHub repository and a zip. The sealed file is `hooksteel-0.1.0.zip`. The fence pack on this branch is `hooksteel-0.1.1.zip`. This packet does not change the Polar product. You run Postgres. Your Stripe account and your Polar account stay yours. There is no hosted webhook gateway in this purchase.
+You get the public source-available GitHub repository https://github.com/yellowgram/hooksteel and the zip `hooksteel-0.1.1.zip` from Polar. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`. You run Postgres. Your Stripe account and your Polar account stay yours. There is no hosted webhook gateway in this purchase.
 
 **Price:** Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. Soft-WTP is off. The purchase-refund window is 14 days. **License:** PolyForm Noncommercial 1.0.0 for the public tree (source-available; not OSI open source; not MIT). Paid commercial production use is the Suthirth Commercial Grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See `LICENSE` and `docs/COMMERCIAL_GRANT.md`.
 
@@ -58,11 +47,11 @@ You get a private GitHub repository and a zip. The sealed file is `hooksteel-0.1
 
 **Known limits:** exactly five chaos scenarios (no fuzzing); no hosted gateway; adapters are stubs you replace; uniqueness is per provider event id, not a global total order across providers; Polar `order.refunded` is stored and ignored (no credit clawback); the kit does not certify PCI, charge correctness, or tax. Patches are not a perpetual rewrite. Soft-WTP is off.
 
-**Delivery:** access to the private repository `yellowgram/hooksteel`, plus the zip. The sealed file is `hooksteel-0.1.0.zip`. The fence pack on this branch is `hooksteel-0.1.1.zip`. This packet does not change the Polar product. The zip has no `node_modules`, no `.env`, no `.git`, and no database dump. It does include `.env.example`. Confirm the SHA-256 in the file description against the matching row in `docs/CHECKSUMS.md` (that checksum file is published beside the zip, not inside it). Do not put a checkout URL in the file description.
+**Delivery:** the public source-available repository `yellowgram/hooksteel`, plus `hooksteel-0.1.1.zip` from Polar. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`. The sealed `hooksteel-0.1.0.zip` on tag `v0.1.0` is grandfathered and is not the current sell file. The zip has no `node_modules`, no `.env`, no `.git`, and no database dump. It does include `.env.example`. Confirm the SHA-256 in the file description against the 0.1.1 row in `docs/CHECKSUMS.md` (that checksum file is published beside the zip, not inside it). Do not put a checkout URL in the file description.
 
 **Support:** Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
 
-**Not included:** Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the download and private GitHub access only.
+**Not included:** Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
 
 A Polar purchase refund, the replay CLI, and a provider `order.refunded` webhook are three different things. The purchase-refund window is 14 days. Replay is not that refund. `order.refunded` is stored and ignored and does not claw back credit.
 
@@ -77,28 +66,24 @@ A Polar purchase refund, the replay CLI, and a provider `order.refunded` webhook
 5. Use both when — Hookdeck in front, HookSteel inside. Optional. Do not require it.
 6. Do not buy HookSteel if — you want yellowgram to host your webhooks.
 
-Same six points: `README.md` and `docs/LANDING.md`.
+Same six points: `README.md` and `docs/LANDING.md`. The clip is one take, not two provider demos: same event four times → one side effect, rollback mid-fulfillment, Stripe and Polar in that same clip (`docs/DEMO_60S.md`). If a cut cannot beat the Stripe docs and the Hookdeck homepage, it is not the buyer clip. The line that ships with the clip: use them for ingress; this is the outbox you keep.
 
 ## How delivery works
 
-The sealed artifact is version `0.1.0`:
+Current sell file:
 
-1. Private GitHub: `yellowgram/hooksteel`. Not a public clone URL.
-2. Sealed file: `release/hooksteel-0.1.0.zip`. This pull request does not rewrite it and does not move tag `v0.1.0`. Buyers of that release should see the name `hooksteel-0.1.0.zip`.
+1. Public source-available GitHub: https://github.com/yellowgram/hooksteel. Buyers clone it. Opening an Issue does not need an invite.
+2. Polar file: `hooksteel-0.1.1.zip`. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`. GitHub Release `v0.1.1` is published.
 
-The license-fence pack on this branch is `release/hooksteel-0.1.1.zip`. This pull request does not attach it to Polar and does not create GitHub Release tag `v0.1.1`.
+Grandfathered:
 
-Build (already run for the file on this branch; re-run only to reproduce):
+1. Tag `v0.1.0` and `release/hooksteel-0.1.0.zip` stay sealed. Do not rewrite that zip. Do not move that tag. SHA-256 `dddcfe5dca204cd92b2c1b2a10adbb99515d0552a4a5947693aff34a29573a65` (the 0.1.0 row in `docs/CHECKSUMS.md`). It is not the current Polar sell file.
 
-```bash
-npm run pack:release
-```
-
-`scripts/pack-release.sh` runs `git archive` of `HEAD` with a pinned mtime. It then sets the zip comment to `hooksteel-0.1.0` (git archive would otherwise store the commit id, and the digest would change when this checksum file is committed). The digest is stable when the only tree differences are `docs/CHECKSUMS.md` and `release/`.
+`scripts/pack-release.sh` runs `git archive` of `HEAD` with a pinned mtime and sets the zip comment to the `package.json` version. The digest is stable only when the only tree differences are `docs/CHECKSUMS.md` and `release/`. Later doc edits are not that case. Do not replace the live Polar asset from this packet.
 
 ### Zip omit contract
 
-Omitted:
+Omitted from a pack:
 
 - `node_modules/` (root and `examples/next`)
 - `.env`, `.env.local`, and any `.env.*` that is not `.env.example`
@@ -113,78 +98,81 @@ The script exits non-zero if the zip breaks that contract.
 
 ## Checksum field
 
-Paste the hex from `docs/CHECKSUMS.md`. Do not type a hash from memory. This packet does not embed the hex, because the checksum file is generated from the zip and is not inside the zip.
+Paste from `docs/CHECKSUMS.md`. The live row is:
 
 ```text
-SHA-256 (hooksteel-0.1.0.zip): <paste the sealed 0.1.0 row in docs/CHECKSUMS.md>
-SHA-256 (hooksteel-0.1.1.zip): <paste the 0.1.1 row in docs/CHECKSUMS.md>
+SHA-256 (hooksteel-0.1.1.zip): e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9
 ```
 
-Use the row that matches the file you are describing. Do not replace the live 0.1.0 Polar file from this pull request.
+Sealed prior artifact, not the current sell file:
 
-Put that line in:
+```text
+SHA-256 (hooksteel-0.1.0.zip): dddcfe5dca204cd92b2c1b2a10adbb99515d0552a4a5947693aff34a29573a65
+```
 
-- GitHub Release `v0.1.0` notes
-- the Polar file description
+Put the 0.1.1 line in the GitHub Release `v0.1.1` notes and the Polar file description. Do not replace the live 0.1.1 Polar file from a docs-only change. Do not reseal 0.1.0.
 
-Buyer check, from a checkout that has the asset. Use the filename you were given:
+Buyer check, on a tree that has the asset:
 
 ```bash
-sha256sum release/hooksteel-0.1.0.zip
 sha256sum release/hooksteel-0.1.1.zip
 ```
 
-## Issues access (expected path)
+The first field must equal the 0.1.1 row. `sha256sum release/hooksteel-0.1.0.zip` checks the grandfathered file only.
 
-Support is GitHub Issues, not Polar chat. The repository is private, so a buyer cannot open an Issue until CoS grants access.
+## Issues access
 
-Configure this only when the founder allows the listing to go light. Not now.
+The repository is public and source-available. A buyer opens a GitHub Issue on https://github.com/yellowgram/hooksteel without an invite. Support is GitHub Issues, not Polar chat. Write "GitHub Issues" on the listing. Do not name Polar chat as support.
 
-1. Preferred: Polar benefit "GitHub repository" → `yellowgram/hooksteel`, with permission that can **open an Issue** (Triage or Write).
-2. If that benefit can only clone and cannot open Issues: CoS invites the purchase email as a collaborator with Triage or Write for the support window.
-3. Write "GitHub Issues" on the listing. Do not name Polar chat as support.
-4. Do not make the repository public in order to skip invites.
+Historical, before 2026-09-27: this packet required a Polar GitHub benefit or a collaborator invite because the repository was private. That path is closed. Do not switch Issues back to invite-only.
 
-Until that benefit is actually on, do not tell buyers it already works.
+## Maintenance
 
-## CoS flip checklist
+The listing is already live. This packet does not change Polar settings.
 
-Do not flip the listing on from this packet. Listing stays dark until the founder-approved clip, the distribution post, and the founder types go-live. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post.
+1. Price on that one product stays founding **$89** until the first **10 licenses** OR **30 days after go-live**, whichever comes first; then **$129** on that same product.
+2. One SKU. Do not run two Polar products. Do not invent a coupon. Do not open a second product at $129 while the $89 product is still up.
+3. Soft-WTP stays off. No waitlist benefit. No "email me forever updates" benefit.
+4. Purchase-refund window stays **14 days**. Do not change it.
+5. Sell file stays `hooksteel-0.1.1.zip` with SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`.
+6. No Lock, no Audit, no hosted gateway.
 
-When those three exist, one Polar product only:
+## Refund
 
-Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products.
-
-1. Price on that product is founding **$89**.
-2. Founding window: first **10 licenses** OR **30 days after go-live**, whichever comes first; then set that same product to **$129**.
-3. One SKU. Do not run two Polar products. Do not invent a coupon. Do not open a second product at $129 while the $89 product is still up.
-4. Soft-WTP stays off. No waitlist benefit. No "email me forever updates" benefit.
-5. Purchase-refund window is **14 days**. Set the Polar refund toggle to 14 days before the listing goes light. Do not publish to set it.
-6. Stop if the clip, the post, or the typed go-live is missing. Do not start KYC or Checkout to get ahead of that word.
-
-## Refund toggle
-
-**14 days. Founder lock 2026-09-26.** Before the listing goes light, set the Polar refund toggle to 14 days. You may set that toggle on the unpublished product. Do not publish. Do not start KYC or Checkout. Do not leave a rail default that is not 14 days. Listing stays dark.
+**14 days. Founder lock 2026-09-26.** The window is already locked. Do not change it. Do not copy a rail default that is not 14 days.
 
 Glossary: `docs/REFUND_GLOSSARY.md`.
 
 ## Cover image
 
-CoS supplies the image. This repo does not contain one. Founder approves it before the listing goes light.
+CoS owns the live cover. This repo does not contain one.
 
 Art direction: the word HookSteel; the sentence "Same billing event four times → one side effect"; a small "Stripe + Polar". No hosted-dashboard mock. No Hookdeck logo as if this product were Hookdeck. No refund-day badge. No live-checkout sticker. No revenue claim.
 
-A finished image does not turn the listing on.
+## GitHub Release `v0.1.1` (live sell file)
 
-## GitHub Release `v0.1.0` (sealed)
+Published: https://github.com/yellowgram/hooksteel/releases/tag/v0.1.1
 
-This branch does not create a Release and does not move tag `v0.1.0`. `npm run pack:release` now writes `hooksteel-0.1.1.zip` from `package.json`. It does not reseal `hooksteel-0.1.0.zip`. If tag `v0.1.0` and its asset already exist, leave them.
+Release notes name `hooksteel-0.1.1.zip` and SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`. This docs change does not move the tag and does not upload a replacement asset.
 
-1. Check out `main` and pull.
-2. Confirm `release/hooksteel-0.1.0.zip` is the sealed file. Do not rebuild it.
-3. `sha256sum release/hooksteel-0.1.0.zip` matches the sealed 0.1.0 row in `docs/CHECKSUMS.md`.
-4. Do not upload a new asset onto tag `v0.1.0`. The asset filename stays `hooksteel-0.1.0.zip`.
-5. Release notes:
+```text
+HookSteel 0.1.1 — Billing Event Reliability Kit
+
+Stripe + Polar signed webhooks, same-transaction outbox, drain, replay CLI, five Postgres chaos scenarios.
+License: PolyForm Noncommercial 1.0.0 (source-available; not OSI; not MIT) plus the Suthirth Commercial Grant.
+Not a hosted gateway. Soft-WTP off.
+Purchase-refund window: 14 days. That is not the replay CLI. `order.refunded` does not claw back credit.
+Delivery: public source-available GitHub plus hooksteel-0.1.1.zip.
+
+SHA-256 (hooksteel-0.1.1.zip): e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9
+
+Changelog: CHANGELOG.md
+Support: SUPPORT.md
+```
+
+## GitHub Release `v0.1.0` (sealed, grandfathered)
+
+Historical. Tag `v0.1.0` and `hooksteel-0.1.0.zip` already exist. Leave them. Do not rewrite the zip. Do not move the tag. Do not upload that file as the current Polar sell file.
 
 ```text
 HookSteel 0.1.0 — Billing Event Reliability Kit
@@ -194,23 +182,23 @@ Stripe + Polar signed webhooks, same-transaction outbox, drain, replay CLI, five
 Not a hosted gateway. Soft-WTP off.
 Purchase-refund window: 14 days. That is not the replay CLI. `order.refunded` does not claw back credit.
 
-SHA-256 (hooksteel-0.1.0.zip): <paste the sealed 0.1.0 row in docs/CHECKSUMS.md>
+SHA-256 (hooksteel-0.1.0.zip): dddcfe5dca204cd92b2c1b2a10adbb99515d0552a4a5947693aff34a29573a65
 
 Changelog: CHANGELOG.md
 Support: SUPPORT.md
 ```
 
-6. Stop. Do not upload the asset to a **visible** Polar product. Do not start KYC or Checkout. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post. Listing stays dark until the founder types go-live. The purchase-refund window is already 14 days. Set the Polar refund toggle to 14 days before the listing goes light. Do not publish in order to set it. Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Soft-WTP stays off.
+## Live
 
-## Still dark
+- Polar listing: live, sells `hooksteel-0.1.1.zip`
+- SHA-256: `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`
+- GitHub Release `v0.1.1`: published
+- Repository: public, source-available
+- Price: founding $89, then $129, one SKU, Soft-WTP off, no coupon
+- Purchase-refund window: 14 days
+- Checkout URL: not in the README, the zip, or buyer Quickstart
+- Lock / Audit / hosted gateway: not offered
 
-- Polar product visibility: dark / unpublished
-- No founder-approved 60s clip yet (one clip: Stripe and Polar, four deliveries, one side effect, rollback)
-- No distribution post yet (X, Hacker News, Stripe/Polar builder chats)
-- Founder has not typed go-live
-- One SKU when it does go light: founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. Do not run two Polar products.
-- Checkout: off
-- KYC: not started from this packet
-- Soft-WTP: off
-- Lock / Audit: not offered
-- Hosted gateway: not offered
+## Historical pre-go-live gates
+
+Before 2026-09-27 this packet told CoS to keep the listing unpublished until a founder-approved clip, a distribution post, and a typed go-live, and it said not to open Checkout from the packet. Those gates are closed. Go-live was 2026-09-27. Do not treat them as current instructions. The clip script remains `docs/DEMO_60S.md`.

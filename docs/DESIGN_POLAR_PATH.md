@@ -1,3 +1,5 @@
+> **Historical note (pre-go-live).** This document records the Polar-path design pass of 2026-09-26. As of 2026-09-27 the Polar listing is live and sells `hooksteel-0.1.1.zip` (SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`). https://github.com/yellowgram/hooksteel is public and source-available. GitHub Release `v0.1.1` is published. Sentences below that say the listing stays dark, do not publish, or the repo is private describe that pass. They are not current commercial status. Soft-WTP stays off. Purchase-refund window stays 14 days. This note does not change Polar settings.
+
 # HookSteel — DESIGN: Polar webhook path
 
 **Owner:** yellowgram  
@@ -6,7 +8,7 @@
 **Base:** `main` @ `f25f235` (Stripe path merged). Schema, outbox, drain, replay, five chaos files, and the Stripe handler stay.  
 **Repo:** https://github.com/yellowgram/hooksteel  
 **This pass:** **Design only.** No application code. No Polar SDK forced into buyer apps. Soft-WTP OFF. No Lock/Audit/services. No hosted gateway. No Polar listing/KYC.  
-**Purchase-refund window (current policy):** **14 days**, founder lock 2026-09-26. See [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md). This Polar-path slice did not choose that number. Do not copy a rail default over 14 days. Listing stays dark. `order.refunded` clawback stays out of the kit.  
+**Purchase-refund window (current policy):** **14 days**, founder lock 2026-09-26. See [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md). This Polar-path slice did not choose that number. Do not copy a rail default over 14 days. At this design pass the listing was still dark; the historical note at the top is the current commercial status. `order.refunded` clawback stays out of the kit.  
 **Standing practice:** 3 progressive adversarial **design** iterations in §2. **Founder GREENLIT** 2026-09-26. PQ1 and PQ2 are closed in §3. CoS PD1–PD4 are implement locks. **Implement is a separate later PR** — not this design change.  
 **Date:** 2026-09-26 ET  
 **Evidence read that day:** Polar delivery docs, Polar TypeScript SDK `webhooks.ts` on `master`, Standard Webhooks spec, Polar OpenAPI `2026-04`, Polar sandbox + events docs, Polar issue #13519.
@@ -473,7 +475,7 @@ Iteration 1 left the MAC as “HMAC-SHA256 the body with the secret.” Iteratio
 | Slack/Discord delivery formats | Dashboard Raw is the integration. Other formats fail `invalid_payload`. |
 | Polished replay CLI, worker supervisor, Grafana | Replay mutation already shipped. This slice does not reopen it. |
 | Hosted gateway / yellowgram retry proxy “because Polar disables endpoints” | Kill criterion. Document the 10-strike rule instead. |
-| Polar listing, sandbox org, KYC, Soft-WTP, Lock, Audit | Still dark / still off. |
+| Polar listing, sandbox org, KYC, Soft-WTP, Lock, Audit | Out of this 2026-09-26 pass. The listing was still dark then. Soft-WTP, Lock, and Audit stay off. |
 | LICENSE edit to count Polar organizations, or to reinterpret Single-app | Founder lock for this pass: commercial Single-app text unchanged. |
 | Migration adding `livemode_source` or widening `provider` | Column and check already fit. |
 | `next` or `@polar-sh/sdk` at the repo root | Layout test already forbids both shapes. |

@@ -2,11 +2,11 @@
 
 **This clip is the product.** One continuous take. Stripe and Polar in the same clip. Not two provider demos.
 
-**Script only until the founder films and approves it.** This repo has no video.
+**The founder-approved cut is GitHub Release `clip-60s-approved`.** This file is the script. The repo does not store the video bytes. The public post is linked from the README Quickstart. The Polar listing is live as of 2026-09-27 and sells `hooksteel-0.1.1.zip`.
 
 ## Kill criterion
 
-If this one clip cannot beat the Stripe docs and the Hookdeck homepage, do not list. Those pages do not show the same event four times becoming one side effect, a rollback mid-fulfillment that does not grant again, and Stripe and Polar in the same minute. If the clip cannot, stop. Do not add a sixth chaos scenario. Do not pivot to a hosted gateway. Do not split the proof into a Stripe video and a Polar video and call either one the gate.
+If this one clip cannot beat the Stripe docs and the Hookdeck homepage, it is not the buyer clip. Those pages do not show the same event four times becoming one side effect, a rollback mid-fulfillment that does not grant again, and Stripe and Polar in the same minute. If the clip cannot, stop. Do not add a sixth chaos scenario. Do not pivot to a hosted gateway. Do not split the proof into a Stripe video and a Polar video and call either one the gate.
 
 ## Off camera
 
@@ -54,14 +54,10 @@ Do not cut away.
 
 `npm test` remains the code ship gate (all five files). It is not a second demo. The thing that has to beat the Stripe docs and the Hookdeck homepage is this one clip.
 
-## After the founder approves the clip
+## Listing
 
-Order, and no step skipped:
-
-1. This clip, founder-approved.
-2. Post it where the burn already happened. Channels: a tight X thread, Show HN, and Stripe/Polar builder chats. Shape: "we double-provisioned after a 500." Hookdeck honesty in the same breath: use them for ingress; this is the outbox you keep.
-3. Only then may CoS open the Polar listing, as the cash register. CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post. See `docs/POLAR_DELIVERABLES.md`.
+The Polar listing is live as of 2026-09-27. It sells `hooksteel-0.1.1.zip`. See `docs/POLAR_DELIVERABLES.md`. The order that closed go-live was this clip, then a post where the burn already happened (use them for ingress; this is the outbox you keep), then the listing. That order is finished. It is not a new gate.
 
 ## Not in this file
 
-No recording yet. No live keys. No Polar checkout. Soft-WTP off. The purchase-refund window stays 14 days. This clip is not that refund. Listing stays dark.
+No live keys. No Polar checkout URL. Soft-WTP off. The purchase-refund window stays 14 days. This clip is not that refund. The Polar listing is live. Delivery is the public source-available repository plus the Polar zip.

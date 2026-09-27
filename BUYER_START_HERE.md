@@ -2,6 +2,8 @@
 
 HookSteel is a Node kit. Postgres is the ship path.
 
+Delivery is this public source-available repository (https://github.com/yellowgram/hooksteel) and the Polar zip `hooksteel-0.1.1.zip`. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`. The Polar listing is live. No Polar checkout URL in this Quickstart. Sealed `hooksteel-0.1.0.zip` stays grandfathered. Soft-WTP is off.
+
 1. Copy `.env.example` to `.env`. Set `DATABASE_URL` and `STRIPE_WEBHOOK_SECRET` to the `whsec_` that matches how you forward events (Stripe CLI secret and Dashboard endpoint secret are different). For Polar, set `POLAR_WEBHOOK_SECRET` to the endpoint `whsec_` (`polar_whs_` is rejected) and set `POLAR_EXPECT_LIVEMODE=true` on a production Polar endpoint.
 2. `npm ci`
 3. `npm run build` (writes `dist/` for plain Node and the Next example)

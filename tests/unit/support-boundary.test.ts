@@ -6,7 +6,7 @@ const BOUNDARY =
   'Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.';
 
 const OUT_OF_SCOPE =
-  'Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the download and private GitHub access only.';
+  'Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.';
 
 const BOUNDARY_FILES = [
   'SUPPORT.md',
@@ -62,19 +62,55 @@ test('purchase refund window is 14 days on the policy surfaces', () => {
   assert.match(glossary, /not a refund/);
 });
 
-test('the 60s clip is one Stripe and Polar take, and Polar waits on distribution', () => {
-  const clip = 'CoS do not list while the listing is dark, there is no founder-approved clip, and there is no distribution post.';
+test('the 60s clip is one Stripe and Polar take, and the Polar listing is live', () => {
   const breath = 'use them for ingress; this is the outbox you keep';
-  for (const file of ['docs/DEMO_60S.md', 'docs/POLAR_DELIVERABLES.md', 'docs/STATUS.md', 'docs/LANDING.md', 'release/README.md']) {
+  const sell = 'hooksteel-0.1.1.zip';
+  const sha = 'e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9';
+  const checksums = readFileSync('docs/CHECKSUMS.md', 'utf8');
+  assert.equal(checksums.includes(`\`${sell}\` | \`${sha}\``), true);
+  for (const file of [
+    'README.md',
+    'docs/POLAR_DELIVERABLES.md',
+    'docs/STATUS.md',
+    'docs/LANDING.md',
+    'release/README.md',
+    'docs/COMMERCIAL_LOCK.md',
+  ]) {
     const text = readFileSync(file, 'utf8');
-    assert.equal(text.includes(clip), true, file);
-    assert.equal(text.includes(breath), true, file);
-    assert.equal(text.includes('Hookdeck homepage'), true, file);
+    assert.equal(text.includes(sell), true, file);
+    assert.equal(text.includes(sha), true, file);
+    assert.equal(text.includes('public source-available'), true, file);
+    assert.match(text, /listing is live/i, file);
   }
   const demo = readFileSync('docs/DEMO_60S.md', 'utf8');
+  assert.equal(demo.includes(breath), true);
+  assert.equal(demo.includes('Hookdeck homepage'), true);
   assert.match(demo, /One continuous take/);
   assert.match(demo, /Not two provider demos/);
   assert.match(demo, /npm run demo:60s/);
+  assert.match(demo, /listing is live/i);
+  const current = [
+    'README.md',
+    'SUPPORT.md',
+    'BUYER_START_HERE.md',
+    'CHANGELOG.md',
+    'release/README.md',
+    'docs/STATUS.md',
+    'docs/POLAR_DELIVERABLES.md',
+    'docs/LANDING.md',
+    'docs/COMMERCIAL_LOCK.md',
+    'docs/DEMO_60S.md',
+    'docs/REFUND_GLOSSARY.md',
+    'docs/README.md',
+    '.github/ISSUE_TEMPLATE/bug_support.yml',
+  ];
+  const banned = [/listing stays dark/i, /do not publish/i, /release not cut/i, /v0\.1\.1` is not cut/, /v0\.1\.1` is not created/, /\(private\)/];
+  for (const file of current) {
+    const text = readFileSync(file, 'utf8');
+    for (const pattern of banned) {
+      assert.equal(pattern.test(text), false, `${file} ${pattern}`);
+    }
+  }
 });
 
 test('demo and pack scripts stay on the existing five chaos files', () => {

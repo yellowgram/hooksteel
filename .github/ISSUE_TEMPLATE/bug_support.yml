@@ -6,7 +6,7 @@ body:
       value: |
         Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
 
-        Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the download and private GitHub access only.
+        Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
 
         If your request matches that out-of-scope sentence, do not open this Issue. Maintainer auto-reply (then close): the two paragraphs above. Full text: SUPPORT.md.
 
@@ -19,7 +19,7 @@ body:
     attributes:
       label: Kit semver, tag, and checksum
       description: Semver from package.json, git tag, and the SHA-256 in docs/CHECKSUMS.md.
-      placeholder: 0.1.0 / v0.1.0 / sha256…
+      placeholder: 0.1.1 / v0.1.1 / e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9
     validations:
       required: true
 

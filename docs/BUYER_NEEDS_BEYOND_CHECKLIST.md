@@ -1,11 +1,11 @@
 # HookSteel — Buyer / Operator Needs Beyond Minimum-Support
 
 **Filename:** `BUYER_NEEDS_BEYOND_CHECKLIST.md` (kit buyers; dual title = Buyer / Operator)  
-**Audience:** buyer of the **$89–129 Polar zip / private GitHub** (indie SaaS founder / integrator / ops) — not founder income rails  
+**Audience:** buyer of the **$89–129 Polar zip / public source-available GitHub** (indie SaaS founder / integrator / ops) — not founder income rails  
 **Baseline treated as covered:** `docs/MINIMUM_SUPPORT_CHECKLIST.md` (v3) in this repository  
 **Method:** three sequential adversarial expert iterations *after* treating the minimum-support checklist as covered; each adds concrete buyer-owned needs, kills fluff.  
 **Naming:** BUYER_NEEDS (buyer of the kit). Operator needs = how that buyer runs outbox/replay in *their* prod (keel-inspired depth; Polar digital-kit shape from credit-ledger).  
-**Date:** 2026-09-26 ET — design-only; no code/git/outreach/PRs. Soft-WTP OFF. No Lock/Audit/services. Polar dark until ready (yellowgram concern — not a buyer deliverable).
+**Date:** 2026-09-26 ET design notes. Commercial status 2026-09-27: the Polar listing is live. Soft-WTP OFF. No Lock/Audit/services. Sell file `hooksteel-0.1.1.zip` on the public source-available repository.
 
 ---
 
@@ -24,7 +24,7 @@ Treat checklist items (offline fixtures, Postgres chaos CI, demo flags off, live
 7. **Fulfillment economics / side-effect inventory** — List every side effect that must be exactly-once per billing event (credits, license email, GitHub org invite, Slack notify…). Kit does not discover hidden dual paths for you.
 8. **Org / license fit** — Public license is PolyForm Noncommercial 1.0.0 (source-available; not OSI open source; not MIT). Paid commercial production use is the Suthirth Commercial Grant: one organization, the purchased named tag. Prior Single-app kit language folds into that one-organization grant. No resale as competing boilerplate. A second organization is outside the grant. If intent is to republish a starter, **do not buy**.
 9. **Support expectations calibrated** — 60 days GitHub Issues, best-effort, no SLA, ≤~2 h/week founder attention, repro required. Buyer who needs a call / Slack / implementation partner must obtain that elsewhere (not on this Polar SKU).
-10. **Pin target decision** — Keep the Polar zip / tag `v0.1.0` (and checksum when published) as the team’s pin. Floating “whatever email attachment” is a buyer failure mode.
+10. **Pin target decision** — Pin the live Polar zip `hooksteel-0.1.1.zip` / tag `v0.1.1` and the SHA-256 in `docs/CHECKSUMS.md`. Sealed `v0.1.0` stays grandfathered and is not the current sell file. Floating “whatever email attachment” is a buyer failure mode.
 11. **Refund window awareness** — Kit purchase refund window is **14 days** (founder lock 2026-09-26). That is **not** the same as the replay CLI or a provider `order.refunded` webhook. `order.refunded` does not claw back credit. Decide purchase with the chaos demo / fixtures in mind.
 
 ### Unzip, prove, graduate off stubs

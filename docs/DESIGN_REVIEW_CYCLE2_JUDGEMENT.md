@@ -1,3 +1,5 @@
+> **Historical note (pre-go-live).** This judgement is dated 2026-09-26. As of 2026-09-27 the Polar listing is live and sells `hooksteel-0.1.1.zip` (SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`). https://github.com/yellowgram/hooksteel is public and source-available. An action below that says "push to private repo" records that pass. The repository is public. This note does not change Polar settings.
+
 # HookSteel — Cycle-2 design review judgement (HookSteel owner)
 
 **Source:** [`docs/COS_STRIPE_PATH_CYCLE2.yaml`](./COS_STRIPE_PATH_CYCLE2.yaml)  

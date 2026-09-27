@@ -96,7 +96,7 @@ Apply these into `DESIGN_STRIPE_PATH.md` §1 **after** you greenlight (or after 
 | NQ2 | one prod app + one prod Stripe account | test+live of that account = one; second product/account = Multi-app later |
 | NQ3 | add `ignored` | empty adapter map → ignored, HTTP 200 |
 
-Purchase-refund window is **30 days** (founder lock 2026-09-26, [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). This cycle did not pick that number.
+Purchase-refund window is **14 days** (founder lock 2026-09-26, [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). This cycle did not pick that number.
 
 ---
 

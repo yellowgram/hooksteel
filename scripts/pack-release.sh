@@ -68,6 +68,7 @@ with zipfile.ZipFile(zip_path) as zf:
         print("zip comment was not pinned", file=sys.stderr)
         Path(zip_path).unlink(missing_ok=True)
         sys.exit(1)
+    payloads = {path: zf.read(path) for path in names if not path.endswith("/")}
 
 def base(path: str) -> str:
     return path.rstrip("/").split("/")[-1]
@@ -90,6 +91,12 @@ for path in names:
         bad.append(("checksum-inside-zip", path))
     if b.endswith(".zip"):
         bad.append(("nested-zip", path))
+    if not path.endswith("/"):
+        data = payloads[path]
+        checkout_host = b"buy" + b".polar.sh"
+        checkout_id = b"polar" + b"_cl_"
+        if checkout_host in data or checkout_id in data:
+            bad.append(("checkout-url", path))
 
 required = [
     f"{prefix}.env.example",
@@ -105,6 +112,8 @@ required = [
     f"{prefix}docs/POLAR_DELIVERABLES.md",
     f"{prefix}docs/REFUND_GLOSSARY.md",
     f"{prefix}docs/LANDING.md",
+    f"{prefix}docs/COMMERCIAL_GRANT.md",
+    f"{prefix}docs/COMMERCIAL_LOCK.md",
     f"{prefix}tests/chaos/01-duplicate-delivery.test.ts",
     f"{prefix}tests/chaos/02-out-of-order.test.ts",
     f"{prefix}tests/chaos/03-signature-fail.test.ts",
@@ -139,6 +148,14 @@ SHA-256 of the release zip. This file is not inside the zip. A hash stored insid
 - Zip comment: `hooksteel-{version}` (replaces the git commit id `git archive` writes)
 - Omitted: `node_modules/`, `.env` and `.env.local` (`.env.example` stays), `.git/`, database dumps (`*.dump`, `*.backup`, `*.sql.gz`, `pg_dump*`), `release/`, and this file
 - Schema SQL under `migrations/` is included. It is not a database dump.
+
+## Sealed prior artifact
+
+`npm run pack:release` does not rebuild this file. Do not reseal it. Do not move tag `v0.1.0`.
+
+| File | SHA-256 |
+| --- | --- |
+| `hooksteel-0.1.0.zip` | `dddcfe5dca204cd92b2c1b2a10adbb99515d0552a4a5947693aff34a29573a65` |
 
 Verify:
 

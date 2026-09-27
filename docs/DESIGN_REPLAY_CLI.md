@@ -6,7 +6,7 @@
 **Base:** `main` @ `09c4f88d21dae3fc01af6cae27456246b898626c` (Polar path merged, PR #3). Stripe path, Polar verify / `handlePolar`, outbox, drain, replay mutation, five chaos files, and LICENSE stay.  
 **Repo:** https://github.com/yellowgram/hooksteel  
 **This pass:** **Design only.** No application code. No scripts. Soft-WTP OFF. Polar listing dark. No Lock/Audit/services. No hosted gateway.  
-**Purchase-refund window (current policy):** **30 days**, founder lock 2026-09-26. See [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md). This replay-CLI slice did not choose that number. Replay is not that refund. `order.refunded` does not claw back credit. Listing stays dark.  
+**Purchase-refund window (current policy):** **14 days**, founder lock 2026-09-26. See [`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md). This replay-CLI slice did not choose that number. Replay is not that refund. `order.refunded` does not claw back credit. Listing stays dark.  
 **Standing practice:** 3 progressive adversarial **design** iterations in §2. **Founder GREENLIT** 2026-09-26. PQ1 and PQ2 are locked in §3. RD1 and RD2 stay known limits for the implement README. **Implement is a separate later PR** — not this design change.  
 **Date:** 2026-09-26 ET  
 **Evidence read that day:** `src/outbox/replay.ts`, `scripts/outbox-drain.ts`, `migrations/003_dead_letters.sql`, `migrations/004_dead_letters_outbox_unique.sql`, `tests/unit/drain.test.ts`, `package.json` scripts, README drain paragraph, `DESIGN_STRIPE_PATH.md` §1.9, `COS_CODE_REVIEW_PR1.yaml` CR2-A-P2-002, `MINIMUM_SUPPORT_CHECKLIST.md` §C.18 and §G, `MVP_SCOPE.md` replay responsibilities.
@@ -21,7 +21,7 @@
 | `package.json` **scripts only:** `replay:list`, `replay:dry-run`, `replay:execute` | A `bin` entry, a new dependency, `yargs` / `commander`, a global `hooksteel-replay` |
 | `tests/unit/replay-cli.test.ts` — argv only, no Postgres | A sixth chaos file, or edits to `tests/chaos/01`–`05` |
 | README + `BUYER_START_HERE.md` runbook: inspect → dry-run → execute → drain runs the adapter | Worker UI, Grafana, a hosted drain, a drain spawned by execute |
-| Glossary sentence: replay ≠ Polar purchase refund | Picking the number was outside this slice. Current policy is **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). `order.refunded` clawback, Polar listing, and KYC stay out. |
+| Glossary sentence: replay ≠ Polar purchase refund | Picking the number was outside this slice. Current policy is **14 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). `order.refunded` clawback, Polar listing, and KYC stay out. |
 | One known-limit sentence for CR2-A-P2-002 (deferred, not fixed) | Relabeling `$1` inside `statementsFor`, or adding a billing-event id field to `ReplayDryRun` |
 | `docs/STATUS.md` on the **implement** PR, after greenlight, to record that implement | CR3 P2s (published MAC pin, Stripe label on the first HTTP table), LICENSE Polar-org clause, zip / checksum / landing / 60s demo |
 
@@ -278,7 +278,7 @@ Prose the implement section must include:
 
 **Glossary (required in README `## Replay` and in `BUYER_START_HERE.md`):**
 
-> **Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. **Replay is not a Polar purchase refund.** A Polar refund returns the money paid for this kit. The purchase-refund window is 30 days. `order.refunded` stays ignored and does not claw back credit.
+> **Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. **Replay is not a Polar purchase refund.** A Polar refund returns the money paid for this kit. The purchase-refund window is 14 days. `order.refunded` stays ignored and does not claw back credit.
 
 `BUYER_START_HERE.md` gains one step after the existing drain step, and stays a single short page:
 
@@ -300,7 +300,7 @@ No new `GLOSSARY.md`. No Polar listing copy. Listing stays dark.
 | R14 | Do not “fix” CR2-A-P2-002 or the CR3 P2s inside the replay implement PR. |
 | H2 / H3 | Adapter map and `skipped_no_email` unchanged. |
 | Polar PQ1 / PD1–PD4 | Already merged at `09c4f88`. This slice does not edit verify or `handlePolar`. |
-| Refund window | **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). Glossary names replay, the purchase refund, and `order.refunded` as three different things. |
+| Refund window | **14 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). Glossary names replay, the purchase refund, and `order.refunded` as three different things. |
 | Soft-WTP / Lock / Audit / hosted gateway | Off. |
 | MVP_SCOPE “log who/when” | **PQ2 locked:** execute stdout JSON (`deadLetterId`, `outboxId`, `adapter`) is the operator note. No `--operator` flag. No `replayed_by` column / migration. Whoever holds `DATABASE_URL` can run it. |
 | MVP_SCOPE “dry-run prints intended adapter calls” | Superseded by the shipped dry-run, which prints bound `UPDATE`s plus `adapter`. This slice prints that object. It does not invent an adapter-call preview, because the payload is not in the return value. |
@@ -372,7 +372,7 @@ Each iteration attacks the design as it stood after the previous one. Accepted r
 | --- | --- |
 | npm scripts only. No `package.json` `"bin"`. No new dependency. | `hooksteel-replay` in §1.9 was the name of a later slice. This slice’s brief is `npm run`. Founder locked that supersession on 2026-09-26 (PQ1). See §3. |
 | README + `BUYER_START_HERE` get the four-step runbook and the glossary sentence | MINIMUM_SUPPORT §C.18 and §G.34–§G.35. The design PR does not edit those buyer files. The implement PR does. |
-| Glossary distinguishes replay from a Polar purchase refund | Naming the words is the support fix. The window is **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). This slice did not edit that page. |
+| Glossary distinguishes replay from a Polar purchase refund | Naming the words is the support fix. The window is **14 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). This slice did not edit that page. |
 | Argv unit test only. Chaos files untouched. | Mutation proof already exists. A CLI chaos file would be a sixth scenario or a disguise of one. |
 | `src/index.ts` unchanged | The three functions and `ReplayRefusedError` are already exported. The script imports the source files the way the drain script does. |
 | Execute JSON is the who/when note | MVP_SCOPE asked for a local operator note. An audit column is a migration. Founder locked terminal JSON only on 2026-09-26 (PQ2). See §3. |
@@ -387,7 +387,7 @@ Each iteration attacks the design as it stood after the previous one. Accepted r
 | Editing verify, `handlePolar`, `handle`, drain, migrations, adapters | Out of slice. A Polar dead letter is an outbox row. |
 | LICENSE Polar-org clause | Polar PQ2: LICENSE stays byte-identical until a listing decision. |
 | CR3-B-P2-001, CR3-C-P2-001 | Deferred at Polar merge. Not replay work. |
-| `order.refunded` clawback | Stays out. Purchase-refund window is **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). |
+| `order.refunded` clawback | Stays out. Purchase-refund window is **14 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). |
 | Zip, checksum, landing page, 60s demo, Polar listing, KYC | Ready gate, still later. Listing stays dark. |
 | Soft-WTP, Lock, Audit, services, hosted gateway | Off. |
 | Implement-now inside this design PR | Founder greenlit the design. Implement is a separate later PR. |
@@ -418,7 +418,7 @@ Each iteration attacks the design as it stood after the previous one. Accepted r
 | **Recommendation** | **Yes. Stdout only.** No `--operator` flag, no `replayed_by` column, no new table. Whoever can read `DATABASE_URL` can run the command. Buyer owns that access. Yellowgram is not the on-call. |
 | **Answer** | **`terminal_json_only`.** Locked 2026-09-26. |
 | Lock | - Execute stdout JSON (`deadLetterId`, `outboxId`, `adapter`) is the operator note<br>- No `--operator` flag<br>- No `replayed_by` column / migration<br>- Whoever holds `DATABASE_URL` can run it |
-| Not in this answer | The refund window. Current policy is **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). |
+| Not in this answer | The refund window. Current policy is **14 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). |
 
 ### RD1 and RD2 — known limits for the implement README
 
@@ -443,7 +443,7 @@ Unchanged by this greenlight. They are README known limits. They are not a patch
 | Chaos | Exactly five files. No new chaos case. |
 | CR3 P2s | Not this PR and not the replay implement PR. |
 | LICENSE | Byte-identical. |
-| Refund window | **30 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). Glossary states replay ≠ Polar purchase refund. |
+| Refund window | **14 days** ([`REFUND_GLOSSARY.md`](./REFUND_GLOSSARY.md)). Glossary states replay ≠ Polar purchase refund. |
 | Polar listing / KYC / Soft-WTP / Lock / Audit / gateway | Dark / off. |
 | Implement inside the design PR | **No.** Separate later PR. |
 

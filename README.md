@@ -9,7 +9,7 @@
 | SKU | One. Do not run two Polar products. |
 | Contact | hello@yellowgram.dev |
 | Site | https://www.yellowgram.dev |
-| License | Single-app: one production application and one production Stripe account |
+| License | PolyForm Noncommercial 1.0.0 (source-available; not OSI; not MIT). Paid commercial use: Suthirth Commercial Grant |
 
 Not a hosted gateway. Soft-WTP off. Polar listing dark until the ready gate. Stripe and Polar webhooks both verify into the same outbox. `billing_events.provider` already allows `'polar'`.
 
@@ -177,7 +177,7 @@ npm run replay:execute -- <dead_letter_id>
 npm run outbox:drain -- --once
 ```
 
-**Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. **Replay is not a Polar purchase refund.** A Polar refund returns the money paid for this kit. The purchase-refund window is 30 days. `order.refunded` stays ignored and does not claw back credit. The three names are separated in [docs/REFUND_GLOSSARY.md](./docs/REFUND_GLOSSARY.md).
+**Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. **Replay is not a Polar purchase refund.** A Polar refund returns the money paid for this kit. The purchase-refund window is 14 days. `order.refunded` stays ignored and does not claw back credit. The three names are separated in [docs/REFUND_GLOSSARY.md](./docs/REFUND_GLOSSARY.md).
 
 **Inspect** is `replay:list`. Read `reason`, `adapter`, and `replayed_at`. `replayed_at: null` is open. Rows that already have `replayed_at` set stay in the list. v0.1 drain writes `max_attempts` and `poison`. `timeout` and `adapter_error` are reserved and this drain does not write them.
 
@@ -357,16 +357,21 @@ Support is GitHub Issues for 60 days from purchase. It is best-effort. There is 
 
 ## License
 
-Commercial kit, not MIT. The Single-app grant is one production application and one production Stripe account (test and live keys of that same account count as one). See `LICENSE`.
+Source-available under the PolyForm Noncommercial License 1.0.0. That public license is not an OSI-approved open source license. It is not MIT. The text is `LICENSE`.
+
+Paid commercial production use is the Suthirth Commercial Grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See [docs/COMMERCIAL_GRANT.md](./docs/COMMERCIAL_GRANT.md).
+
+Not a hosted gateway. Soft-WTP is off. No coupon. Price and refund lock: [docs/COMMERCIAL_LOCK.md](./docs/COMMERCIAL_LOCK.md). Already-distributed `v0.1.0` zips keep the terms that shipped inside them.
 
 ## Docs
 
 - [SUPPORT](./SUPPORT.md) — 60-day boundary
 - [60s demo script](./docs/DEMO_60S.md) — script only; founder films later
-- [Refund glossary](./docs/REFUND_GLOSSARY.md) — 30-day purchase refund, replay CLI, and `order.refunded`
+- [Refund glossary](./docs/REFUND_GLOSSARY.md) — 14-day purchase refund, replay CLI, and `order.refunded`
 - [Landing copy](./docs/LANDING.md) — Hookdeck honesty; not a deployed site
 - [Changelog](./CHANGELOG.md) · [Checksums](./docs/CHECKSUMS.md)
 - [Polar deliverables (CoS, listing stays dark)](./docs/POLAR_DELIVERABLES.md)
+- [Suthirth Commercial Grant](./docs/COMMERCIAL_GRANT.md) · [Commercial lock](./docs/COMMERCIAL_LOCK.md)
 - [STATUS](./docs/STATUS.md)
 - [DESIGN — Stripe path + chaos](./docs/DESIGN_STRIPE_PATH.md) — §1 is the contract this tree implements
 - [Cycle-2 judgement](./docs/DESIGN_REVIEW_CYCLE2_JUDGEMENT.md)

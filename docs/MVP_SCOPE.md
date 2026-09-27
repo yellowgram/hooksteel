@@ -2,7 +2,7 @@
 
 **Owner:** yellowgram  
 **Product:** HookSteel — Billing Event Reliability Kit  
-**Price:** $89 founding → $129 list; optional Multi-app $249 later (**Single-app only at launch**)  
+**Price:** $89 founding → $129 list. One SKU. No coupon. Public license from 0.1.1: PolyForm Noncommercial 1.0.0 (source-available; not OSI open source; not MIT). Paid commercial use: Suthirth Commercial Grant.  
 **Deliverable:** Private GitHub (`yellowgram/hooksteel`) + zip. **Not** a hosted Hookdeck clone. **Not** services / Lock / Audit. Soft-WTP OFF.  
 **ICP:** Global-English indie/SaaS founders on Stripe and/or Polar. **No India-ICP.**  
 **Contact:** hello@yellowgram.dev · www.yellowgram.dev  
@@ -25,7 +25,7 @@
 5. **Replay CLI** — re-drive stored / dead-lettered events safely (idempotent).
 6. **Drop-in adapter stubs** — grant credit / send email / invite GitHub (interfaces + no-op or demo stubs).
 7. **README honesty** — when to use **Hookdeck** (hosted gateway) instead of this kit.
-8. **Commercial license** — one org (Single-app); use/modify OK; no resale as competing boilerplate; no warranty for billing correctness in buyer prod.
+8. **Commercial license** — PolyForm Noncommercial 1.0.0 for the public tree; Suthirth Commercial Grant for paid commercial production (one organization, the purchased named tag). Prior Single-app kit language folds into that one-organization grant. No resale as competing boilerplate. No warranty for billing correctness in buyer prod. Not OSI. Not MIT.
 9. **Support boundary** — 60-day GitHub Issues, best-effort, no SLA, ≤2h/wk kill if exceeded.
 10. **Offline-capable fixtures** — prove Stripe + Polar paths without live provider accounts for the happy-path demo (live keys optional later).
 

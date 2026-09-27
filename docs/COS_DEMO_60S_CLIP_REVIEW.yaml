@@ -66,7 +66,7 @@ kill_criterion_quoted: >-
 standing_constraints:
   - no_soft_wtp
   - polar_listing_dark
-  - refund_30d
+  - refund_14d
   - do_not_reseal_zip
   - clip_lives_on_release_tag
   - launchgate_film_hash_holds
@@ -307,7 +307,7 @@ iterations:
         issue: Buyer master must exist before X / Show HN / Polar
         change_required: >-
           Sequence — buyer master (all P1s) → founder distribution post →
-          founder types go-live → CoS lists Polar (refund 30d). No reorder.
+          founder types go-live → CoS lists Polar (refund 14d). No reorder.
       - id: CLIP-P2-004
         severity: P2
         accepted: true

@@ -43,4 +43,4 @@ These notes name outside patterns. They are not paths in this repository, and th
 - Operator depth: keel minimum-ops checklist
 - Product lock: digital-product-hunt decision #1 (HookSteel)
 
-*Last updated: 2026-09-26 ET — Stripe path merged at f25f235; Polar path merged at 09c4f88; replay CLI implement merged at c6a4012. Ready-gate docs are in this tree (`SUPPORT.md`, `docs/DEMO_60S.md`, `docs/LANDING.md`, `docs/POLAR_DELIVERABLES.md`, `docs/REFUND_GLOSSARY.md`, `docs/CHECKSUMS.md`, `CHANGELOG.md`). Listing stays dark until the founder-approved clip and the distribution post. Purchase-refund window 30 days.*
+*Last updated: 2026-09-26 ET — Stripe path merged at f25f235; Polar path merged at 09c4f88; replay CLI implement merged at c6a4012. Ready-gate docs are in this tree (`SUPPORT.md`, `docs/DEMO_60S.md`, `docs/LANDING.md`, `docs/POLAR_DELIVERABLES.md`, `docs/REFUND_GLOSSARY.md`, `docs/CHECKSUMS.md`, `CHANGELOG.md`). Listing stays dark until the founder-approved clip and the distribution post. Purchase-refund window 14 days.*

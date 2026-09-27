@@ -35,7 +35,7 @@ Missing the clip, the post, or go-live means do not list. A cover image does not
 | List price in the description | **$129 USD** |
 | Founding window | Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. |
 | SKU | One Polar product. Do not open a second product to change the price. |
-| License | PolyForm Noncommercial 1.0.0 (`LICENSE`; source-available; not OSI open source; not MIT). Paid commercial use: Suthirth Commercial Grant (`docs/COMMERCIAL_GRANT.md`) — one organization, the purchased named tag, perpetual for that tag; one production application and one production Stripe account (test and live keys of that same account count as one). |
+| License | PolyForm Noncommercial 1.0.0 (`LICENSE`; source-available; not OSI open source; not MIT). Paid commercial use: Suthirth Commercial Grant (`docs/COMMERCIAL_GRANT.md`) — one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. |
 | Not on this listing | Multi-app, Lock, Audit, Soft-WTP, hosted gateway, implementation services, Credit Ledger |
 
 Soft-WTP is **off**. Do not add a waitlist, a "email me forever updates" benefit, or an outreach toggle.
@@ -52,7 +52,7 @@ HookSteel is owned code for Stripe and Polar webhooks. The same billing event fo
 
 You get a private GitHub repository and a zip. The live Polar file stays `hooksteel-0.1.0.zip` until CoS republish after the 0.1.1 license fence is on `main`. The fence pack is `hooksteel-0.1.1.zip`. Do not unlist from this packet. You run Postgres. Your Stripe account and your Polar account stay yours. There is no hosted webhook gateway in this purchase.
 
-**Price:** Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. Soft-WTP is off. The purchase-refund window is 30 days. **License:** PolyForm Noncommercial 1.0.0 for the public tree (source-available; not OSI open source; not MIT). Paid commercial production use is the Suthirth Commercial Grant: one organization, for the purchased named tag, perpetual for that tag; one production application and one production Stripe account (test and live keys of that same account count as one). See `LICENSE` and `docs/COMMERCIAL_GRANT.md`.
+**Price:** Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. Soft-WTP is off. The purchase-refund window is 30 days. **License:** PolyForm Noncommercial 1.0.0 for the public tree (source-available; not OSI open source; not MIT). Paid commercial production use is the Suthirth Commercial Grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See `LICENSE` and `docs/COMMERCIAL_GRANT.md`.
 
 **Use Hookdeck when** you need hosted ingress, fan-out, a team dashboard, or you do not want to run an outbox worker. **Use HookSteel when** the fear is a side effect that already ran inside a transaction that then rolls back, and you want that code in your repo for Stripe and Polar. Use both only if you want Hookdeck in front and this kit inside. Do not buy HookSteel if you want yellowgram to host your webhooks.
 

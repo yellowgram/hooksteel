@@ -359,7 +359,7 @@ Support is GitHub Issues for 60 days from purchase. It is best-effort. There is 
 
 Source-available under the PolyForm Noncommercial License 1.0.0. That public license is not an OSI-approved open source license. It is not MIT. The text is `LICENSE`.
 
-Paid commercial production use is the Suthirth Commercial Grant: one organization, for the purchased named tag, perpetual for that tag. The grant keeps the prior product scope: one production application under that organization and one production Stripe account (test and live keys of that same account count as one). See [docs/COMMERCIAL_GRANT.md](./docs/COMMERCIAL_GRANT.md).
+Paid commercial production use is the Suthirth Commercial Grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See [docs/COMMERCIAL_GRANT.md](./docs/COMMERCIAL_GRANT.md).
 
 Not a hosted gateway. Soft-WTP is off. No coupon. Price and refund lock: [docs/COMMERCIAL_LOCK.md](./docs/COMMERCIAL_LOCK.md). Already-distributed `v0.1.0` zips keep the terms that shipped inside them.
 

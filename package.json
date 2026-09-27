@@ -1,7 +1,7 @@
 {
   "name": "hooksteel",
   "version": "0.1.1",
-  "license": "PolyForm-Noncommercial-1.0.0",
+  "license": "LicenseRef-PolyForm-Noncommercial-1.0.0",
   "private": true,
   "description": "Billing event reliability kit: Stripe and Polar signed webhooks, same-transaction outbox, minimal drain.",
   "type": "module",

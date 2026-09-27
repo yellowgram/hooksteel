@@ -1,12 +1,22 @@
-HookSteel
+# yellowgram — source-available (not OSI open source)
 
-Copyright (c) 2026 yellowgram / Suthirth solutions
+Copyright (c) 2026 yellowgram
 
-The public license for this repository is the PolyForm Noncommercial License 1.0.0, reproduced in full below. This public license is source-available. It is not an OSI-approved open source license. It is not the MIT license.
+This repository is offered under the PolyForm Noncommercial License 1.0.0
+(the full official license text follows this header, unchanged).
 
-Paid commercial use is not granted by the text below. Buyers of the Polar kit receive the Suthirth Commercial Grant in docs/COMMERCIAL_GRANT.md.
+Commercial production use, or any use outside that noncommercial license,
+requires a paid **Suthirth Commercial Grant** from Suthirth solutions for
+this product. The grant is sold via the Polar kit listing. Terms:
+docs/COMMERCIAL_GRANT.md.
 
-Required Notice: Copyright yellowgram / Suthirth solutions (https://www.yellowgram.dev)
+Claims: source-available = true. OSI “open source” = false.
+Seller: Suthirth solutions. Contact: hello@yellowgram.dev
+https://www.yellowgram.dev
+
+Required Notice: Copyright yellowgram (https://www.yellowgram.dev)
+
+---
 
 # PolyForm Noncommercial License 1.0.0
 

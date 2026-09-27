@@ -1,48 +1,51 @@
 # Suthirth Commercial Grant
 
-**Product:** HookSteel — Billing Event Reliability Kit  
+**Product:** HookSteel  
 **Seller:** Suthirth solutions  
 **Contact:** hello@yellowgram.dev · https://www.yellowgram.dev  
-**Public license:** PolyForm Noncommercial License 1.0.0 (`LICENSE`)  
-**Grant:** paid commercial production use for a buyer of the Polar kit
+**Public license:** PolyForm Noncommercial 1.0.0 (`LICENSE`) — source-available; not OSI open source  
+**Soft-WTP:** off (no coupons, no cold invoices)
 
-The public `LICENSE` is source-available. It is not an OSI-approved open source license. It is not the MIT license. PolyForm Noncommercial does not permit commercial production use. This grant is a separate license from the copyright holder (yellowgram / Suthirth solutions). It does not change the PolyForm text. It is not a sublicense under PolyForm.
+## What you buy
 
-Price, the refund window, and the single SKU are locked in [COMMERCIAL_LOCK.md](./COMMERCIAL_LOCK.md). Soft-WTP is off. There is no coupon.
+A paid Polar purchase of the **HookSteel** self-host kit grants **one organization** a **Suthirth Commercial Grant** for that kit.
 
-## Who receives it
+| Term | Grant |
+| --- | --- |
+| Scope | **One organization** (the buyer named on the Polar order) |
+| Version | The **named git tag** delivered with that purchase (and its sealed zip SHA) |
+| Duration | **Perpetual** for that named tag |
+| Rights | Use and modify the kit for that organization’s own commercial production purposes for the product’s intended function |
+| Delivery | Kit zip + checksums as listed on Polar for that tag (and GitHub access when the listing includes it) |
+| Support | GitHub Issues for 60 days from purchase (best-effort, no SLA) — no SLA unless a separate written agreement says otherwise |
+| Refund | As stated on the Polar listing at purchase time (do not invent a longer window here) |
 
-A purchase of HookSteel from **Suthirth solutions** on Polar grants this license to **one organization**: the organization that bought that named release tag.
+HookSteel’s intended function is the billing-event reliability kit (Stripe and Polar webhooks / outbox). This commercial grant covers one organization’s production use of that kit. Prior Single-app kit language folds into this one-organization grant.
 
-The grant is **perpetual for that named tag** (the version purchased, for example `v0.1.1`). It does not include later tags. A later tag is outside this purchase.
+Price for the current kit SKU is set on Polar / yellowgram.dev Current card (founding $89 for first 10 licenses OR 30 days after go-live whichever first, then $129; one SKU). Do **not** put Polar checkout URLs in the README or inside the zip.
 
-## Production scope
+## What this grant does **not** include
 
-For that one organization, and for that named tag only, you may use and modify the kit in commercial production, limited to:
+- Rights for a **second organization** (each org needs its own purchase)
+- Rights to **other tags** or future major lines unless separately purchased or explicitly upgraded in writing
+- Permission to **resell, sublicense, republish, or redistribute** the kit (or a substantial portion) as a competing starter, boilerplate, template, course, or hosted service
+- **Self-host production rights** bundled into any **hosted** SKU (hosted is separate; it does not sell the self-host grant)
+- Permission to run a **competing hosted** offering of HookSteel
+- Any OSI “open source” grant; payment does not convert the public PolyForm Noncommercial terms into MIT/Apache/BSD
 
-- **one production application** under that organization, and
-- **one production Stripe account**.
+## Relationship to `LICENSE`
 
-Test-mode and live-mode keys of that same Stripe account count as one account. A second production application, or a second production Stripe account, is outside this grant.
+Without this grant, only PolyForm Noncommercial 1.0.0 applies.  
+With this grant, the named organization may use the named tag commercially as above. The public PolyForm text in `LICENSE` stays the public fence for everyone else.
 
-That is the prior Single-app scope, kept explicit. A later License Gate may tighten it. This grant does not widen it. The grantee is not a count of GitHub organizations, and it is not a bundle of sister companies. There is no revenue royalty on the one production application.
+## Prior distributions
 
-Shipping the kit inside that one production application is the use this grant allows.
+Tags and zips already shipped under an older license (for example MIT, or a prior custom commercial license) are **not rewritten**. Rights already granted for those sealed artifacts are not clawed back. New purchases and new tags use this grant + PolyForm Noncommercial fence.
 
-## No competing starter
+## Operator responsibility
 
-You may not redistribute, resell, sublicense, or republish this kit — or a substantial portion of it — as a competing starter, boilerplate, template, theme, or course. Handing the kit out as a starter is not this grant.
+HookSteel is provided **as is**. You remain responsible for production correctness, compliance, and decisions made from its outputs. This is not legal, tax, or accounting advice.
 
-## What this purchase is not
+---
 
-This purchase is not a hosted webhook gateway. Yellowgram does not run your webhooks. Your Stripe account and your Polar account stay yours.
-
-Soft-WTP is off. This grant is not a waitlist and not an updates-for-life benefit. No Lock product. No Audit product. No implementation service.
-
-## v0.1.0 copies stay as distributed
-
-This fence applies forward. It does not claw back rights on copies of `hooksteel-0.1.0.zip` that were already distributed, including the asset on GitHub Release `v0.1.0`. Those copies stay under the commercial kit terms that were inside them. This grant does not rewrite that zip and does not move that tag.
-
-## No warranty
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. YOU ARE RESPONSIBLE FOR BILLING CORRECTNESS IN PRODUCTION. THIS KIT DOES NOT PROVIDE LEGAL, TAX, OR ACCOUNTING ADVICE AND IS NOT AFFILIATED WITH STRIPE, POLAR, OR HOOKDECK. Outbox proves side-effect-after-commit and idempotency keys. It does not certify PCI, charge correctness, or tax.
+*Fill placeholders before merge: PRODUCT_NAME, SUPPORT_WINDOW, PRICE_NOTE. Keep Soft-WTP off. Keep checkout URLs out of README/zip.*

@@ -79,7 +79,7 @@ test('demo and pack scripts stay on the existing five chaos files', () => {
     version: string;
     scripts: Record<string, string>;
   };
-  assert.equal(pkg.version, '0.1.0');
+  assert.equal(pkg.version, '0.1.1');
   assert.equal(
     pkg.scripts['demo:60s'],
     'tsx --test --test-concurrency=1 tests/chaos/01-duplicate-delivery.test.ts tests/chaos/05-db-rollback-mid-fulfillment.test.ts',

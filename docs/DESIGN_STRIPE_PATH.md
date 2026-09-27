@@ -458,6 +458,8 @@ Full CLI = later slice; schema `replayed_at` + mutation locked now.
 
 ### 1.10 LICENSE stub (credit-ledger tone — text to ship later)
 
+**Superseded 2026-09-27.** The paragraphs below are the v0.1.0 design stub. They are not the public license. The public license is `LICENSE` (PolyForm Noncommercial 1.0.0; source-available; not an OSI-approved open source license; not MIT). Paid commercial use is `docs/COMMERCIAL_GRANT.md`.
+
 Commercial kit license — HookSteel  
 
 Copyright (c) 2026 yellowgram  

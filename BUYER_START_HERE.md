@@ -18,6 +18,6 @@ The Next example reads `examples/next/.env.local`, not the repo-root `.env`. See
 
 The Stripe webhook handler is `handle({ rawBody, signature })`. The Polar webhook handler is `handlePolar({ rawBody, webhookId, webhookTimestamp, webhookSignature })`. Pass the raw request body string. `npm test` covers both HMAC key eras and the five chaos files (Polar cases live in those files). The Next.js routes under `examples/next` are examples only.
 
-Replace `grant_credit`, `send_email`, and `invite_github` with your own adapters. `invite_github` and `invoice.paid → [grant_credit]` are opt-in. See `README.md` for the HTTP status contract, Hookdeck honesty, and license (Single-app = one production application and one production Stripe account).
+Replace `grant_credit`, `send_email`, and `invite_github` with your own adapters. `invite_github` and `invoice.paid → [grant_credit]` are opt-in. See `README.md` for the HTTP status contract and Hookdeck honesty. The public license is PolyForm Noncommercial 1.0.0 (`LICENSE`; source-available; not OSI open source; not MIT). Paid commercial production use is the Suthirth Commercial Grant in `docs/COMMERCIAL_GRANT.md`: one organization, the purchased named tag, perpetual for that tag; one production application and one production Stripe account (test and live of that same account count as one).
 
 [SUPPORT.md](./SUPPORT.md) · [60s demo script](./docs/DEMO_60S.md) · [Refund glossary](./docs/REFUND_GLOSSARY.md) · Hookdeck: [README](./README.md#hookdeck) and [landing copy](./docs/LANDING.md).

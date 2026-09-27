@@ -9,7 +9,7 @@
 | SKU | One. Do not run two Polar products. |
 | Contact | hello@yellowgram.dev |
 | Site | https://www.yellowgram.dev |
-| License | Single-app: one production application and one production Stripe account |
+| License | PolyForm Noncommercial 1.0.0 (source-available; not OSI; not MIT). Paid commercial use: Suthirth Commercial Grant |
 
 Not a hosted gateway. Soft-WTP off. Polar listing dark until the ready gate. Stripe and Polar webhooks both verify into the same outbox. `billing_events.provider` already allows `'polar'`.
 
@@ -357,7 +357,11 @@ Support is GitHub Issues for 60 days from purchase. It is best-effort. There is 
 
 ## License
 
-Commercial kit, not MIT. The Single-app grant is one production application and one production Stripe account (test and live keys of that same account count as one). See `LICENSE`.
+Source-available under the PolyForm Noncommercial License 1.0.0. That public license is not an OSI-approved open source license. It is not MIT. The text is `LICENSE`.
+
+Paid commercial production use is the Suthirth Commercial Grant: one organization, for the purchased named tag, perpetual for that tag. The grant keeps the prior product scope: one production application under that organization and one production Stripe account (test and live keys of that same account count as one). See [docs/COMMERCIAL_GRANT.md](./docs/COMMERCIAL_GRANT.md).
+
+Not a hosted gateway. Soft-WTP is off. No coupon. Price and refund lock: [docs/COMMERCIAL_LOCK.md](./docs/COMMERCIAL_LOCK.md). Already-distributed `v0.1.0` zips keep the terms that shipped inside them.
 
 ## Docs
 
@@ -367,6 +371,7 @@ Commercial kit, not MIT. The Single-app grant is one production application and 
 - [Landing copy](./docs/LANDING.md) — Hookdeck honesty; not a deployed site
 - [Changelog](./CHANGELOG.md) · [Checksums](./docs/CHECKSUMS.md)
 - [Polar deliverables (CoS, listing stays dark)](./docs/POLAR_DELIVERABLES.md)
+- [Suthirth Commercial Grant](./docs/COMMERCIAL_GRANT.md) · [Commercial lock](./docs/COMMERCIAL_LOCK.md)
 - [STATUS](./docs/STATUS.md)
 - [DESIGN — Stripe path + chaos](./docs/DESIGN_STRIPE_PATH.md) — §1 is the contract this tree implements
 - [Cycle-2 judgement](./docs/DESIGN_REVIEW_CYCLE2_JUDGEMENT.md)

@@ -9,7 +9,7 @@ Same billing event four times → still one side effect. Owned outbox. Stripe an
 | Founding | $89 for the first 10 licenses OR 30 days after go-live, whichever comes first |
 | List | $129 after that window |
 | SKU | One. Do not run two Polar products. |
-| License | Single-app: one production application and one production Stripe account |
+| License | PolyForm Noncommercial 1.0.0 (source-available; not OSI; not MIT). Paid commercial use: Suthirth Commercial Grant |
 | ICP | Global English. Indie and SaaS founders on Stripe and/or Polar. |
 | Contact | hello@yellowgram.dev · https://www.yellowgram.dev |
 
@@ -23,7 +23,7 @@ You run it on your database. Your Stripe account and your Polar account stay you
 
 ## What it is not
 
-Not a hosted webhook gateway. Not Hookdeck. Not a yellowgram-operated ingress. Not Lock, Audit, or implementation services. Not Soft-WTP. Not Credit Ledger. Stripe signature checks use the `stripe` package this kit already depends on. Polar signature checks use Node `crypto`, not a Polar SDK.
+Not a hosted webhook gateway. Not Hookdeck. Not a yellowgram-operated ingress. Not Lock, Audit, or implementation services. Not Soft-WTP. Not Credit Ledger. Not an OSI-approved open source license. Not MIT. The public license is PolyForm Noncommercial 1.0.0. Paid commercial production use is the Suthirth Commercial Grant (`docs/COMMERCIAL_GRANT.md`): one organization, the purchased named tag, perpetual for that tag; one production application and one production Stripe account (test and live of that same account count as one). Stripe signature checks use the `stripe` package this kit already depends on. Polar signature checks use Node `crypto`, not a Polar SDK.
 
 Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the download and private GitHub access only.
 

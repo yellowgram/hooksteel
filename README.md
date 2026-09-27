@@ -32,9 +32,12 @@ cp .env.example .env
 npm ci
 npm run build
 npm run migrate
+npm run demo
 npm test
 npm run outbox:drain -- --once
 ```
+
+`npm run demo` is the sealed fixture smoke, the same command as `npm run demo:60s` (chaos 01 and 05). Fixture-only (no live Stripe/Polar keys); Soft-WTP is OFF. [Watch demo](https://x.com/yellowgram/status/2104030413622816842).
 
 `npm test` does not boot Next.js. Next 15 is an example under `examples/next` only. The root package does not depend on `next`. `npm run build` writes `dist/` (plain Node). Migrate and the drain script run the TypeScript sources with `tsx` and do not need that build. The Next example imports the built package; see `examples/next/README.md` for its own `.env.local` (`next dev` does not read the repo-root `.env`).
 
@@ -366,7 +369,7 @@ Not a hosted gateway. Soft-WTP is off. No coupon. Price and refund lock: [docs/C
 ## Docs
 
 - [SUPPORT](./SUPPORT.md) — 60-day boundary
-- [60s demo script](./docs/DEMO_60S.md) — script only; founder films later
+- [60s demo script](./docs/DEMO_60S.md) — film script for `npm run demo:60s`
 - [Refund glossary](./docs/REFUND_GLOSSARY.md) — 14-day purchase refund, replay CLI, and `order.refunded`
 - [Landing copy](./docs/LANDING.md) — Hookdeck honesty; not a deployed site
 - [Changelog](./CHANGELOG.md) · [Checksums](./docs/CHECKSUMS.md)

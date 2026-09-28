@@ -8,13 +8,13 @@
 | List | $129 after that window |
 | SKU | One. Do not run two Polar products. |
 | Contact | hello@yellowgram.dev |
-| Site | https://www.yellowgram.dev |
+| Site | https://www.yellowgram.dev/hooksteel |
 | Repo | https://github.com/yellowgram/hooksteel (public, source-available) |
 | Sell file | `hooksteel-0.1.1.zip` |
 | SHA-256 | `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` |
 | License | PolyForm Noncommercial 1.0.0 (source-available; not OSI; not MIT). Paid commercial use: HookSteel commercial grant |
 
-Not a hosted gateway. Soft-WTP off. The Polar listing is live and sells `hooksteel-0.1.1.zip`. Delivery is this public source-available repository plus that zip. No Polar checkout URL in this README. Stripe and Polar webhooks both verify into the same outbox. `billing_events.provider` already allows `'polar'`.
+Not a hosted gateway. The Polar listing is live and sells `hooksteel-0.1.1.zip`. Delivery is this public source-available repository plus that zip. No Polar Checkout URL in this README. Buy: [www.yellowgram.dev/hooksteel](https://www.yellowgram.dev/hooksteel) or hello@yellowgram.dev. Stripe and Polar webhooks both verify into the same outbox. `billing_events.provider` already allows `'polar'`.
 
 ## What HookSteel guarantees
 
@@ -40,7 +40,7 @@ npm test
 npm run outbox:drain -- --once
 ```
 
-`npm run demo` is the sealed fixture smoke, the same command as `npm run demo:60s` (chaos 01 and 05). Fixture-only (no live Stripe/Polar keys); Soft-WTP is OFF. [Watch demo](https://x.com/yellowgram/status/2104030413622816842).
+`npm run demo` is the sealed fixture smoke, the same command as `npm run demo:60s` (chaos 01 and 05). Fixture-only (no live Stripe/Polar keys). [Watch demo](https://x.com/yellowgram/status/2104030413622816842).
 
 `npm test` does not boot Next.js. Next 15 is an example under `examples/next` only. The root package does not depend on `next`. `npm run build` writes `dist/` (plain Node). Migrate and the drain script run the TypeScript sources with `tsx` and do not need that build. The Next example imports the built package; see `examples/next/README.md` for its own `.env.local` (`next dev` does not read the repo-root `.env`).
 
@@ -218,7 +218,7 @@ If migrate fails, fix the database and re-run. Do not hand-edit a file that only
 5. Use both when — Hookdeck in front, HookSteel inside (optional; document; do not require).
 6. Do not buy HookSteel if — you want yellowgram to host your webhooks.
 
-Landing copy with the same six points: [docs/LANDING.md](./docs/LANDING.md). That file is not a deployed site. The Polar listing is live and sells `hooksteel-0.1.1.zip` (founding $89 → list $129; SHA-256 in `docs/CHECKSUMS.md`). No Polar checkout URL in this README.
+Landing copy with the same six points: [docs/LANDING.md](./docs/LANDING.md). That file is not a deployed site. The Polar listing is live and sells `hooksteel-0.1.1.zip` (founding $89 → list $129; SHA-256 in `docs/CHECKSUMS.md`). No Polar Checkout URL in this README. Buy: [www.yellowgram.dev/hooksteel](https://www.yellowgram.dev/hooksteel) or hello@yellowgram.dev.
 
 ## Known limits
 
@@ -361,17 +361,22 @@ Support is GitHub Issues for 60 days from purchase. It is best-effort. There is 
 
 [SUPPORT.md](./SUPPORT.md)
 
+## Paid delta
+
+Without a purchase, [LICENSE](LICENSE) is PolyForm Noncommercial 1.0.0 only (source-available; not an OSI-approved license). Paying for HookSteel buys the [HookSteel commercial grant](docs/COMMERCIAL_GRANT.md) for **one organization** and the **named tag** delivered with that purchase, plus the Polar zip `hooksteel-0.1.1.zip` (SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`). Legal seller: Suthirth Solutions, operating as yellowgram. Contact hello@yellowgram.dev.
+
 ## License
 
 Source-available under the PolyForm Noncommercial License 1.0.0. That public license is not an OSI-approved open source license. It is not MIT. The text is `LICENSE`.
 
 Paid commercial production use is the HookSteel commercial grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See [docs/COMMERCIAL_GRANT.md](./docs/COMMERCIAL_GRANT.md).
 
-Not a hosted gateway. Soft-WTP is off. No coupon. Price and refund lock: [docs/COMMERCIAL_LOCK.md](./docs/COMMERCIAL_LOCK.md). Already-distributed `v0.1.0` zips keep the terms that shipped inside them.
+Not a hosted gateway. No coupons. No cold invoices. Price and refund lock: [docs/COMMERCIAL_LOCK.md](./docs/COMMERCIAL_LOCK.md). Already-distributed `v0.1.0` zips keep the terms that shipped inside them.
 
 ## Docs
 
 - [SUPPORT](./SUPPORT.md) — 60-day boundary
+- [SECURITY](./SECURITY.md) — private vulnerability reports
 - [60s demo script](./docs/DEMO_60S.md) — film script for `npm run demo:60s`
 - [Refund glossary](./docs/REFUND_GLOSSARY.md) — 14-day purchase refund, replay CLI, and `order.refunded`
 - [Landing copy](./docs/LANDING.md) — Hookdeck honesty; not a deployed site

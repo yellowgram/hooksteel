@@ -6,7 +6,7 @@ body:
       value: |
         Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
 
-        Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
+        Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; coupons or cold invoices; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
 
         If your request matches that out-of-scope sentence, do not open this Issue. Maintainer auto-reply (then close): the two paragraphs above. Full text: SUPPORT.md.
 
@@ -93,7 +93,7 @@ body:
     attributes:
       label: Scope
       options:
-        - label: This is not a request for a hosted gateway, Soft-WTP, Lock/Audit, live-key debugging, fuzz or chaos expansion, or Credit Ledger.
+        - label: This is not a request for a hosted gateway, coupons or cold invoices, Lock/Audit, live-key debugging, fuzz or chaos expansion, or Credit Ledger.
           required: true
 
   - type: textarea

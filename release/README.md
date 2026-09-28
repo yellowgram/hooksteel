@@ -6,7 +6,7 @@ The Polar listing is live as of 2026-09-27 and sells `hooksteel-0.1.1.zip`. SHA-
 
 One clip, not two provider demos: same event four times → one side effect, rollback mid-fulfillment, Stripe and Polar in that same clip (`docs/DEMO_60S.md`). If a cut cannot beat the Stripe docs and the Hookdeck homepage, it is not the buyer clip. The line that ships with the clip: use them for ingress; this is the outbox you keep.
 
-Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Purchase-refund window is 14 days. Soft-WTP off.
+Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Purchase-refund window is 14 days.
 
 `npm run pack:release` rebuilds the zip for the `package.json` version. Do not run it to replace the live Polar file after a docs-only change. It does not reseal `hooksteel-0.1.0.zip`.
 

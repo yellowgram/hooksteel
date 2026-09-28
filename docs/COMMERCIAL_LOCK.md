@@ -13,7 +13,7 @@ Price and terms lock for the Polar kit. This file is not a checkout page. It has
 | Founding window | First 10 licenses OR 30 days after go-live, whichever comes first; then $129 |
 | Purchase-refund window | 14 days |
 | SKU | One. Do not run two Polar products. Do not invent a coupon. |
-| Soft-WTP | Off. No waitlist. No updates-for-life benefit. |
+| Coupons / cold invoices | Off. No waitlist. No updates-for-life benefit. |
 | Not offered | Lock, Audit, hosted gateway, implementation services |
 | Public license | PolyForm Noncommercial 1.0.0 (`LICENSE`). Source-available. Not OSI open source. Not MIT. |
 | Paid commercial use | HookSteel commercial grant ([COMMERCIAL_GRANT.md](./COMMERCIAL_GRANT.md)): one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. |
@@ -26,4 +26,4 @@ This file records the price lock. It does not request a Polar price change, a re
 
 `release/hooksteel-0.1.0.zip` is sealed. Do not rewrite it. Do not move tag `v0.1.0`.
 
-Not a hosted gateway. The kit is the Polar zip and the public source-available GitHub repository only. Soft-WTP is off.
+Not a hosted gateway. The kit is the Polar zip and the public source-available GitHub repository only. Coupons and cold invoices are off.

@@ -23,18 +23,18 @@ This repository is public and source-available: https://github.com/yellowgram/ho
 | `DESIGN_REVIEW_CYCLE2_JUDGEMENT.md` — HookSteel accept/reject of CoS cycle-2 packet | — |
 | This `README.md` — agent pointer | — |
 
-**Not here:** git remotes for income docs, Polar KYC, live keys, Soft-WTP, Lock/Audit, hosted gateway.
+**Not here:** git remotes for income docs, Polar KYC, live keys, coupons, Lock/Audit, hosted gateway.
 
 ---
 
 ## Standing rules
 
-- Soft-WTP **OFF**. No Lock / Audit / services on Polar.
+- coupons **OFF**. No Lock / Audit / services on Polar.
 - Polar organization (dashboard; not renamed this week) is Suthirth solutions. Legal seller: Suthirth Solutions, operating as yellowgram. The Polar listing is live as of 2026-09-27. Sell file `hooksteel-0.1.1.zip`. This directory does not change Polar settings.
 - Stripe path is **merged** on `main` (`f25f235`). Further kit code still goes through **3 code-review** passes.
 - Polar path **design×3 is founder-greenlit** and the implement is **merged** at `09c4f88` ([`DESIGN_POLAR_PATH.md`](./DESIGN_POLAR_PATH.md) §3: PQ1 `whsec_` only, PQ2 LICENSE unchanged, PD1–PD4 accepted). No Polar SDK as a required dependency.
 - Replay CLI **design×3 is founder-greenlit** and the implement is **merged** at `c6a4012` (PR #5). PQ1 `three_npm_scripts`, PQ2 `terminal_json_only`. RD1/RD2 stay README known limits. Do not edit `src/outbox/replay.ts`.
-- No Soft-WTP / Lock / Audit / hosted gateway. Delivery is the public source-available repository plus the Polar zip. No checkout URL in the README or the zip.
+- No coupons / Lock / Audit / hosted gateway. Delivery is the public source-available repository plus the Polar zip. No checkout URL in the README or the zip.
 - ICP: Global English only. Contact: hello@yellowgram.dev · www.yellowgram.dev.
 
 ## Pattern sources
@@ -45,4 +45,4 @@ These notes name outside patterns. They are not paths in this repository, and th
 - Operator depth: keel minimum-ops checklist
 - Product lock: digital-product-hunt decision #1 (HookSteel)
 
-*Last updated: 2026-09-27 ET — Stripe path merged at f25f235; Polar path merged at 09c4f88; replay CLI implement merged at c6a4012. The Polar listing is live and sells `hooksteel-0.1.1.zip`. Repository is public and source-available. Purchase-refund window 14 days. Soft-WTP off.*
+*Last updated: 2026-09-27 ET — Stripe path merged at f25f235; Polar path merged at 09c4f88; replay CLI implement merged at c6a4012. The Polar listing is live and sells `hooksteel-0.1.1.zip`. Repository is public and source-available. Purchase-refund window 14 days. coupons off.*

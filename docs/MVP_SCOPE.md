@@ -2,11 +2,11 @@
 
 **Owner:** yellowgram  
 **Product:** HookSteel — Billing Event Reliability Kit  
-**Price:** $89 founding → $129 list. One SKU. No coupon. Public license from 0.1.1: PolyForm Noncommercial 1.0.0 (source-available; not OSI open source; not MIT). Paid commercial use: Suthirth Commercial Grant.  
+**Price:** $89 founding → $129 list. One SKU. No coupon. Public license from 0.1.1: PolyForm Noncommercial 1.0.0 (source-available; not OSI open source; not MIT). Paid commercial use: HookSteel commercial grant.  
 **Deliverable:** Public source-available GitHub (https://github.com/yellowgram/hooksteel) plus the Polar zip `hooksteel-0.1.1.zip`. **Not** a hosted Hookdeck clone. **Not** services / Lock / Audit. Soft-WTP OFF.  
 **ICP:** Global-English indie/SaaS founders on Stripe and/or Polar. **No India-ICP.**  
 **Contact:** hello@yellowgram.dev · www.yellowgram.dev  
-**Polar:** Suthirth solutions. The Polar listing is live as of 2026-09-27. CoS owns the listing. This scope note does not change Polar settings.  
+**Polar organization (dashboard; not renamed this week):** Suthirth solutions. Legal seller: Suthirth Solutions, operating as yellowgram. The Polar listing is live as of 2026-09-27. CoS owns the listing. This scope note does not change Polar settings.  
 **Date:** 2026-09-26 ET design lock. Commercial status updated 2026-09-27.
 
 ---
@@ -25,7 +25,7 @@
 5. **Replay CLI** — re-drive stored / dead-lettered events safely (idempotent).
 6. **Drop-in adapter stubs** — grant credit / send email / invite GitHub (interfaces + no-op or demo stubs).
 7. **README honesty** — when to use **Hookdeck** (hosted gateway) instead of this kit.
-8. **Commercial license** — PolyForm Noncommercial 1.0.0 for the public tree; Suthirth Commercial Grant for paid commercial production (one organization, the purchased named tag). Prior Single-app kit language folds into that one-organization grant. No resale as competing boilerplate. No warranty for billing correctness in buyer prod. Not OSI. Not MIT.
+8. **Commercial license** — PolyForm Noncommercial 1.0.0 for the public tree; HookSteel commercial grant for paid commercial production (one organization, the purchased named tag). Prior Single-app kit language folds into that one-organization grant. No resale as competing boilerplate. No warranty for billing correctness in buyer prod. Not OSI. Not MIT.
 9. **Support boundary** — 60-day GitHub Issues, best-effort, no SLA, ≤2h/wk kill if exceeded.
 10. **Offline-capable fixtures** — prove Stripe + Polar paths without live provider accounts for the happy-path demo (live keys optional later).
 
@@ -173,7 +173,7 @@ Stubs ship with no-op / console / in-memory implementations. Buyer wires real St
 - [ ] 60s demo recorded/approved (“same event 4× → one side effect”)  
 - [ ] Landing / README with Hookdeck “use them when…” honesty  
 - [ ] Commercial license (no resale as competing kit)  
-- [x] **Then:** Polar org (Suthirth solutions). Listing is live as of 2026-09-27. Delivery is the public source-available repository plus `hooksteel-0.1.1.zip`. No private-repo invite. No checkout URL in this file.
+- [x] **Then:** Polar organization dashboard (Suthirth solutions; not renamed this week). Listing is live as of 2026-09-27. Delivery is the public source-available repository plus `hooksteel-0.1.1.zip`. No private-repo invite. No checkout URL in this file.
 
 ---
 

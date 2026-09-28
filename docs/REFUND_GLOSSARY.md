@@ -8,7 +8,7 @@ Support length is a separate clock: GitHub Issues for 60 days from purchase (`SU
 
 ## Polar purchase refund
 
-Money returned for buying the HookSteel kit on Polar (org **Suthirth solutions**). The Polar listing is live.
+Money returned for buying the HookSteel kit on Polar (Polar organization dashboard **Suthirth solutions**; not renamed this week). The Polar listing is live.
 
 - It is a Polar dashboard action on the **kit order**.
 - The window is **14 days**. Do not change it.

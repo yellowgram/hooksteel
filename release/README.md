@@ -1,6 +1,6 @@
 # Release asset
 
-The Polar listing is live as of 2026-09-27 and sells `hooksteel-0.1.1.zip`. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` (`docs/CHECKSUMS.md`). GitHub Release `v0.1.1` is published. License: PolyForm Noncommercial 1.0.0 plus the Suthirth Commercial Grant (source-available; not OSI; not MIT). Delivery is the public source-available repository https://github.com/yellowgram/hooksteel plus that zip. No checkout URL in this folder. This file does not change the Polar product.
+The Polar listing is live as of 2026-09-27 and sells `hooksteel-0.1.1.zip`. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` (`docs/CHECKSUMS.md`). GitHub Release `v0.1.1` is published. License: PolyForm Noncommercial 1.0.0 plus the HookSteel commercial grant (source-available; not OSI; not MIT). Delivery is the public source-available repository https://github.com/yellowgram/hooksteel plus that zip. No checkout URL in this folder. This file does not change the Polar product.
 
 `hooksteel-0.1.0.zip` is the sealed prior artifact on GitHub Release `v0.1.0`. Do not rewrite it. Do not move tag `v0.1.0`. It is grandfathered. It is not the current Polar sell file.
 

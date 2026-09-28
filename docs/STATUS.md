@@ -3,7 +3,9 @@
 **Product:** HookSteel — Billing Event Reliability Kit  
 **Owner:** yellowgram  
 **Contact:** hello@yellowgram.dev · www.yellowgram.dev  
-**Polar org:** Suthirth solutions (CoS owns the listing; this file does not change Polar settings)  
+**Polar organization (dashboard; not renamed this week):** Suthirth solutions (CoS owns the listing; this file does not change Polar settings)  
+**Legal seller:** Suthirth Solutions, operating as yellowgram  
+**Polar product id:** `8901910f-b04f-4d68-8e67-140741b544d7` (do not rename)  
 **Repo:** https://github.com/yellowgram/hooksteel (public, source-available)  
 **Date:** 2026-09-27 ET
 
@@ -32,7 +34,7 @@
 - RD1 and RD2 are README known limits. Do not edit `src/outbox/replay.ts`.
 - Purchase-refund window is **14 days** (founder lock 2026-09-26). It is already locked. Do not change it. Soft-WTP / Lock / Audit / hosted gateway stay off.
 - Buyer docs are in the tree: [SUPPORT.md](../SUPPORT.md), [DEMO_60S.md](./DEMO_60S.md) (script; founder-approved cut is GitHub Release `clip-60s-approved`), [LANDING.md](./LANDING.md) (listing copy; the public site is https://www.yellowgram.dev; this file is not a checkout URL), [POLAR_DELIVERABLES.md](./POLAR_DELIVERABLES.md), [REFUND_GLOSSARY.md](./REFUND_GLOSSARY.md), [CHECKSUMS.md](./CHECKSUMS.md), [CHANGELOG.md](../CHANGELOG.md). Sealed zip: `release/hooksteel-0.1.0.zip` (do not rewrite; do not move tag `v0.1.0`). Live Polar sell file: `release/hooksteel-0.1.1.zip`. GitHub Release `v0.1.1` is published.
-- **License fence (2026-09-27).** Public license is PolyForm Noncommercial 1.0.0 (`LICENSE`): source-available, not OSI open source, not MIT. Paid commercial production use is the Suthirth Commercial Grant ([COMMERCIAL_GRANT.md](./COMMERCIAL_GRANT.md)): one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. Price lock: [COMMERCIAL_LOCK.md](./COMMERCIAL_LOCK.md). Soft-WTP off. No coupon. No checkout URL in README or the zip. The fence does not claw back already-distributed v0.1.0 zips. That license-fence change did not itself edit Polar product settings. The listing is live and sells `hooksteel-0.1.1.zip`.
+- **License fence (2026-09-27).** Public license is PolyForm Noncommercial 1.0.0 (`LICENSE`): source-available, not OSI open source, not MIT. Paid commercial production use is the HookSteel commercial grant ([COMMERCIAL_GRANT.md](./COMMERCIAL_GRANT.md)): one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. Price lock: [COMMERCIAL_LOCK.md](./COMMERCIAL_LOCK.md). Soft-WTP off. No coupon. No checkout URL in README or the zip. The fence does not claw back already-distributed v0.1.0 zips. That license-fence change did not itself edit Polar product settings. The listing is live and sells `hooksteel-0.1.1.zip`.
 - **Founder clarification 2026-09-26 (closed by go-live).** The 60s demo is the product: one clip, same event four times → one side effect, rollback mid-fulfillment, Stripe and Polar in that clip. Not two provider demos. If a cut cannot beat the Stripe docs and the Hookdeck homepage, it is not the buyer clip. The order that closed go-live was the founder-approved clip, then a post ("we double-provisioned after a 500") with "use them for ingress; this is the outbox you keep" in the same breath, then Polar as the cash register. That order is finished.
 - The purchase-refund window is **14 days**. See [REFUND_GLOSSARY.md](./REFUND_GLOSSARY.md). Replay CLI is not that refund. `order.refunded` stays ignored and does not claw back credit.
 

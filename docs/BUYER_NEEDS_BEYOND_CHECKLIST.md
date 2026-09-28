@@ -18,11 +18,11 @@ Treat checklist items (offline fixtures, Postgres chaos CI, demo flags off, live
 1. **Correct product mental model** — This is a **cloneable reliability module** on *your* Stripe and/or Polar + *your* Postgres. It is **not** hosted SaaS, not Hookdeck, not a yellowgram-operated gateway, not Credit Ledger, not Lock/Audit. Buyer must accept: you own outbox worker uptime, adapter correctness, and dead_letter triage forever.
 2. **Hard-gate fit check** — Confirm your pain is **duplicate / out-of-order webhooks or side effects after rolled-back DB txns**. If you only need hosted ingress/routing/observability, **read Hookdeck honesty and walk away** — do not buy to get a managed dashboard.
 3. **Hookdeck vs HookSteel decision (buyer must actually choose)** — Checklist ships the honesty text; purchase discipline does not. Use Hookdeck, HookSteel, or both (Hookdeck in front, kit inside) — decide before wiring live secrets.
-4. **Provider account readiness** — Buyer owns a Stripe and/or Polar account that can run **test-mode webhooks** today; live when graduating. Founder’s Polar org (Suthirth solutions) and India rail status are irrelevant to the buyer’s accounts.
+4. **Provider account readiness** — Buyer owns a Stripe and/or Polar account that can run **test-mode webhooks** today; live when graduating. Founder’s Polar organization dashboard (Suthirth solutions; not renamed this week) and India rail status are irrelevant to the buyer’s accounts.
 5. **Runtime prerequisites owned by the buyer** — Node 20+ (per `engines`), npm/pnpm, Postgres (ship path). Checklist pins engines/CI; **buyer provisions the host and DB**.
 6. **Auth / identity plan for adapters** — Grant credit, send email, invite GitHub need *your* user ids, API tokens, and admin auth. Kit stubs have **no** identity product. Planning to hardcode a single demo user in production is a buyer failure mode.
 7. **Fulfillment economics / side-effect inventory** — List every side effect that must be exactly-once per billing event (credits, license email, GitHub org invite, Slack notify…). Kit does not discover hidden dual paths for you.
-8. **Org / license fit** — Public license is PolyForm Noncommercial 1.0.0 (source-available; not OSI open source; not MIT). Paid commercial production use is the Suthirth Commercial Grant: one organization, the purchased named tag. Prior Single-app kit language folds into that one-organization grant. No resale as competing boilerplate. A second organization is outside the grant. If intent is to republish a starter, **do not buy**.
+8. **Org / license fit** — Public license is PolyForm Noncommercial 1.0.0 (source-available; not OSI open source; not MIT). Paid commercial production use is the HookSteel commercial grant: one organization, the purchased named tag. Prior Single-app kit language folds into that one-organization grant. No resale as competing boilerplate. A second organization is outside the grant. If intent is to republish a starter, **do not buy**.
 9. **Support expectations calibrated** — 60 days GitHub Issues, best-effort, no SLA, ≤~2 h/week founder attention, repro required. Buyer who needs a call / Slack / implementation partner must obtain that elsewhere (not on this Polar SKU).
 10. **Pin target decision** — Pin the live Polar zip `hooksteel-0.1.1.zip` / tag `v0.1.1` and the SHA-256 in `docs/CHECKSUMS.md`. Sealed `v0.1.0` stays grandfathered and is not the current sell file. Floating “whatever email attachment” is a buyer failure mode.
 11. **Refund window awareness** — Kit purchase refund window is **14 days** (founder lock 2026-09-26). That is **not** the same as the replay CLI or a provider `order.refunded` webhook. `order.refunded` does not claw back credit. Decide purchase with the chaos demo / fixtures in mind.
@@ -84,7 +84,7 @@ Treat checklist items (offline fixtures, Postgres chaos CI, demo flags off, live
 49. **Legal/compliance sign-off that “outbox = billing correctness forever”** — No warranty; buyer owns production correctness.
 50. **India GST invoicing for *your* end customers, or founder’s payout/KYC** — Buyer’s tax and provider account problems. Global English ICP only.
 51. **Credit Ledger / real-time credit hard-gate product** — Separate yellowgram kit if/when ready; not included.
-52. **A second organization on this purchase** — Outside the Suthirth Commercial Grant. One SKU. Do not assume the grant covers unlimited organizations.
+52. **A second organization on this purchase** — Outside the HookSteel commercial grant. One SKU. Do not assume the grant covers unlimited organizations.
 53. **Founder as free integration engineer or 24/7 on-call for your outbox** — Out of charter.
 54. **Polar Checkout early / waitlist Soft-WTP** — Yellowgram keeps Polar dark until ready; not a buyer-facing deliverable to chase.
 
@@ -103,7 +103,7 @@ Treat checklist items (offline fixtures, Postgres chaos CI, demo flags off, live
 | Stripe and/or Polar account + Postgres host provisioning | Engines in package.json ≠ laptop/server ready |
 | Auth / tokens for adapters pre-wiring | Stubs have no identity product |
 | Side-effect inventory before integrate | Hidden dual paths nullify uniqueness |
-| License / support / refund-window calibration | Listing states terms; buyer must accept no SLA, PolyForm Noncommercial for the public tree, and the Suthirth Commercial Grant for paid production use |
+| License / support / refund-window calibration | Listing states terms; buyer must accept no SLA, PolyForm Noncommercial for the public tree, and the HookSteel commercial grant for paid production use |
 | Archive fixtures proof + run optional live test themselves | Happy path is product-owned; proof retention is buyer-owned |
 | Replace stubs as required graduation | START_HERE warns; execution is buyer work |
 | Env fill with *their* secrets; CLI vs Dashboard whsec | `.env.example` is a template, not their production |

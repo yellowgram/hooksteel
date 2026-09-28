@@ -2,13 +2,13 @@
 
 **LIVE as of 2026-09-27.** The Polar listing is live and sells `hooksteel-0.1.1.zip`. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` (`docs/CHECKSUMS.md`). GitHub Release [`v0.1.1`](https://github.com/yellowgram/hooksteel/releases/tag/v0.1.1) is published. Founding **$89** for the first 10 licenses OR 30 days after go-live, whichever comes first; then list **$129**. One SKU. Purchase-refund window **14 days**. Soft-WTP is off. No coupon.
 
-Org: **Suthirth solutions**. Repo: public source-available https://github.com/yellowgram/hooksteel. Contact: hello@yellowgram.dev · https://www.yellowgram.dev
+Polar organization (dashboard; not renamed this week): **Suthirth solutions**. Legal seller: **Suthirth Solutions, operating as yellowgram**. Product id `8901910f-b04f-4d68-8e67-140741b544d7` (do not rename). Repo: public source-available https://github.com/yellowgram/hooksteel. Contact: hello@yellowgram.dev · https://www.yellowgram.dev
 
 This packet does not change Polar product settings, price, or the refund window. It does not add a checkout URL. Delivery is the public source-available repository plus the zip from Polar.
 
 ## License
 
-Public license: PolyForm Noncommercial 1.0.0 in `LICENSE` (source-available; not OSI open source; not MIT). Paid commercial production use: the Suthirth Commercial Grant in `docs/COMMERCIAL_GRANT.md`. Price lock: `docs/COMMERCIAL_LOCK.md`.
+Public license: PolyForm Noncommercial 1.0.0 in `LICENSE` (source-available; not OSI open source; not MIT). Paid commercial production use: the HookSteel commercial grant in `docs/COMMERCIAL_GRANT.md`. Price lock: `docs/COMMERCIAL_LOCK.md`.
 
 `npm run pack:release` can rebuild `release/hooksteel-0.1.1.zip` from `HEAD`. Do not run it to refresh these docs, and do not upload a new zip over the live Polar file. A docs change would move the digest. The live file stays the already published `hooksteel-0.1.1.zip` with the SHA above. The script does not rewrite `release/hooksteel-0.1.0.zip` and does not move tag `v0.1.0`. That 0.1.0 zip and tag stay grandfathered.
 
@@ -22,7 +22,7 @@ Public license: PolyForm Noncommercial 1.0.0 in `LICENSE` (source-available; not
 | List price in the description | **$129 USD** |
 | Founding window | Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. |
 | SKU | One Polar product. Do not open a second product to change the price. |
-| License | PolyForm Noncommercial 1.0.0 (`LICENSE`; source-available; not OSI open source; not MIT). Paid commercial use: Suthirth Commercial Grant (`docs/COMMERCIAL_GRANT.md`) — one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. |
+| License | PolyForm Noncommercial 1.0.0 (`LICENSE`; source-available; not OSI open source; not MIT). Paid commercial use: HookSteel commercial grant (`docs/COMMERCIAL_GRANT.md`) — one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. |
 | Sell file | `hooksteel-0.1.1.zip` |
 | SHA-256 | `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` |
 | Not on this listing | Multi-app, Lock, Audit, Soft-WTP, hosted gateway, implementation services, Credit Ledger |
@@ -41,7 +41,7 @@ HookSteel is owned code for Stripe and Polar webhooks. The same billing event fo
 
 You get the public source-available GitHub repository https://github.com/yellowgram/hooksteel and the zip `hooksteel-0.1.1.zip` from Polar. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`. You run Postgres. Your Stripe account and your Polar account stay yours. There is no hosted webhook gateway in this purchase.
 
-**Price:** Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. Soft-WTP is off. The purchase-refund window is 14 days. **License:** PolyForm Noncommercial 1.0.0 for the public tree (source-available; not OSI open source; not MIT). Paid commercial production use is the Suthirth Commercial Grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See `LICENSE` and `docs/COMMERCIAL_GRANT.md`.
+**Price:** Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. Soft-WTP is off. The purchase-refund window is 14 days. **License:** PolyForm Noncommercial 1.0.0 for the public tree (source-available; not OSI open source; not MIT). Paid commercial production use is the HookSteel commercial grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See `LICENSE` and `docs/COMMERCIAL_GRANT.md`.
 
 **Use Hookdeck when** you need hosted ingress, fan-out, a team dashboard, or you do not want to run an outbox worker. **Use HookSteel when** the fear is a side effect that already ran inside a transaction that then rolls back, and you want that code in your repo for Stripe and Polar. Use both only if you want Hookdeck in front and this kit inside. Do not buy HookSteel if you want yellowgram to host your webhooks.
 
@@ -159,7 +159,7 @@ Release notes name `hooksteel-0.1.1.zip` and SHA-256 `e5fb3c1117b954f344fb27e7b1
 HookSteel 0.1.1 — Billing Event Reliability Kit
 
 Stripe + Polar signed webhooks, same-transaction outbox, drain, replay CLI, five Postgres chaos scenarios.
-License: PolyForm Noncommercial 1.0.0 (source-available; not OSI; not MIT) plus the Suthirth Commercial Grant.
+License: PolyForm Noncommercial 1.0.0 (source-available; not OSI; not MIT) plus the HookSteel commercial grant.
 Not a hosted gateway. Soft-WTP off.
 Purchase-refund window: 14 days. That is not the replay CLI. `order.refunded` does not claw back credit.
 Delivery: public source-available GitHub plus hooksteel-0.1.1.zip.

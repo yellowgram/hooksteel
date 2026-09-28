@@ -12,7 +12,7 @@
 | Repo | https://github.com/yellowgram/hooksteel (public, source-available) |
 | Sell file | `hooksteel-0.1.1.zip` |
 | SHA-256 | `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` |
-| License | PolyForm Noncommercial 1.0.0 (source-available; not OSI; not MIT). Paid commercial use: Suthirth Commercial Grant |
+| License | PolyForm Noncommercial 1.0.0 (source-available; not OSI; not MIT). Paid commercial use: HookSteel commercial grant |
 
 Not a hosted gateway. Soft-WTP off. The Polar listing is live and sells `hooksteel-0.1.1.zip`. Delivery is this public source-available repository plus that zip. No Polar checkout URL in this README. Stripe and Polar webhooks both verify into the same outbox. `billing_events.provider` already allows `'polar'`.
 
@@ -365,7 +365,7 @@ Support is GitHub Issues for 60 days from purchase. It is best-effort. There is 
 
 Source-available under the PolyForm Noncommercial License 1.0.0. That public license is not an OSI-approved open source license. It is not MIT. The text is `LICENSE`.
 
-Paid commercial production use is the Suthirth Commercial Grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See [docs/COMMERCIAL_GRANT.md](./docs/COMMERCIAL_GRANT.md).
+Paid commercial production use is the HookSteel commercial grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See [docs/COMMERCIAL_GRANT.md](./docs/COMMERCIAL_GRANT.md).
 
 Not a hosted gateway. Soft-WTP is off. No coupon. Price and refund lock: [docs/COMMERCIAL_LOCK.md](./docs/COMMERCIAL_LOCK.md). Already-distributed `v0.1.0` zips keep the terms that shipped inside them.
 
@@ -377,7 +377,7 @@ Not a hosted gateway. Soft-WTP is off. No coupon. Price and refund lock: [docs/C
 - [Landing copy](./docs/LANDING.md) — Hookdeck honesty; not a deployed site
 - [Changelog](./CHANGELOG.md) · [Checksums](./docs/CHECKSUMS.md)
 - [Polar deliverables (CoS, listing live)](./docs/POLAR_DELIVERABLES.md)
-- [Suthirth Commercial Grant](./docs/COMMERCIAL_GRANT.md) · [Commercial lock](./docs/COMMERCIAL_LOCK.md)
+- [HookSteel commercial grant](./docs/COMMERCIAL_GRANT.md) · [Commercial lock](./docs/COMMERCIAL_LOCK.md)
 - [STATUS](./docs/STATUS.md)
 - [DESIGN — Stripe path + chaos](./docs/DESIGN_STRIPE_PATH.md) — §1 is the contract this tree implements
 - [Cycle-2 judgement](./docs/DESIGN_REVIEW_CYCLE2_JUDGEMENT.md)

@@ -30,7 +30,7 @@ This repository is public and source-available: https://github.com/yellowgram/ho
 ## Standing rules
 
 - Soft-WTP **OFF**. No Lock / Audit / services on Polar.
-- Polar org is Suthirth solutions. The Polar listing is live as of 2026-09-27. Sell file `hooksteel-0.1.1.zip`. This directory does not change Polar settings.
+- Polar organization (dashboard; not renamed this week) is Suthirth solutions. Legal seller: Suthirth Solutions, operating as yellowgram. The Polar listing is live as of 2026-09-27. Sell file `hooksteel-0.1.1.zip`. This directory does not change Polar settings.
 - Stripe path is **merged** on `main` (`f25f235`). Further kit code still goes through **3 code-review** passes.
 - Polar path **design×3 is founder-greenlit** and the implement is **merged** at `09c4f88` ([`DESIGN_POLAR_PATH.md`](./DESIGN_POLAR_PATH.md) §3: PQ1 `whsec_` only, PQ2 LICENSE unchanged, PD1–PD4 accepted). No Polar SDK as a required dependency.
 - Replay CLI **design×3 is founder-greenlit** and the implement is **merged** at `c6a4012` (PR #5). PQ1 `three_npm_scripts`, PQ2 `terminal_json_only`. RD1/RD2 stay README known limits. Do not edit `src/outbox/replay.ts`.

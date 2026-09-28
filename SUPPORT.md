@@ -4,6 +4,8 @@
 **Contact:** hello@yellowgram.dev · https://www.yellowgram.dev  
 **Repo:** https://github.com/yellowgram/hooksteel (public, source-available)
 
+Commercial use is the HookSteel commercial grant in [docs/COMMERCIAL_GRANT.md](docs/COMMERCIAL_GRANT.md). Legal seller: Suthirth Solutions, operating as yellowgram. Public source is the PolyForm Noncommercial License 1.0.0 in [LICENSE](LICENSE). That license is not an OSI-approved license. HookSteel is source-available. Soft-WTP stays off.
+
 ## Boundary
 
 Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.

@@ -5,7 +5,7 @@ Price and terms lock for the Polar kit. This file is not a checkout page. It has
 | | |
 | --- | --- |
 | Product | HookSteel — Billing Event Reliability Kit |
-| Seller | Suthirth solutions |
+| Legal seller | Suthirth Solutions, operating as yellowgram |
 | Contact | hello@yellowgram.dev |
 | Site | https://www.yellowgram.dev |
 | Founding price | $89 USD |
@@ -16,7 +16,7 @@ Price and terms lock for the Polar kit. This file is not a checkout page. It has
 | Soft-WTP | Off. No waitlist. No updates-for-life benefit. |
 | Not offered | Lock, Audit, hosted gateway, implementation services |
 | Public license | PolyForm Noncommercial 1.0.0 (`LICENSE`). Source-available. Not OSI open source. Not MIT. |
-| Paid commercial use | Suthirth Commercial Grant ([COMMERCIAL_GRANT.md](./COMMERCIAL_GRANT.md)): one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. |
+| Paid commercial use | HookSteel commercial grant ([COMMERCIAL_GRANT.md](./COMMERCIAL_GRANT.md)): one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. |
 
 ## Listing
 

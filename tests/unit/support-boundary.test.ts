@@ -6,7 +6,7 @@ const BOUNDARY =
   'Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.';
 
 const OUT_OF_SCOPE =
-  'Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.';
+  'Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; coupons or cold invoices; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.';
 
 const BOUNDARY_FILES = [
   'SUPPORT.md',
@@ -128,4 +128,19 @@ test('demo and pack scripts stay on the existing five chaos files', () => {
   assert.equal(pkg.scripts['replay:list'], 'tsx scripts/replay-cli.ts list');
   assert.equal(pkg.scripts['replay:dry-run'], 'tsx scripts/replay-cli.ts dry-run');
   assert.equal(pkg.scripts['replay:execute'], 'tsx scripts/replay-cli.ts execute');
+});
+
+test('Soft-WTP appears once in STATUS; buyer surfaces use coupons language; SECURITY and product buy path exist', () => {
+  const status = readFileSync('docs/STATUS.md', 'utf8');
+  assert.equal((status.match(/Soft-WTP/g) || []).length, 1);
+  assert.match(status, /Soft-WTP stays forbidden/);
+  const polar = readFileSync('docs/POLAR_DELIVERABLES.md', 'utf8');
+  assert.doesNotMatch(polar, /Soft-WTP/);
+  assert.match(polar, /coupon|cold invoices/i);
+  assert.equal(readFileSync('SECURITY.md', 'utf8').length > 0, true);
+  const readme = readFileSync('README.md', 'utf8');
+  assert.match(readme, /yellowgram\.dev\/hooksteel/);
+  assert.match(readme, /Paid delta/);
+  assert.match(readme, /SECURITY\.md/);
+  assert.doesNotMatch(readme, /buy\.polar\.sh/);
 });

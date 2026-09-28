@@ -26,9 +26,9 @@ You run it on your database. Your Stripe account and your Polar account stay you
 
 ## What it is not
 
-Not a hosted webhook gateway. Not Hookdeck. Not a yellowgram-operated ingress. Not Lock, Audit, or implementation services. Not Soft-WTP. Not Credit Ledger. Not an OSI-approved open source license. Not MIT. The public license is PolyForm Noncommercial 1.0.0. Paid commercial production use is the HookSteel commercial grant (`docs/COMMERCIAL_GRANT.md`): one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. Stripe signature checks use the `stripe` package this kit already depends on. Polar signature checks use Node `crypto`, not a Polar SDK.
+Not a hosted webhook gateway. Not Hookdeck. Not a yellowgram-operated ingress. Not Lock, Audit, or implementation services. Not coupons or cold invoices. Not Credit Ledger. Not an OSI-approved open source license. Not MIT. The public license is PolyForm Noncommercial 1.0.0. Paid commercial production use is the HookSteel commercial grant (`docs/COMMERCIAL_GRANT.md`): one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. Stripe signature checks use the `stripe` package this kit already depends on. Polar signature checks use Node `crypto`, not a Polar SDK.
 
-Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
+Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; coupons or cold invoices; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
 
 ## Hookdeck — use them when
 
@@ -47,7 +47,7 @@ The product is one clip, not two provider demos. The script is [DEMO_60S.md](./D
 
 ## Listing
 
-The Polar listing is live as of 2026-09-27. It sells `hooksteel-0.1.1.zip`. Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Purchase-refund window is 14 days. Soft-WTP is off. Polar organization (dashboard; not renamed this week): Suthirth solutions.
+The Polar listing is live as of 2026-09-27. It sells `hooksteel-0.1.1.zip`. Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Purchase-refund window is 14 days. Polar organization (dashboard; not renamed this week): Suthirth solutions.
 
 Historical, closed at go-live: founder-approved clip first, then a post where the burn already happened (a tight X thread, Show HN, and Stripe/Polar builder chats, in the shape of "we double-provisioned after a 500," with Hookdeck honesty in the same breath), then Polar as the cash register.
 

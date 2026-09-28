@@ -4,7 +4,7 @@
 **Contact:** hello@yellowgram.dev · https://www.yellowgram.dev  
 **Repo:** https://github.com/yellowgram/hooksteel (public, source-available)
 
-Commercial use is the HookSteel commercial grant in [docs/COMMERCIAL_GRANT.md](docs/COMMERCIAL_GRANT.md). Legal seller: Suthirth Solutions, operating as yellowgram. Public source is the PolyForm Noncommercial License 1.0.0 in [LICENSE](LICENSE). That license is not an OSI-approved license. HookSteel is source-available. Soft-WTP stays off.
+Commercial use is the HookSteel commercial grant in [docs/COMMERCIAL_GRANT.md](docs/COMMERCIAL_GRANT.md). Legal seller: Suthirth Solutions, operating as yellowgram. Public source is the PolyForm Noncommercial License 1.0.0 in [LICENSE](LICENSE). That license is not an OSI-approved license. HookSteel is source-available.
 
 ## Boundary
 
@@ -12,7 +12,7 @@ Support is GitHub Issues for 60 days from purchase. It is best-effort. There is 
 
 The 60 days start on the Polar purchase date. After that window, Issues are outside support. Yellowgram is not on-call for your outbox, your dead-letter queue, or your production keys.
 
-Use the bug/support issue template. An Issue without the repro fields is not debugged.
+Security reports go to [SECURITY.md](SECURITY.md), not public Issues with exploit detail. Use the bug/support issue template. An Issue without the repro fields is not debugged.
 
 The same boundary is in `README.md`, `BUYER_START_HERE.md`, `docs/POLAR_DELIVERABLES.md`, `docs/LANDING.md`, and `.github/ISSUE_TEMPLATE/bug_support.yml`.
 
@@ -44,7 +44,7 @@ There are five chaos files. Polar cases live inside those files. A request to ad
 
 ## Out of scope
 
-Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
+Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; coupons or cold invoices; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
 
 ## Auto-reply
 
@@ -52,7 +52,7 @@ Paste this and close when the request is out of scope or has no repro:
 
 > Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
 >
-> Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
+> Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; coupons or cold invoices; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
 >
 > If you are inside 60 days and this is an in-scope kit bug, reopen with the template: kit semver, tag, and checksum; Node; OS; DB; a failing chaos test name or a test-mode event id; and redacted booleans only.
 

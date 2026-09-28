@@ -1,8 +1,10 @@
 # Polar deliverables — CoS packet
 
-**LIVE as of 2026-09-27.** The Polar listing is live and sells `hooksteel-0.1.1.zip`. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` (`docs/CHECKSUMS.md`). GitHub Release [`v0.1.1`](https://github.com/yellowgram/hooksteel/releases/tag/v0.1.1) is published. Founding **$89** for the first 10 licenses OR 30 days after go-live, whichever comes first; then list **$129**. One SKU. Purchase-refund window **14 days**. Soft-WTP is off. No coupon.
+**LIVE as of 2026-09-27.** Live attachment re-checked 2026-09-28 (America/New_York): product `8901910f-b04f-4d68-8e67-140741b544d7` downloadable file id `b93c2b98-99be-472c-b386-ea8f9639d411` is `hooksteel-0.1.1.zip`, SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`.
 
-Polar organization (dashboard; not renamed this week): **Suthirth solutions**. Legal seller: **Suthirth Solutions, operating as yellowgram**. Product id `8901910f-b04f-4d68-8e67-140741b544d7` (do not rename). Repo: public source-available https://github.com/yellowgram/hooksteel. Contact: hello@yellowgram.dev · https://www.yellowgram.dev
+**LIVE as of 2026-09-27.** The Polar listing is live and sells `hooksteel-0.1.1.zip`. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` (`docs/CHECKSUMS.md`). GitHub Release [`v0.1.1`](https://github.com/yellowgram/hooksteel/releases/tag/v0.1.1) is published. Founding **$89** for the first 10 licenses OR 30 days after go-live, whichever comes first; then list **$129**. One SKU. Purchase-refund window **14 days**. Coupons and cold invoices stay off.
+
+Polar organization (dashboard; not renamed this week): **Suthirth solutions**. Legal seller: **Suthirth Solutions, operating as yellowgram**. Product id `8901910f-b04f-4d68-8e67-140741b544d7` (do not rename). Repo: public source-available https://github.com/yellowgram/hooksteel. Contact: hello@yellowgram.dev · https://www.yellowgram.dev/hooksteel
 
 This packet does not change Polar product settings, price, or the refund window. It does not add a checkout URL. Delivery is the public source-available repository plus the zip from Polar.
 
@@ -25,9 +27,9 @@ Public license: PolyForm Noncommercial 1.0.0 in `LICENSE` (source-available; not
 | License | PolyForm Noncommercial 1.0.0 (`LICENSE`; source-available; not OSI open source; not MIT). Paid commercial use: HookSteel commercial grant (`docs/COMMERCIAL_GRANT.md`) — one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. |
 | Sell file | `hooksteel-0.1.1.zip` |
 | SHA-256 | `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` |
-| Not on this listing | Multi-app, Lock, Audit, Soft-WTP, hosted gateway, implementation services, Credit Ledger |
+| Not on this listing | Multi-app, Lock, Audit, coupons / cold invoices, hosted gateway, implementation services, Credit Ledger |
 
-Soft-WTP is **off**. Do not add a waitlist, a "email me forever updates" benefit, or an outreach toggle.
+Coupons and cold invoices stay **off**. Do not add a waitlist, a "email me forever updates" benefit, or an outreach toggle.
 
 No Lock product. No Audit product. Do not add those names as benefits or bumps.
 
@@ -41,17 +43,17 @@ HookSteel is owned code for Stripe and Polar webhooks. The same billing event fo
 
 You get the public source-available GitHub repository https://github.com/yellowgram/hooksteel and the zip `hooksteel-0.1.1.zip` from Polar. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`. You run Postgres. Your Stripe account and your Polar account stay yours. There is no hosted webhook gateway in this purchase.
 
-**Price:** Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. Soft-WTP is off. The purchase-refund window is 14 days. **License:** PolyForm Noncommercial 1.0.0 for the public tree (source-available; not OSI open source; not MIT). Paid commercial production use is the HookSteel commercial grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See `LICENSE` and `docs/COMMERCIAL_GRANT.md`.
+**Price:** Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Do not invent a coupon. Coupons stay off. The purchase-refund window is 14 days. **License:** PolyForm Noncommercial 1.0.0 for the public tree (source-available; not OSI open source; not MIT). Paid commercial production use is the HookSteel commercial grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See `LICENSE` and `docs/COMMERCIAL_GRANT.md`.
 
 **Use Hookdeck when** you need hosted ingress, fan-out, a team dashboard, or you do not want to run an outbox worker. **Use HookSteel when** the fear is a side effect that already ran inside a transaction that then rolls back, and you want that code in your repo for Stripe and Polar. Use both only if you want Hookdeck in front and this kit inside. Do not buy HookSteel if you want yellowgram to host your webhooks.
 
-**Known limits:** exactly five chaos scenarios (no fuzzing); no hosted gateway; adapters are stubs you replace; uniqueness is per provider event id, not a global total order across providers; Polar `order.refunded` is stored and ignored (no credit clawback); the kit does not certify PCI, charge correctness, or tax. Patches are not a perpetual rewrite. Soft-WTP is off.
+**Known limits:** exactly five chaos scenarios (no fuzzing); no hosted gateway; adapters are stubs you replace; uniqueness is per provider event id, not a global total order across providers; Polar `order.refunded` is stored and ignored (no credit clawback); the kit does not certify PCI, charge correctness, or tax. Patches are not a perpetual rewrite. Coupons stay off.
 
 **Delivery:** the public source-available repository `yellowgram/hooksteel`, plus `hooksteel-0.1.1.zip` from Polar. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`. The sealed `hooksteel-0.1.0.zip` on tag `v0.1.0` is grandfathered and is not the current sell file. The zip has no `node_modules`, no `.env`, no `.git`, and no database dump. It does include `.env.example`. Confirm the SHA-256 in the file description against the 0.1.1 row in `docs/CHECKSUMS.md` (that checksum file is published beside the zip, not inside it). Do not put a checkout URL in the file description.
 
 **Support:** Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
 
-**Not included:** Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; Soft-WTP; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
+**Not included:** Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; coupons or cold invoices; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
 
 A Polar purchase refund, the replay CLI, and a provider `order.refunded` webhook are three different things. The purchase-refund window is 14 days. Replay is not that refund. `order.refunded` is stored and ignored and does not claw back credit.
 
@@ -132,7 +134,7 @@ The listing is already live. This packet does not change Polar settings.
 
 1. Price on that one product stays founding **$89** until the first **10 licenses** OR **30 days after go-live**, whichever comes first; then **$129** on that same product.
 2. One SKU. Do not run two Polar products. Do not invent a coupon. Do not open a second product at $129 while the $89 product is still up.
-3. Soft-WTP stays off. No waitlist benefit. No "email me forever updates" benefit.
+3. Coupons and cold invoices stay off. No waitlist benefit. No "email me forever updates" benefit.
 4. Purchase-refund window stays **14 days**. Do not change it.
 5. Sell file stays `hooksteel-0.1.1.zip` with SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`.
 6. No Lock, no Audit, no hosted gateway.
@@ -160,7 +162,7 @@ HookSteel 0.1.1 — Billing Event Reliability Kit
 
 Stripe + Polar signed webhooks, same-transaction outbox, drain, replay CLI, five Postgres chaos scenarios.
 License: PolyForm Noncommercial 1.0.0 (source-available; not OSI; not MIT) plus the HookSteel commercial grant.
-Not a hosted gateway. Soft-WTP off.
+Not a hosted gateway. Coupons and cold invoices off.
 Purchase-refund window: 14 days. That is not the replay CLI. `order.refunded` does not claw back credit.
 Delivery: public source-available GitHub plus hooksteel-0.1.1.zip.
 
@@ -179,7 +181,7 @@ HookSteel 0.1.0 — Billing Event Reliability Kit
 
 Stripe + Polar signed webhooks, same-transaction outbox, drain, replay CLI, five Postgres chaos scenarios.
 0.1.0 zip: commercial kit terms inside that sealed zip. Do not rewrite this release as PolyForm.
-Not a hosted gateway. Soft-WTP off.
+Not a hosted gateway. Coupons and cold invoices off.
 Purchase-refund window: 14 days. That is not the replay CLI. `order.refunded` does not claw back credit.
 
 SHA-256 (hooksteel-0.1.0.zip): dddcfe5dca204cd92b2c1b2a10adbb99515d0552a4a5947693aff34a29573a65
@@ -194,7 +196,7 @@ Support: SUPPORT.md
 - SHA-256: `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`
 - GitHub Release `v0.1.1`: published
 - Repository: public, source-available
-- Price: founding $89, then $129, one SKU, Soft-WTP off, no coupon
+- Price: founding $89, then $129, one SKU, coupons off, no cold invoices
 - Purchase-refund window: 14 days
 - Checkout URL: not in the README, the zip, or buyer Quickstart
 - Lock / Audit / hosted gateway: not offered

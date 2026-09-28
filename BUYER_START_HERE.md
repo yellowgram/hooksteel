@@ -2,7 +2,11 @@
 
 HookSteel is a Node kit. Postgres is the ship path.
 
-Delivery is this public source-available repository (https://github.com/yellowgram/hooksteel) and the Polar zip `hooksteel-0.1.1.zip`. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`. The Polar listing is live. No Polar checkout URL in this Quickstart. Sealed `hooksteel-0.1.0.zip` stays grandfathered. Soft-WTP is off.
+Delivery is this public source-available repository (https://github.com/yellowgram/hooksteel) and the Polar zip `hooksteel-0.1.1.zip`. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`. The Polar listing is live. No Polar Checkout URL in this Quickstart. Sealed `hooksteel-0.1.0.zip` stays grandfathered as GitHub Release only.
+
+**Paid delta:** PolyForm Noncommercial 1.0.0 alone does not grant commercial production use. A paid purchase is the [HookSteel commercial grant](docs/COMMERCIAL_GRANT.md) for one organization and the named tag. Legal seller: Suthirth Solutions, operating as yellowgram.
+
+Buy: [www.yellowgram.dev/hooksteel](https://www.yellowgram.dev/hooksteel) or hello@yellowgram.dev. This page is not a Checkout link. Security reports: [SECURITY.md](SECURITY.md).
 
 1. Copy `.env.example` to `.env`. Set `DATABASE_URL` and `STRIPE_WEBHOOK_SECRET` to the `whsec_` that matches how you forward events (Stripe CLI secret and Dashboard endpoint secret are different). For Polar, set `POLAR_WEBHOOK_SECRET` to the endpoint `whsec_` (`polar_whs_` is rejected) and set `POLAR_EXPECT_LIVEMODE=true` on a production Polar endpoint.
 2. `npm ci`
@@ -22,4 +26,4 @@ The Stripe webhook handler is `handle({ rawBody, signature })`. The Polar webhoo
 
 Replace `grant_credit`, `send_email`, and `invite_github` with your own adapters. `invite_github` and `invoice.paid → [grant_credit]` are opt-in. See `README.md` for the HTTP status contract and Hookdeck honesty. The public license is PolyForm Noncommercial 1.0.0 (`LICENSE`; source-available; not OSI open source; not MIT). Paid commercial production use is the HookSteel commercial grant in `docs/COMMERCIAL_GRANT.md`: one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant.
 
-[SUPPORT.md](./SUPPORT.md) · [60s demo script](./docs/DEMO_60S.md) · [Refund glossary](./docs/REFUND_GLOSSARY.md) · Hookdeck: [README](./README.md#hookdeck) and [landing copy](./docs/LANDING.md).
+[SUPPORT.md](./SUPPORT.md) · [SECURITY.md](./SECURITY.md) · [60s demo script](./docs/DEMO_60S.md) · [Refund glossary](./docs/REFUND_GLOSSARY.md) · Hookdeck: [README](./README.md#hookdeck) and [landing copy](./docs/LANDING.md).

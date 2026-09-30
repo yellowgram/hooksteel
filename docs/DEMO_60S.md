@@ -1,6 +1,6 @@
 # 60-second demo script
 
-**Frozen for LaunchGate SR×3.** This file is the source of truth for the 60-second clip. The sections are Kill, Off camera, On camera, VO, and Shot timing. Do not film from this pass. Do not reseal the zip. Do not change the package version.
+**Frozen for LaunchGate SR×3.** This file is the source of truth for the 60-second clip. The sections are Kill, Off camera, On camera, VO, and Shot timing. HookSteel records after LaunchGate SR APPROVE; founder does not film. Do not reseal the zip. Do not change the package version.
 
 **This clip is the product.** One continuous take. Stripe and Polar in the same clip. Not two provider demos.
 
@@ -55,7 +55,12 @@ On screen, not spoken: `evt_dup_1`, `msg_polar_dup_1`, `evt_mid_1`, `msg_polar_m
 
 Title card, under the open VO, not a silent preroll: `HookSteel — same billing event ×4, one side effect. Stripe + Polar.`
 
-End card, about 3 seconds: owned outbox, not a gateway. `yellowgram.dev`. `hello@yellowgram.dev`. No Polar checkout URL.
+End card lists all of these. Do not omit one. No Polar checkout URL.
+
+- honesty line: use them for ingress; this is the outbox you keep
+- close line: HookSteel. Stripe and Polar. One side effect.
+- yellowgram.dev/hooksteel
+- hello@yellowgram.dev
 
 ## VO
 
@@ -74,31 +79,41 @@ Stripe’s free page already tells a builder to log the event IDs they’ve proc
 
 ### Proof
 
-Say this while the four pass lines are on screen, in that order. Polar is the next lines in this same output, not a later video.
+Say this while the four pass lines are on screen, in that order. Polar is the next lines in this same output, not a later video. The isolation sentence is its own chapter, ≤7.0s, not part of pass line 1.
 
-- Stripe `checkout.session.completed` is posted four times concurrently. One `billing_events` row. The handler returns 200 and does not run adapters. Two outbox rows means two adapters (`grant_credit` and `send_email`), not two grants. After drain, `stripe|evt_dup_1|grant_credit` exists once.
+- Stripe `checkout.session.completed` is posted four times concurrently. One `billing_events` row. The handler returns 200 and does not run adapters.
+- Isolation, ≤7.0s: two outbox rows means two adapters (`grant_credit` and `send_email`), not two grants. After drain, `stripe|evt_dup_1|grant_credit` exists once.
 - Polar `order.paid` four times. `polar|msg_polar_dup_1|grant_credit` exists once.
 - Rollback is still this clip. The `grant_credit` invocation commits, then the drain throws before `completed_at`. A second drain leaves that count at 1. Stripe, then Polar, same terminal.
 - You run this on your Postgres. `handle` / `handlePolar`, then `outbox:drain`. No live keys.
 
 ### End
 
-On the end card, say the honesty line again:
+On the end card, say the honesty line again, and leave the close line on screen with it:
 
 use them for ingress; this is the outbox you keep
 
+HookSteel. Stripe and Polar. One side effect.
+
+The card also shows yellowgram.dev/hooksteel and hello@yellowgram.dev. No Polar checkout URL.
+
 ## Shot timing
 
-One clock. The VO timecodes match this table. The command is already running under the open; it is not the first spoken line.
+One clock. Picture and sound share each chapter. Do not add the two columns into a second minute. The command is already running under the open; it is not the first spoken line.
 
-| Clock | Picture | Sound |
-| --- | --- | --- |
-| 0:00–0:06 | Title card under the terminal. `npm run demo:60s` is already on screen. | Stripe sent the same Checkout event four times after our 500. Credit granted once. |
-| 0:06–0:10 | Same terminal. Caption the honesty line. | use them for ingress; this is the outbox you keep |
-| 0:10–0:16 | Stripe doc title on one side, “Record. Deliver. Keep.” on the other, then back to the terminal. | Fear. The free page logs processed ids. The brochure loses that screenshot. |
-| 0:16–0:26 | Pass line 1, full-width at least 2.5s. Then `billing_events` 1, outbox 2, `grant_credit` 1. | Stripe proof. Two rows, two adapters, one grant. |
-| 0:26–0:34 | Pass line 2, full-width at least 2.5s. | Polar proof. Same take. One `grant_credit`. |
-| 0:34–0:44 | Pass line 3, full-width at least 2.5s. | Crash after the invocation write, before `completed_at`. Second drain still 1. |
-| 0:44–0:52 | Pass line 4, full-width at least 2.5s. | Same crash on Polar. Still one. |
-| 0:52–0:57 | Monday line on screen. | You run this on your Postgres. `handle` / `handlePolar`, then `outbox:drain`. |
-| 0:57–1:00 | End card. Owned outbox. `yellowgram.dev`. `hello@yellowgram.dev`. No Polar checkout URL. | use them for ingress; this is the outbox you keep |
+**Chapter wall.** Isolation beat ≤7.0s. Total spoken/on-screen chapter sum ≤60.0s.
+
+| Chapter | Clock | Dur | Picture | Sound |
+| --- | --- | --- | --- | --- |
+| Burn | 0:00–0:06 | 6.0s | Title card under the terminal. `npm run demo:60s` is already on screen. | Stripe sent the same Checkout event four times after our 500. Credit granted once. |
+| Honesty | 0:06–0:10 | 4.0s | Same terminal. Caption the honesty line. | use them for ingress; this is the outbox you keep |
+| Fear | 0:10–0:16 | 6.0s | Stripe doc title on one side, “Record. Deliver. Keep.” on the other, then back to the terminal. | Fear. The free page logs processed ids. The brochure loses that screenshot. |
+| Pass 1 | 0:16–0:22 | 6.0s | Pass line 1, full-width at least 2.5s. One `billing_events` row. Handler 200. Adapters do not run in the request. | Stripe Checkout, four times, one row. |
+| Isolation | 0:22–0:29 | 7.0s | Outbox 2. `grant_credit` count 1. Key `stripe`, `evt_dup_1`, `grant_credit` once. | Two outbox rows means two adapters (`grant_credit` and `send_email`), not two grants. |
+| Pass 2 | 0:29–0:35 | 6.0s | Pass line 2, full-width at least 2.5s. | Polar `order.paid`, four times. Key `polar`, `msg_polar_dup_1`, `grant_credit` once. Same take. |
+| Pass 3 | 0:35–0:43 | 8.0s | Pass line 3, full-width at least 2.5s. | Crash after the invocation write, before `completed_at`. Second drain still 1. |
+| Pass 4 | 0:43–0:50 | 7.0s | Pass line 4, full-width at least 2.5s. | Same crash on Polar. Still one. |
+| Monday | 0:50–0:55 | 5.0s | Monday line on screen. | You run this on your Postgres. `handle` / `handlePolar`, then `outbox:drain`. |
+| End card | 0:55–1:00 | 5.0s | Lists the honesty line, the close line `HookSteel. Stripe and Polar. One side effect.`, yellowgram.dev/hooksteel, and hello@yellowgram.dev. No Polar checkout URL. | use them for ingress; this is the outbox you keep |
+
+Chapter sum: 6.0 + 4.0 + 6.0 + 6.0 + 7.0 + 6.0 + 8.0 + 7.0 + 5.0 + 5.0 = 60.0. Isolation is the 7.0s row (≤7.0s).

@@ -40,7 +40,7 @@ npm test
 npm run outbox:drain -- --once
 ```
 
-`npm run demo` is the sealed fixture smoke, the same command as `npm run demo:60s` (chaos 01 and 05). Fixture-only (no live Stripe/Polar keys). [Watch demo](https://x.com/yellowgram/status/2104030413622816842).
+`npm run demo` is the sealed fixture smoke, the same command as `npm run demo:60s` (chaos 01 and 05). Fixture-only (no live Stripe/Polar keys). [Watch demo](https://x.com/yellowgram/status/2104030413622816842). use them for ingress; this is the outbox you keep.
 
 `npm test` does not boot Next.js. Next 15 is an example under `examples/next` only. The root package does not depend on `next`. `npm run build` writes `dist/` (plain Node). Migrate and the drain script run the TypeScript sources with `tsx` and do not need that build. The Next example imports the built package; see `examples/next/README.md` for its own `.env.local` (`next dev` does not read the repo-root `.env`).
 

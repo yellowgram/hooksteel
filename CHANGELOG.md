@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 — 2026-10-19
+
+- Relicensed to MIT; no longer sold. `LICENSE` is the MIT License (Copyright (c) 2026 yellowgram). The commercial grant, commercial lock, Polar listing packet, landing copy, pricing and purchase-refund copy, support-window copy, the release pack script, and internal design/review documents were removed from the tree (they remain in git history). `BUYER_START_HERE.md` is now `START_HERE.md`.
+- package.json: `license` MIT, no longer `private`, adds `repository`, `homepage`, `bugs`, `author`, and `files` for npm.
+- Tests: the PolyForm license-fence and sales-copy tests are replaced by MIT license tests. Sealed `release/hooksteel-0.1.0.zip` and `release/hooksteel-0.1.1.zip` are still checked byte-for-byte. No runtime behavior change.
+- Releases before 0.2.0 were published under the previous license.
+
 ## 0.1.1 — 2026-09-27
 
 License fence patch. No product behavior change. Not a hosted gateway. Soft-WTP stays off. No Lock. No Audit. No coupon.

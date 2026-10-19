@@ -1,24 +1,12 @@
 # Support
 
-**Product:** HookSteel — Billing Event Reliability Kit  
-**Contact:** hello@yellowgram.dev · https://www.yellowgram.dev  
-**Repo:** https://github.com/yellowgram/hooksteel (public, source-available)
+HookSteel is MIT-licensed open source (https://github.com/yellowgram/hooksteel). There is no paid support, no support window, and no SLA. GitHub Issues are best-effort. Nobody is on-call for your outbox, your dead-letter queue, or your production keys.
 
-Commercial use is the HookSteel commercial grant in [docs/COMMERCIAL_GRANT.md](docs/COMMERCIAL_GRANT.md). Legal seller: Suthirth Solutions, operating as yellowgram. Public source is the PolyForm Noncommercial License 1.0.0 in [LICENSE](LICENSE). That license is not an OSI-approved license. HookSteel is source-available.
-
-## Boundary
-
-Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
-
-The 60 days start on the Polar purchase date. After that window, Issues are outside support. Yellowgram is not on-call for your outbox, your dead-letter queue, or your production keys.
-
-Security reports go to [SECURITY.md](SECURITY.md), not public Issues with exploit detail. Use the bug/support issue template. An Issue without the repro fields is not debugged.
-
-The same boundary is in `README.md`, `BUYER_START_HERE.md`, `docs/POLAR_DELIVERABLES.md`, `docs/LANDING.md`, and `.github/ISSUE_TEMPLATE/bug_support.yml`.
+Security reports go to [SECURITY.md](SECURITY.md), not public Issues with exploit detail. Use the bug issue template. An Issue without the repro fields may not be debugged.
 
 ## What to include
 
-- Kit semver, git tag, and checksum (live sell file `v0.1.1` / `hooksteel-0.1.1.zip` and the SHA-256 in `docs/CHECKSUMS.md`; sealed `v0.1.0` stays grandfathered)
+- HookSteel version (from `package.json`) and git tag or npm version
 - Node version (`node -v`), operating system, and database engine (Postgres version)
 - One failing chaos test name from the list below, or a **test-mode** provider event id (`evt_…` from Stripe test mode, or a Polar test-mode `webhook-id`)
 - Redacted environment booleans only: `true`, `false`, or unset. Never the secret string.
@@ -44,16 +32,6 @@ There are five chaos files. Polar cases live inside those files. A request to ad
 
 ## Out of scope
 
-Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; coupons or cold invoices; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
+A hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; implementation services; debugging live keys; expanding the chaos suite or adding fuzzing.
 
-## Auto-reply
-
-Paste this and close when the request is out of scope or has no repro:
-
-> Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
->
-> Out of scope, and closed without debugging: a hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; coupons or cold invoices; Lock or Audit; implementation services; debugging live keys; India-local ICP customization; expanding the chaos suite or adding fuzzing; treating HookSteel as Credit Ledger. This product is the Polar zip and the public source-available GitHub repository only.
->
-> If you are inside 60 days and this is an in-scope kit bug, reopen with the template: kit semver, tag, and checksum; Node; OS; DB; a failing chaos test name or a test-mode event id; and redacted booleans only.
-
-Purchase refunds are not Issues. Replay is not a refund. The purchase-refund window is 14 days. See `docs/REFUND_GLOSSARY.md`. `order.refunded` stays ignored and does not claw back credit.
+`order.refunded` does not claw back credit, and replay does not move money. See `docs/REFUND_GLOSSARY.md`.

@@ -1,8 +1,19 @@
 {
   "name": "hooksteel",
-  "version": "0.1.1",
-  "license": "LicenseRef-PolyForm-Noncommercial-1.0.0",
-  "private": true,
+  "version": "0.2.0",
+  "license": "MIT",
+  "author": {
+    "name": "yellowgram",
+    "url": "https://www.yellowgram.dev"
+  },
+  "homepage": "https://www.yellowgram.dev/oss",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yellowgram/hooksteel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yellowgram/hooksteel/issues"
+  },
   "description": "Billing event reliability kit: Stripe and Polar signed webhooks, same-transaction outbox, minimal drain.",
   "type": "module",
   "engines": {
@@ -26,7 +37,6 @@
     "replay:execute": "tsx scripts/replay-cli.ts execute",
     "demo": "npm run demo:60s",
     "demo:60s": "tsx --test --test-concurrency=1 tests/chaos/01-duplicate-delivery.test.ts tests/chaos/05-db-rollback-mid-fulfillment.test.ts",
-    "pack:release": "bash scripts/pack-release.sh",
     "test": "tsx --test --test-concurrency=1 tests/unit/*.test.ts tests/chaos/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
@@ -40,5 +50,14 @@
     "@types/pg": "^8.11.11",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
-  }
+  },
+  "files": [
+    "dist",
+    "migrations",
+    "README.md",
+    "START_HERE.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    ".env.example"
+  ]
 }

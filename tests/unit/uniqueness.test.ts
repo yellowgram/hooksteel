@@ -9,7 +9,7 @@ import { count, installDbHooks } from '../setup/harness.js';
 
 installDbHooks();
 
-test('buyer migrations are plain CREATE files without IF NOT EXISTS', () => {
+test('shipped migrations are plain CREATE files without IF NOT EXISTS', () => {
   const files = readdirSync('migrations').filter((name) => name.endsWith('.sql')).sort();
   assert.deepEqual(files, [
     '000_schema_migrations.sql',

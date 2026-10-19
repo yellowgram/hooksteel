@@ -2,19 +2,16 @@
 
 **Billing Event Reliability Kit** — owned code for Stripe and Polar webhooks. The same billing event, delivered again, keeps one outbox row per adapter. Side effects run after that transaction commits. Pass the idempotency key through to any external API. Replay can run an adapter again on purpose.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 | | |
 |---|---|
-| Founding | $89 for the first 10 licenses OR 30 days after go-live, whichever comes first |
-| List | $129 after that window |
-| SKU | One. Do not run two Polar products. |
+| Repo | https://github.com/yellowgram/hooksteel |
+| npm | `hooksteel` |
+| License | MIT ([LICENSE](LICENSE)) |
 | Contact | hello@yellowgram.dev |
-| Site | https://www.yellowgram.dev/hooksteel |
-| Repo | https://github.com/yellowgram/hooksteel (public, source-available) |
-| Sell file | `hooksteel-0.1.1.zip` |
-| SHA-256 | `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9` |
-| License | PolyForm Noncommercial 1.0.0 (source-available; not OSI; not MIT). Paid commercial use: HookSteel commercial grant |
 
-Not a hosted gateway. The Polar listing is live and sells `hooksteel-0.1.1.zip`. Delivery is this public source-available repository plus that zip. No Polar Checkout URL in this README. Buy: [www.yellowgram.dev/hooksteel](https://www.yellowgram.dev/hooksteel) or hello@yellowgram.dev. Stripe and Polar webhooks both verify into the same outbox. `billing_events.provider` already allows `'polar'`.
+Not a hosted gateway. Stripe and Polar webhooks both verify into the same outbox. `billing_events.provider` already allows `'polar'`. HookSteel is MIT-licensed open source and is no longer sold. Releases before 0.2.0 (tags `v0.1.0`, `v0.1.1` and the zips in `release/`) were published under the previous license.
 
 ## What HookSteel guarantees
 
@@ -120,7 +117,7 @@ Exactly five scenarios, all on Postgres. CI is `.github/workflows/chaos-postgres
 
 Exactly five chaos files. Polar is covered inside those files: each one also runs the same theme for an `order.paid` signed with the post-cutoff `standard_webhooks` key. The pre-2026-09-08 `polar_hmac` key is proven in `tests/unit/polar-verify.test.ts`, not by a sixth file.
 
-`adapter_invocations` is created by the test setup only. It is not part of buyer migrate. Stubs write that table only when `NODE_ENV=test` or `HOOKSTEEL_RECORD_INVOCATIONS=true`. Unset, `development`, and `production` do not open a connection for it.
+`adapter_invocations` is created by the test setup only. It is not part of `npm run migrate`. Stubs write that table only when `NODE_ENV=test` or `HOOKSTEEL_RECORD_INVOCATIONS=true`. Unset, `development`, and `production` do not open a connection for it.
 
 `src/chaos` is imported only from tests. It returns option objects you pass into `handle` or `drainOnce`. Nothing in `src/index.ts` exports it, and production modules do not keep env-armed hook slots. `NODE_ENV=production` makes those helpers throw. `ALLOW_CHAOS_INJECT` defaults to false.
 
@@ -183,7 +180,7 @@ npm run replay:execute -- <dead_letter_id>
 npm run outbox:drain -- --once
 ```
 
-**Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. **Replay is not a Polar purchase refund.** A Polar refund returns the money paid for this kit. The purchase-refund window is 14 days. `order.refunded` stays ignored and does not claw back credit. The three names are separated in [docs/REFUND_GLOSSARY.md](./docs/REFUND_GLOSSARY.md).
+**Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. Replay does not move money. `order.refunded` stays ignored and does not claw back credit. The terms are separated in [docs/REFUND_GLOSSARY.md](./docs/REFUND_GLOSSARY.md).
 
 **Inspect** is `replay:list`. Read `reason`, `adapter`, and `replayed_at`. `replayed_at: null` is open. Rows that already have `replayed_at` set stay in the list. v0.1 drain writes `max_attempts` and `poison`. `timeout` and `adapter_error` are reserved and this drain does not write them.
 
@@ -199,7 +196,7 @@ One operator, one id per command. Two ids in one invocation is a usage error and
 
 The idempotency key does not change. Pass it through to the external API. Replay without that discipline can double-send.
 
-Yellowgram is not on-call for the buyer’s dead-letter queue. Whoever holds `DATABASE_URL` can run these commands. There is no audit column.
+Nobody is on-call for your dead-letter queue but you. Whoever holds `DATABASE_URL` can run these commands. There is no audit column.
 
 ## Migrations
 
@@ -216,9 +213,8 @@ If migrate fails, fix the database and re-run. Do not hand-edit a file that only
 3. Use Hookdeck when — you need multi-destination routing, team dashboard, or do not want to run an outbox worker.
 4. Use HookSteel when — double-fulfillment after rolled-back txns is the fear; you want owned code on Stripe **and** Polar.
 5. Use both when — Hookdeck in front, HookSteel inside (optional; document; do not require).
-6. Do not buy HookSteel if — you want yellowgram to host your webhooks.
+6. Do not use HookSteel if — you want someone else to host your webhooks.
 
-Landing copy with the same six points: [docs/LANDING.md](./docs/LANDING.md). That file is not a deployed site. The Polar listing is live and sells `hooksteel-0.1.1.zip` (founding $89 → list $129; SHA-256 in `docs/CHECKSUMS.md`). No Polar Checkout URL in this README. Buy: [www.yellowgram.dev/hooksteel](https://www.yellowgram.dev/hooksteel) or hello@yellowgram.dev.
 
 ## Known limits
 
@@ -229,7 +225,7 @@ Landing copy with the same six points: [docs/LANDING.md](./docs/LANDING.md). Tha
 - Adapters that call Resend, GitHub, or Stripe should pass `idempotencyKey` through when the vendor supports it. The outbox unique key does not make those APIs idempotent by itself.
 - A live Polar endpoint pointed at a process with `POLAR_EXPECT_LIVEMODE` unset or false still verifies when the secret matches and stores `livemode=false`. Polar does not sign that bit. Do not invent a livemode field. Do not add `livemode_mismatch` 400 on this path. Sandbox and production are different organizations.
 - Polar disables an endpoint after 10 consecutive non-2xx responses. 400 does not mean Polar stops. Ten strikes disable the endpoint.
-- Every `order.paid` grants, including `billing_reason=subscription_cycle`. Buyers who do not want a credit on every renewal replace the `order.paid` row. v0.1 does not special-case `billing_reason`.
+- Every `order.paid` grants, including `billing_reason=subscription_cycle`. Integrators who do not want a credit on every renewal replace the `order.paid` row. v0.1 does not special-case `billing_reason`.
 - Exactly five chaos files. Polar is covered inside them.
 - The full Polar event JSONB may include customer email, billing address, and tax id. The kit has no purger. You own retention.
 - Replay dry-run prints three `UPDATE` statements that each use `$1`. Those placeholders are not the same row. `outboxId` and `deadLetterId` are separate JSON fields. The billing-event id is not a field on the dry-run object. Do not paste the statements into a SQL client with one bind value. The CLI is the writer. Labeling the three `$1`s inside `replay.ts` is deferred (CR2-A-P2-002).
@@ -338,7 +334,7 @@ Polar retries non-2xx (up to 10, exponential backoff) and disables the endpoint 
 
 `invite_github` is **opt-in**. It is not in the default Polar map.
 
-Every `order.paid` grants, including `billing_reason=subscription_cycle`. Each delivery has its own `webhook-id`. That is a new payment. v0.1 does not special-case `billing_reason`. Buyers who sell subscriptions and do not want a credit on every renewal replace the `order.paid` row.
+Every `order.paid` grants, including `billing_reason=subscription_cycle`. Each delivery has its own `webhook-id`. That is a new payment. v0.1 does not special-case `billing_reason`. Integrators with subscriptions and do not want a credit on every renewal replace the `order.paid` row.
 
 `order.updated` is not an opt-in grant alongside `order.paid`. Polar also sends `order.updated` when the order becomes paid. Mapping both `order.updated` and `order.paid` to the same adapters grants twice.
 
@@ -357,33 +353,24 @@ configurePolarAdapterMap({
 
 ## Support
 
-Support is GitHub Issues for 60 days from purchase. It is best-effort. There is no SLA. Founder time is at most about 2 hours per week. An Issue must include a failing chaos test name or a test-mode event id. Do not paste live secrets.
-
-[SUPPORT.md](./SUPPORT.md)
-
-## Paid delta
-
-Without a purchase, [LICENSE](LICENSE) is PolyForm Noncommercial 1.0.0 only (source-available; not an OSI-approved license). Paying for HookSteel buys the [HookSteel commercial grant](docs/COMMERCIAL_GRANT.md) for **one organization** and the **named tag** delivered with that purchase, plus the Polar zip `hooksteel-0.1.1.zip` (SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`). Legal seller: Suthirth Solutions, operating as yellowgram. Contact hello@yellowgram.dev.
+There is no support contract and no SLA. Open a GitHub Issue with a failing chaos test name or a test-mode event id. Do not paste live secrets. See [SUPPORT.md](./SUPPORT.md).
 
 ## License
 
-Source-available under the PolyForm Noncommercial License 1.0.0. That public license is not an OSI-approved open source license. It is not MIT. The text is `LICENSE`.
-
-Paid commercial production use is the HookSteel commercial grant: one organization, for the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant. See [docs/COMMERCIAL_GRANT.md](./docs/COMMERCIAL_GRANT.md).
-
-Not a hosted gateway. No coupons. No cold invoices. Price and refund lock: [docs/COMMERCIAL_LOCK.md](./docs/COMMERCIAL_LOCK.md). Already-distributed `v0.1.0` zips keep the terms that shipped inside them.
+MIT. See [LICENSE](LICENSE). Releases before 0.2.0 were published under the previous license.
 
 ## Docs
 
-- [SUPPORT](./SUPPORT.md) — 60-day boundary
+- [START_HERE](./START_HERE.md) — quickstart
+- [SUPPORT](./SUPPORT.md) — how to file a useful Issue
 - [SECURITY](./SECURITY.md) — private vulnerability reports
-- [60s demo script](./docs/DEMO_60S.md) — film script for `npm run demo:60s`
-- [Refund glossary](./docs/REFUND_GLOSSARY.md) — 14-day purchase refund, replay CLI, and `order.refunded`
-- [Landing copy](./docs/LANDING.md) — Hookdeck honesty; not a deployed site
-- [Changelog](./CHANGELOG.md) · [Checksums](./docs/CHECKSUMS.md)
-- [Polar deliverables (CoS, listing live)](./docs/POLAR_DELIVERABLES.md)
-- [HookSteel commercial grant](./docs/COMMERCIAL_GRANT.md) · [Commercial lock](./docs/COMMERCIAL_LOCK.md)
+- [60s demo script](./docs/DEMO_60S.md) — script for `npm run demo:60s`
+- [Refund glossary](./docs/REFUND_GLOSSARY.md) — replay CLI versus `order.refunded`
+- [Changelog](./CHANGELOG.md) · [Checksums (historical releases)](./docs/CHECKSUMS.md)
 - [STATUS](./docs/STATUS.md)
-- [DESIGN — Stripe path + chaos](./docs/DESIGN_STRIPE_PATH.md) — §1 is the contract this tree implements
-- [Cycle-2 judgement](./docs/DESIGN_REVIEW_CYCLE2_JUDGEMENT.md)
-- [MVP scope](./docs/MVP_SCOPE.md) · [MINIMUM_SUPPORT](./docs/MINIMUM_SUPPORT_CHECKLIST.md) · [Buyer needs](./docs/BUYER_NEEDS_BEYOND_CHECKLIST.md)
+
+Earlier design and review documents are in the git history.
+
+---
+
+Part of yellowgram open source tools: https://www.yellowgram.dev/oss

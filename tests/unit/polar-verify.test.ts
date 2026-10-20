@@ -452,7 +452,7 @@ test('checkout opt-in payload and other types expose object_id only', async () =
   const { body } = await post(delivery(rawBody, { webhookId: 'msg_chk_opt', scheme: 'standard_webhooks' }));
   assert.equal(body.outcome, 'outboxed');
   const stored = await getPool().query<{ payload: { checkout_id: string; amount_total: number } }>(
-    `SELECT payload FROM outbox WHERE idempotency_key = '${polarKey('chk_opt', 'grant_credit', 'checkout.updated')}'`,
+    `SELECT payload FROM outbox WHERE idempotency_key = '${polarKey('chk_opt', 'grant_credit', 'checkout.updated', 'msg_chk_opt')}'`,
   );
   assert.equal(stored.rows[0]?.payload.checkout_id, 'chk_opt');
   assert.equal(stored.rows[0]?.payload.amount_total, 500);

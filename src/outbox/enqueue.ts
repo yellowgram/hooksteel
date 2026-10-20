@@ -12,20 +12,24 @@ function idOf(v: unknown): string | null {
   return objectIdOf(v);
 }
 
+export type PaymentFamily = 'invoice' | 'payment_intent';
+
 /**
  * The payment an event is about, for events that report a successful payment. One payment
- * can arrive as several events of different types (Checkout `completed` then
- * `async_payment_succeeded` for a delayed payment, Checkout plus `payment_intent.succeeded`,
- * a subscription Checkout plus its first `invoice.paid`), so fulfilment is keyed on the
- * payment, not on the event type.
+ * can arrive as several events with different ids: an invoice and the PaymentIntent that paid
+ * it, or a Checkout Session that carries both. `family` is the other payment event the adapter
+ * is mapped to (see paymentFamilyOf in webhooks/stripe/mapAdapters.ts), so a Checkout Session
+ * is keyed by the id that event will carry: its invoice for `invoice.paid`, its PaymentIntent
+ * for `payment_intent.succeeded`.
  */
-export function paymentIdOf(provider: string, eventType: string, obj: unknown): string | null {
+export function paymentIdOf(provider: string, eventType: string, obj: unknown, family?: PaymentFamily | null): string | null {
   if (!obj || typeof obj !== 'object') return null;
   const o = obj as Record<string, unknown>;
   if (provider === 'stripe') {
     switch (eventType) {
       case 'checkout.session.completed':
       case 'checkout.session.async_payment_succeeded':
+        if (family === 'invoice') return idOf(o.invoice) ?? idOf(o.payment_intent) ?? objectIdOf(o);
         return idOf(o.payment_intent) ?? idOf(o.invoice) ?? objectIdOf(o);
       case 'payment_intent.succeeded':
       case 'invoice.paid':
@@ -59,14 +63,36 @@ export function awaitingPayment(provider: string, eventType: string, obj: unknow
 
 /**
  * One fulfilment per payment and adapter: `provider|pay:<payment id>|adapter` for events that
- * report a successful payment (see paymentIdOf). Other events keep one run per (event type,
- * billed object, adapter): `provider|event type|object id|adapter`, falling back to the event
- * id only when the event carries no object id.
+ * report a successful payment (see paymentIdOf). Every other event runs each adapter once:
+ * `provider|event type|object id|evt:<event id>|adapter`. Those events can repeat for one object
+ * (`customer.subscription.updated` fires on every change), so keying them on the object alone
+ * would run the adapter for the first change only.
  */
-export function idempotencyKey(provider: string, eventType: string, obj: unknown, fallbackId: string, adapter: string): string {
-  const payment = paymentIdOf(provider, eventType, obj);
+export function idempotencyKey(
+  provider: string,
+  eventType: string,
+  obj: unknown,
+  fallbackId: string,
+  adapter: string,
+  family?: PaymentFamily | null,
+): string {
+  const payment = paymentIdOf(provider, eventType, obj, family);
   if (payment) return `${provider}|pay:${payment}|${adapter}`;
-  return `${provider}|${eventType}|${objectIdOf(obj) ?? fallbackId}|${adapter}`;
+  return `${provider}|${eventType}|${objectIdOf(obj) ?? '-'}|evt:${fallbackId}|${adapter}`;
+}
+
+/**
+ * True when an adapter mapped to `payment_intent.succeeded` (or `charge.succeeded`) should skip
+ * a paid subscription Checkout Session. The session has no PaymentIntent of its own; its first
+ * invoice is paid by a PaymentIntent whose own `payment_intent.succeeded` event fulfils it,
+ * under a key the session cannot know. A free session (`no_payment_required`) is not skipped:
+ * no PaymentIntent event will come for it.
+ */
+export function paidByLaterPaymentIntent(provider: string, eventType: string, obj: unknown, family?: PaymentFamily | null): boolean {
+  if (provider !== 'stripe' || family !== 'payment_intent' || !eventType.startsWith('checkout.session.')) return false;
+  if (!obj || typeof obj !== 'object') return false;
+  const o = obj as Record<string, unknown>;
+  return idOf(o.payment_intent) === null && idOf(o.invoice) !== null && o.payment_status === 'paid';
 }
 
 export async function enqueueOutbox(

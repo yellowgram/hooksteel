@@ -36,7 +36,7 @@ export function stripeKey(eventId: string, adapter: string, type = 'checkout.ses
   if (['checkout.session.completed', 'checkout.session.async_payment_succeeded', 'payment_intent.succeeded', 'invoice.paid', 'invoice.payment_succeeded'].includes(type)) {
     return `stripe|pay:${session}|${adapter}`;
   }
-  return `stripe|${type}|${session}|${adapter}`;
+  return `stripe|${type}|${session}|evt:${eventId}|${adapter}`;
 }
 
 export function checkoutBody(overrides: FixtureOverrides = {}): string {

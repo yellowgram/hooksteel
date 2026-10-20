@@ -2,7 +2,7 @@ export interface AdapterContext {
   billingEventId: string;
   providerEventId: string;
   payload: unknown;
-  /** Unique per (provider, event type, billed object, adapter): two events for one order share it. */
+  /** One per payment and adapter (or per event type, billed object and adapter for non-payment events): two events for one payment share it. */
   idempotencyKey: string;
   /** Aborted if this worker loses the row's lease; another worker will run it. */
   signal?: AbortSignal;

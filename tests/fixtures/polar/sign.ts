@@ -109,9 +109,9 @@ export function signPolar(options: {
 }
 
 /** The outbox idempotency key HookSteel derives for a fixture order (see src/outbox/enqueue.ts). */
-export function polarKey(orderId: string, adapter: string, type = 'order.paid'): string {
+export function polarKey(orderId: string, adapter: string, type = 'order.paid', webhookId = ''): string {
   if (type === 'order.paid' || type === 'order.created') return `polar|pay:${orderId}|${adapter}`;
-  return `polar|${type}|${orderId}|${adapter}`;
+  return `polar|${type}|${orderId}|evt:${webhookId}|${adapter}`;
 }
 
 /** Chaos mints only the post-cutoff standard_webhooks key. */

@@ -35,7 +35,7 @@ The Stripe CLI `whsec_` and the Dashboard endpoint `whsec_` are different secret
 | `invoice.paid` | `[]` (persisted as `ignored`) |
 | `customer.subscription.deleted` | `[]` (persisted as `ignored`) |
 
-`invite_github` ships as a stub and is **opt-in**. `invoice.paid → [grant_credit]` is also **opt-in** (same checkout pack plus invoice grants will double-fulfill).
+`invite_github` ships as a stub and is **opt-in**. `invoice.paid → [grant_credit]` is also **opt-in**. A subscription Checkout and its first `invoice.paid` grant once (both are keyed by the invoice). `configureAdapterMap` throws if one adapter is on both an invoice event (`invoice.paid`, `invoice.payment_succeeded`) and a PaymentIntent event (`payment_intent.succeeded`, `charge.succeeded`): one subscription payment sends both, with ids an event can't link. `validateAdapterMap(map)` runs the same check without applying the map.
 
 ```ts
 import { DEFAULT_ADAPTER_MAP, configureAdapterMap } from 'hooksteel';
@@ -47,7 +47,7 @@ configureAdapterMap({
 });
 ```
 
-Outbox idempotency key: for payment-success events (Stripe `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `payment_intent.succeeded`, `invoice.paid`, `invoice.payment_succeeded`, `charge.succeeded`; Polar `order.created`, `order.paid`) it is `provider|pay:<payment_id>|adapter`, where `payment_id` is the PaymentIntent id, else the invoice id, else the object id. Other events use `provider|event_type|object_id|adapter`, where `object_id` is Stripe's `data.object.id` or Polar's `data.id` (the event id if the event has none). A second event with the same key queues nothing. A Checkout Session with `payment_status: "unpaid"`, or a Polar order that is not paid, queues nothing (outcome `awaiting_payment`).
+Outbox idempotency key: for payment-success events (Stripe `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `payment_intent.succeeded`, `invoice.paid`, `invoice.payment_succeeded`, `charge.succeeded`; Polar `order.created`, `order.paid`) it is `provider|pay:<payment_id>|adapter`, where `payment_id` is the PaymentIntent id, else the invoice id, else the object id. A Checkout Session prefers its invoice id when the adapter is mapped to an invoice event; when the adapter is mapped to a PaymentIntent event, a paid subscription Session (no PaymentIntent of its own) queues nothing for that adapter, and its `payment_intent.succeeded` fulfils it. Other events use `provider|event_type|object_id|evt:<event_id>|adapter`, one run per event (`object_id` is Stripe's `data.object.id` or Polar's `data.id`, `-` if the event has none; `event_id` is the Stripe event id or the Polar webhook id). A second event with the same key queues nothing. A Checkout Session with `payment_status: "unpaid"`, or a Polar order that is not paid, queues nothing (outcome `awaiting_payment`).
 
 `send_email` with no `customer_email` completes as a no-op: `completed_at` set and `last_error = skipped_no_email`. It does not throw, retry, or dead-letter.
 

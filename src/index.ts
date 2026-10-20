@@ -16,6 +16,7 @@ export {
   configureAdapterMap,
   mapAdapters,
   resetAdapterMap,
+  validateAdapterMap,
 } from './webhooks/stripe/mapAdapters.js';
 export { buildOutboxPayload } from './webhooks/stripe/payload.js';
 export { handlePolar, type PolarHandleInput } from './webhooks/polar/handler.js';

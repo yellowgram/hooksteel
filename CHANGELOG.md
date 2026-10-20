@@ -2,13 +2,21 @@
 
 ## 0.3.0 — 2026-10-19
 
+### Upgrading from 0.2.x: drain the outbox first
+
+The outbox idempotency keys changed (see Fixed). Rows queued by 0.2.x keep their old keys, so a later event for the same payment won't dedupe against them and could fulfil the payment a second time. Before you deploy 0.3.0, stop taking webhooks or let them queue, run `hooksteel drain --once` until it reports nothing left, then upgrade. Dead letters are not affected; replay them after the upgrade as usual.
+
+`configureAdapterMap` now refuses a map with one adapter on both `invoice.paid` (or `invoice.payment_succeeded`) and `payment_intent.succeeded` (or `charge.succeeded`). Check your map before deploying (`validateAdapterMap(map)` throws the same error).
+
 ### Fixed
 
 - `hooksteel --help` (also `-h`, `help`) prints usage and exits 0; before, it exited 1.
 - **One payment fulfilled twice.** The idempotency key was per event id, and one payment can arrive as several events: Stripe can send two Event objects for one change, a delayed payment sends `checkout.session.completed` and then `checkout.session.async_payment_succeeded`, and Checkout is followed by `payment_intent.succeeded` or the first `invoice.paid`. Payment-success events are now keyed on the payment, `stripe|pay:<PaymentIntent, else invoice, else session id>|<adapter>` (Polar: `polar|pay:<order id>|<adapter>` for `order.created`/`order.paid`); other events use `provider|<event type>|<object id>|<adapter>`. A second event for the same payment queues nothing.
+- **One subscription payment could run an adapter twice through two mappings.** A subscription invoice arrives as `invoice.paid` (keyed by the invoice) and as `payment_intent.succeeded` (keyed by the PaymentIntent). An event can't always tell you which PaymentIntent paid which invoice, so `configureAdapterMap` now throws if one adapter is mapped to both. A Checkout Session is keyed to match the adapter's other payment event: its invoice when the adapter is on `invoice.paid` (so a one-time Checkout that creates an invoice grants once), its PaymentIntent when the adapter is on `payment_intent.succeeded`. A paid subscription Checkout has no PaymentIntent of its own, so it leaves that adapter to the PaymentIntent event.
+- **Repeating events ran the adapter only once per object.** Non-payment events are keyed per event (`provider|type|object|evt:<event id>|adapter`), so each `customer.subscription.updated` runs the adapter. Before, only the first update for a subscription did.
 - **No fulfilment before payment.** A Checkout Session completed with `payment_status: "unpaid"` used to queue `grant_credit` before the money arrived. It now queues nothing (outcome `awaiting_payment`); `async_payment_succeeded` fulfils it. Unpaid Polar orders are skipped the same way.
-- **Upgrading:** rows queued by 0.2.x use the old per-event keys and will not dedupe against a later event for the same payment. Drain the outbox (`hooksteel drain --once` until idle) before upgrading.
 - `OUTBOX_LEASE_MS` under 1000 is a configuration error (it was accepted down to 0, which caused duplicate runs).
+- The npm package no longer ships source maps that point at `src/` files it doesn't include.
 - The default `OUTBOX_WORKER_ID` is unique per process (was `local-dev-1` for every replica).
 - Adapters get `signal`, aborted when the worker loses the row's lease.
 - **A worker that lost its lease could overwrite the next worker's result.** If an adapter outlived `OUTBOX_LEASE_MS`, a second worker reclaimed the row. The first worker's late completion, backoff or dead-letter then landed anyway and could mark the row done, push it back, or dead-letter work the second worker had finished. Those writes are now fenced on the claim's `(locked_by, locked_at)` token. A stale worker changes nothing and logs `lease_lost`. No migration is needed.

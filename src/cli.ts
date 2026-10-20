@@ -12,7 +12,7 @@ import { closePool } from './db/pool.js';
 import { migrate } from './db/migrate.js';
 import { registerAdapter } from './adapters/registry.js';
 import type { FulfillmentAdapter } from './adapters/types.js';
-import { drainOnce } from './outbox/drain.js';
+import { drainOnce, drainOne } from './outbox/drain.js';
 import { listDeadLetters, replayDryRun, replayExecute } from './outbox/replay.js';
 
 export const REPLAY_USAGE = 'usage: hooksteel replay list | dry-run <dead_letter_id> | execute <dead_letter_id>';
@@ -79,8 +79,9 @@ async function replay(argv: string[]): Promise<number> {
  */
 export async function drainLoop(signal: AbortSignal, idleMs = 1000): Promise<void> {
   while (!signal.aborted) {
-    const processed = await drainOnce();
-    if (processed === 0 && !signal.aborted) {
+    // One row at a time, so an abort waits for at most the row in hand.
+    const worked = await drainOne();
+    if (!worked && !signal.aborted) {
       await new Promise<void>((resolve) => {
         const timer = setTimeout(resolve, idleMs);
         signal.addEventListener('abort', () => {
@@ -128,7 +129,7 @@ async function drain(argv: string[]): Promise<number> {
   const stop = new AbortController();
   for (const sig of ['SIGTERM', 'SIGINT'] as const) {
     process.once(sig, () => {
-      console.log(`outbox drain: ${sig}, finishing the current batch`);
+      console.log(`outbox drain: ${sig}, finishing the row in hand`);
       stop.abort();
     });
   }

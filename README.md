@@ -71,6 +71,8 @@ export const adapters = [
     name: 'grant_credit',
     async execute({ payload, idempotencyKey }) {
       // Make this idempotent on idempotencyKey: it can run more than once.
+      // The key is per order (event type + the provider's object id + adapter), not per
+      // event, so two different events for one checkout share it.
       await credits.grant(payload.customer, payload.amount_total, { idempotencyKey });
     },
   },
@@ -96,7 +98,7 @@ Or, inside your app, `registerAdapter(adapter)` for each one and call `drainOnce
 
 1. **Verify.** A bad or missing signature, or a placeholder secret, gets 400 and nothing is stored.
 2. **Store and enqueue, in one transaction.** The event goes into `billing_events`; one `outbox` row per adapter goes in with it. The adapter map decides which adapters an event type triggers (for example `checkout.session.completed` → `grant_credit`, `send_email`). An unmapped type is stored as `ignored`. A database error gets 500, so the provider retries.
-3. **Drain.** The worker claims due rows with `FOR UPDATE SKIP LOCKED` and runs the adapter. Each outbox row has an idempotency key, `provider|event id|adapter`. Pass it to any external API you call (Stripe, Resend, GitHub), so a retry cannot double-send there either.
+3. **Drain.** The worker claims due rows with `FOR UPDATE SKIP LOCKED` and runs the adapter. Each outbox row has an idempotency key, `provider|event type|object id|adapter` (the object is the checkout session or order), so it is the same for every event about one order. Pass it to any external API you call (Stripe, Resend, GitHub), so a retry cannot double-send there either.
 4. **Retry or dead-letter.** If an adapter throws, the row is retried after 2^attempts seconds, at most 60. After `OUTBOX_MAX_ATTEMPTS` (default 5) it moves to `dead_letters`. An adapter name that isn't registered dead-letters at once as `poison`.
 5. **Replay.** Fix the cause, then re-open one dead letter so the worker runs that adapter again:
 
@@ -110,7 +112,7 @@ Or, inside your app, `registerAdapter(adapter)` for each one and call `drainOnce
 
 ### Leases
 
-A claim takes a lease for `OUTBOX_LEASE_MS` (default 30 s). While the adapter runs, the worker renews the lease every third of that time. A slow adapter that is still working therefore keeps its row. Only a worker that has stalled or died loses it.
+A claim takes a lease for `OUTBOX_LEASE_MS` (default 30 s). While the adapter runs, the worker renews the lease every third of that time. A slow adapter that is still working therefore keeps its row. Only a worker that has stalled or died loses it. A stalled worker may still be running its adapter when another worker takes the row; the adapter's `signal` (an `AbortSignal`) aborts when its lease renewal fails, so a long adapter can stop. `OUTBOX_LEASE_MS` below 1000 is refused at startup.
 
 If a lease does expire and another worker takes the row, the first worker's late writes are fenced off. Completion, backoff and dead-lettering all check the claim's `(locked_by, locked_at)` token, and the first worker logs `lease_lost` and steps aside. Every claim counts as an attempt, including a reclaim after a crash.
 
@@ -119,6 +121,7 @@ If a lease does expire and another worker takes the row, the first worker's late
 What HookSteel guarantees:
 
 - One `billing_events` row per provider event id, under any amount of concurrent duplicate delivery.
+- One outbox row per (event type, billed object, adapter). Stripe sometimes sends two different events for one change; the second one is recorded but queues nothing (it logs `duplicate_object`). If you map an event type that fires repeatedly for one object (for example `customer.subscription.updated`), only the first one for that object runs your adapter.
 - Outbox rows exist if and only if their event's transaction committed.
 - An adapter never runs for an event that rolled back.
 - A worker that lost its lease cannot overwrite the new holder's result.
@@ -142,8 +145,8 @@ What it does not:
 | `STRIPE_EXPECT_LIVEMODE` | `false` | Reject events whose `livemode` doesn't match |
 | `POLAR_WEBHOOK_SECRET` | — | Endpoint `whsec_…` (`polar_whs_` is rejected; rotate it) |
 | `POLAR_EXPECT_LIVEMODE` | `false` | Recorded on each Polar event; Polar does not sign a livemode flag |
-| `OUTBOX_WORKER_ID` | `local-dev-1` | Written to `locked_by`; give each worker its own |
-| `OUTBOX_LEASE_MS` | `30000` | Lease length; renewed while the adapter runs |
+| `OUTBOX_WORKER_ID` | `<hostname>:<pid>:<random>` | Written to `locked_by`, for logs and debugging. Unique per process by default |
+| `OUTBOX_LEASE_MS` | `30000` | Lease length in milliseconds (at least 1000); renewed while the adapter runs |
 | `OUTBOX_MAX_ATTEMPTS` | `5` | Attempts before a dead letter |
 | `OUTBOX_BATCH_SIZE` | `10` | Rows per `--once` run, handled one after another |
 

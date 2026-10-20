@@ -1,6 +1,6 @@
 import type pg from 'pg';
 import { getPool } from '../../db/pool.js';
-import { enqueueOutbox, idempotencyKey } from '../../outbox/enqueue.js';
+import { enqueueOutbox, idempotencyKey, objectIdOf } from '../../outbox/enqueue.js';
 import { mapPolarAdapters } from './mapAdapters.js';
 import { buildPolarOutboxPayload } from './payload.js';
 import { verifyPolarWebhook, PolarWebhookRejected } from './verify.js';
@@ -87,15 +87,25 @@ export async function handlePolar(input: PolarHandleInput, options?: PolarHandle
       );
     } else {
       const payload = buildPolarOutboxPayload(verified.event);
+      const objectId = objectIdOf(verified.event.data) ?? verified.webhookId;
+      let queued = 0;
       for (const adapter of adapters) {
-        await enqueueOutbox(client, {
+        const added = await enqueueOutbox(client, {
           billingEventId,
           adapter,
           payload,
-          idempotencyKey: idempotencyKey('polar', verified.webhookId, adapter),
+          idempotencyKey: idempotencyKey('polar', verified.event.type, objectId, adapter),
         });
+        if (added) queued += 1;
       }
-      await client.query(`UPDATE billing_events SET status = 'outboxed' WHERE id = $1`, [billingEventId]);
+      // Every adapter already ran (or is queued) for this object under another event id:
+      // nothing to drain, so close the event here.
+      await client.query(
+        queued > 0
+          ? `UPDATE billing_events SET status = 'outboxed' WHERE id = $1`
+          : `UPDATE billing_events SET status = 'ignored', processed_at = now() WHERE id = $1`,
+        [billingEventId],
+      );
     }
 
     if (honorChaosHooks() && options?.beforeCommit) await options.beforeCommit(client);

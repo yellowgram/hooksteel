@@ -5,7 +5,7 @@ export { exampleAdaptersAllowed, getAdapter, isExampleAdapter, registerAdapter, 
 export { grantCreditAdapter } from './adapters/grant_credit.js';
 export { inviteGithubAdapter } from './adapters/invite_github.js';
 export { sendEmailAdapter } from './adapters/send_email.js';
-export { idempotencyKey, enqueueOutbox } from './outbox/enqueue.js';
+export { idempotencyKey, enqueueOutbox, objectIdOf } from './outbox/enqueue.js';
 export { drainOnce, drainOne } from './outbox/drain.js';
 export { drainLoop } from './cli.js';
 export { listDeadLetters, replayDryRun, replayExecute, ReplayRefusedError } from './outbox/replay.js';

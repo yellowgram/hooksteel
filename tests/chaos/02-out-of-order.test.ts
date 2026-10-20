@@ -3,8 +3,8 @@ import { test } from 'node:test';
 import { getPool } from '../../src/db/pool.js';
 import { handlePolar } from '../../src/webhooks/polar/handler.js';
 import { handle } from '../../src/webhooks/stripe/handler.js';
-import { orderPaidBody, polarHandleInput } from '../fixtures/polar/sign.js';
-import { checkoutBody, signBody } from '../fixtures/stripe/sign.js';
+import { orderPaidBody, polarHandleInput, polarKey } from '../fixtures/polar/sign.js';
+import { checkoutBody, signBody, stripeKey } from '../fixtures/stripe/sign.js';
 import { count, deadlocks, drainUntilIdle, installDbHooks } from '../setup/harness.js';
 
 installDbHooks();
@@ -49,7 +49,7 @@ test('out-of-order + concurrent deliveries keep uniqueness and do not deadlock',
     for (const adapter of ['grant_credit', 'send_email']) {
       assert.equal(
         await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
-          `stripe|${eventId}|${adapter}`,
+          `${stripeKey(eventId, adapter)}`,
         ]),
         1,
       );
@@ -93,7 +93,7 @@ test('polar out-of-order + concurrent deliveries keep uniqueness and do not dead
     for (const adapter of ['grant_credit', 'send_email']) {
       assert.equal(
         await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
-          `polar|${eventId}|${adapter}`,
+          `${polarKey(eventId === 'msg_polar_order_a' ? 'ord_polar_a' : 'ord_polar_b', adapter)}`,
         ]),
         1,
       );

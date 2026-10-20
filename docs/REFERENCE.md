@@ -47,7 +47,7 @@ configureAdapterMap({
 });
 ```
 
-Outbox idempotency key: `provider|provider_event_id|adapter`.
+Outbox idempotency key: `provider|event_type|object_id|adapter`, where `object_id` is Stripe's `data.object.id` or Polar's `data.id` (the event id if the event has none). A second event with the same key queues nothing.
 
 `send_email` with no `customer_email` completes as a no-op: `completed_at` set and `last_error = skipped_no_email`. It does not throw, retry, or dead-letter.
 

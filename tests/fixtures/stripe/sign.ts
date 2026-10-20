@@ -24,6 +24,13 @@ export interface FixtureOverrides {
   type?: string;
   livemode?: boolean;
   customer_email?: string | null;
+  /** The checkout session id. Defaults to one per event id, so distinct test events are distinct orders. */
+  sessionId?: string;
+}
+
+/** The outbox idempotency key HookSteel derives for a fixture event (see src/outbox/enqueue.ts). */
+export function stripeKey(eventId: string, adapter: string, type = 'checkout.session.completed', sessionId?: string): string {
+  return `stripe|${type}|${sessionId ?? `cs_for_${eventId}`}|${adapter}`;
 }
 
 export function checkoutBody(overrides: FixtureOverrides = {}): string {
@@ -34,6 +41,8 @@ export function checkoutBody(overrides: FixtureOverrides = {}): string {
     data: { object: Record<string, unknown> };
   };
   if (overrides.id !== undefined) event.id = overrides.id;
+  if (overrides.sessionId !== undefined) event.data.object.id = overrides.sessionId;
+  else if (overrides.id !== undefined) event.data.object.id = `cs_for_${overrides.id}`;
   if (overrides.type !== undefined) event.type = overrides.type;
   if (overrides.livemode !== undefined) event.livemode = overrides.livemode;
   if (overrides.customer_email !== undefined) {

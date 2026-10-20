@@ -139,6 +139,10 @@ async function drain(argv: string[]): Promise<number> {
 
 export async function runCli(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
+  if ((command === '--help' || command === '-h' || command === 'help') && rest.length === 0) {
+    console.log(USAGE);
+    return 0;
+  }
   try {
     if (command === 'migrate' && rest.length === 0) {
       const ran = await migrate();

@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+import { hostname } from 'node:os';
 import { exampleAdaptersAllowed, getAdapter, isExampleAdapter } from '../adapters/registry.js';
 import type { AdapterResult } from '../adapters/types.js';
 import { getPool } from '../db/pool.js';
@@ -32,14 +34,23 @@ WHERE o.id = (
 RETURNING o.id, o.billing_event_id, o.adapter, o.payload, o.idempotency_key, o.attempts, o.locked_by, o.locked_at::text AS locked_at
 `;
 
+/** Unique per process unless OUTBOX_WORKER_ID is set, so replicas of one deployment don't share it. */
+const DEFAULT_WORKER_ID = `${hostname()}:${process.pid}:${randomUUID().slice(0, 8)}`;
+
 function workerId(): string {
   const id = process.env.OUTBOX_WORKER_ID?.trim();
-  return id ? id : 'local-dev-1';
+  return id ? id : DEFAULT_WORKER_ID;
 }
 
+/** The lease is renewed every third of its length; below a second, renewals can't keep up. */
+export const MIN_LEASE_MS = 1000;
+
 function leaseSeconds(): number {
-  const ms = Number(process.env.OUTBOX_LEASE_MS ?? 30000);
-  if (!Number.isFinite(ms) || ms < 0) return 30;
+  const raw = process.env.OUTBOX_LEASE_MS;
+  const ms = raw === undefined || raw.trim() === '' ? 30000 : Number(raw);
+  if (!Number.isFinite(ms) || ms < MIN_LEASE_MS) {
+    throw new Error(`OUTBOX_LEASE_MS must be at least ${MIN_LEASE_MS} (it is in milliseconds; got ${raw}).`);
+  }
   return ms / 1000;
 }
 
@@ -194,8 +205,9 @@ async function deadLetter(
  * but healthy adapter is not reclaimed. Each renewal is fenced and moves the token
  * forward. Stop it (and await the last renewal) before any final write.
  */
-function startHeartbeat(row: ClaimedOutbox): { stop: () => Promise<void> } {
-  const everyMs = Math.max(50, (leaseSeconds() * 1000) / 3);
+function startHeartbeat(row: ClaimedOutbox): { stop: () => Promise<void>; signal: AbortSignal } {
+  const everyMs = (leaseSeconds() * 1000) / 3;
+  const lost = new AbortController();
   let inFlight: Promise<void> = Promise.resolve();
   let stopped = false;
   const timer = setInterval(() => {
@@ -206,13 +218,18 @@ function startHeartbeat(row: ClaimedOutbox): { stop: () => Promise<void> } {
         [row.id, row.locked_by, row.locked_at],
       );
       if (renewed.rows[0]) row.locked_at = renewed.rows[0].locked_at;
-      else stopped = true;
+      else {
+        // Another worker holds the row now. Tell the adapter to stop if it can.
+        stopped = true;
+        lost.abort(new Error('outbox lease lost'));
+      }
     }).catch(() => {
       // A failed renewal is not fatal: the final write is still fenced.
     });
   }, everyMs);
   timer.unref();
   return {
+    signal: lost.signal,
     stop: async () => {
       stopped = true;
       clearInterval(timer);
@@ -273,6 +290,7 @@ export async function drainOne(options?: DrainOptions): Promise<boolean> {
       providerEventId: await lookupProviderEventId(claimed.billing_event_id),
       payload: claimed.payload,
       idempotencyKey: claimed.idempotency_key,
+      signal: heartbeat.signal,
     });
     if (honorChaosHooks() && options?.afterInvocation) {
       await options.afterInvocation(claimed.idempotency_key);

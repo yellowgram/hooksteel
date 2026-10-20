@@ -12,7 +12,7 @@ import {
 } from '../../src/webhooks/stripe/mapAdapters.js';
 import { handle } from '../../src/webhooks/stripe/handler.js';
 import { buildOutboxPayload } from '../../src/webhooks/stripe/payload.js';
-import { checkoutBody, signBody } from '../fixtures/stripe/sign.js';
+import { checkoutBody, signBody, stripeKey } from '../fixtures/stripe/sign.js';
 import { count, drainUntilIdle, installDbHooks, TEST_WEBHOOK_SECRET } from '../setup/harness.js';
 
 installDbHooks();
@@ -113,7 +113,7 @@ test('invoice.paid can be opted in to grant_credit', async () => {
   assert.equal(response.status, 200);
   assert.equal((await response.json()).outcome, 'outboxed');
   const payload = await getPool().query<{ payload: { invoice_id: string; amount_paid: number } }>(
-    `SELECT payload FROM outbox WHERE idempotency_key = 'stripe|evt_invoice_optin|grant_credit'`,
+    `SELECT payload FROM outbox WHERE idempotency_key = '${stripeKey('evt_invoice_optin', 'grant_credit', 'invoice.paid', 'in_optin')}'`,
   );
   assert.equal(payload.rows[0]?.payload.invoice_id, 'in_optin');
   assert.equal(payload.rows[0]?.payload.amount_paid, 1200);
@@ -126,7 +126,7 @@ test('send_email missing customer_email completes as skipped_no_email', async ()
   await drainUntilIdle();
 
   const email = await getPool().query<{ last_error: string | null; completed_at: Date | null }>(
-    `SELECT last_error, completed_at FROM outbox WHERE idempotency_key = 'stripe|evt_no_email|send_email'`,
+    `SELECT last_error, completed_at FROM outbox WHERE idempotency_key = '${stripeKey('evt_no_email', 'send_email')}'`,
   );
   assert.equal(email.rows[0]?.last_error, 'skipped_no_email');
   assert.ok(email.rows[0]?.completed_at);
@@ -136,7 +136,7 @@ test('send_email missing customer_email completes as skipped_no_email', async ()
   );
   assert.equal(
     await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
-      'stripe|evt_no_email|grant_credit',
+      stripeKey('evt_no_email', 'grant_credit'),
     ]),
     1,
   );
@@ -180,7 +180,7 @@ test('grant_credit throws on missing money fields and writes no invocation', asy
   const base = {
     billingEventId: '00000000-0000-0000-0000-000000000001',
     providerEventId: 'evt_missing_money',
-    idempotencyKey: 'stripe|evt_missing_money|grant_credit',
+    idempotencyKey: stripeKey('evt_missing_money', 'grant_credit'),
   };
   const missing = [
     { currency: 'usd', customer: 'cus_1' },
@@ -198,23 +198,23 @@ test('grant_credit throws on missing money fields and writes no invocation', asy
 
   await grantCreditAdapter.execute({
     ...base,
-    idempotencyKey: 'stripe|evt_zero_amount|grant_credit',
+    idempotencyKey: stripeKey('evt_zero_amount', 'grant_credit'),
     payload: { amount_total: 0, currency: 'usd', customer: 'cus_1' },
   });
   await grantCreditAdapter.execute({
     ...base,
-    idempotencyKey: 'stripe|evt_amount_paid|grant_credit',
+    idempotencyKey: stripeKey('evt_amount_paid', 'grant_credit'),
     payload: { amount_paid: 1200, currency: 'usd', customer: 'cus_1' },
   });
   assert.equal(
     await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
-      'stripe|evt_zero_amount|grant_credit',
+      stripeKey('evt_zero_amount', 'grant_credit'),
     ]),
     1,
   );
   assert.equal(
     await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
-      'stripe|evt_amount_paid|grant_credit',
+      stripeKey('evt_amount_paid', 'grant_credit'),
     ]),
     1,
   );
@@ -226,18 +226,18 @@ test('invocation log stays off unless NODE_ENV=test or HOOKSTEEL_RECORD_INVOCATI
   try {
     process.env.NODE_ENV = 'development';
     delete process.env.HOOKSTEEL_RECORD_INVOCATIONS;
-    await recordTestInvocation('stripe|evt_gate|grant_credit', 'grant_credit');
+    await recordTestInvocation(stripeKey('evt_gate', 'grant_credit'), 'grant_credit');
     assert.equal(await count('SELECT count(*)::int AS n FROM adapter_invocations'), 0);
 
     process.env.NODE_ENV = 'production';
-    await recordTestInvocation('stripe|evt_gate|grant_credit', 'grant_credit');
+    await recordTestInvocation(stripeKey('evt_gate', 'grant_credit'), 'grant_credit');
     assert.equal(await count('SELECT count(*)::int AS n FROM adapter_invocations'), 0);
 
     process.env.HOOKSTEEL_RECORD_INVOCATIONS = 'true';
-    await recordTestInvocation('stripe|evt_gate|grant_credit', 'grant_credit');
+    await recordTestInvocation(stripeKey('evt_gate', 'grant_credit'), 'grant_credit');
     assert.equal(
       await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
-        'stripe|evt_gate|grant_credit',
+        stripeKey('evt_gate', 'grant_credit'),
       ]),
       1,
     );

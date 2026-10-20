@@ -5,15 +5,15 @@ import { getPool } from '../../src/db/pool.js';
 import { drainOnce } from '../../src/outbox/drain.js';
 import { handlePolar } from '../../src/webhooks/polar/handler.js';
 import { handle } from '../../src/webhooks/stripe/handler.js';
-import { orderPaidBody, polarHandleInput } from '../fixtures/polar/sign.js';
-import { checkoutBody, signBody } from '../fixtures/stripe/sign.js';
+import { orderPaidBody, polarHandleInput, polarKey } from '../fixtures/polar/sign.js';
+import { checkoutBody, signBody, stripeKey } from '../fixtures/stripe/sign.js';
 import { count, installDbHooks } from '../setup/harness.js';
 
 installDbHooks();
 
 test('crash after adapter_invocations write and before completed_at re-drains to count 1', async () => {
   const eventId = 'evt_mid_1';
-  const key = `stripe|${eventId}|grant_credit`;
+  const key = `${stripeKey(eventId, 'grant_credit')}`;
   const rawBody = checkoutBody({ id: eventId });
   const signature = signBody(rawBody);
 
@@ -54,7 +54,7 @@ test('crash after adapter_invocations write and before completed_at re-drains to
 
 test('polar crash after adapter_invocations write and before completed_at re-drains to count 1', async () => {
   const eventId = 'msg_polar_mid_1';
-  const key = `polar|${eventId}|grant_credit`;
+  const key = `${polarKey('ord_polar_mid', 'grant_credit')}`;
   const rawBody = orderPaidBody({ orderId: 'ord_polar_mid' });
   const input = polarHandleInput(rawBody, eventId);
 

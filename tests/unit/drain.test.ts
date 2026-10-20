@@ -6,7 +6,7 @@ import { getPool } from '../../src/db/pool.js';
 import { drainOnce, drainOne } from '../../src/outbox/drain.js';
 import { replayDryRun, replayExecute, ReplayRefusedError } from '../../src/outbox/replay.js';
 import { handle } from '../../src/webhooks/stripe/handler.js';
-import { checkoutBody, signBody } from '../fixtures/stripe/sign.js';
+import { checkoutBody, signBody, stripeKey } from '../fixtures/stripe/sign.js';
 import { count, drainUntilIdle, installDbHooks } from '../setup/harness.js';
 
 installDbHooks();
@@ -41,7 +41,7 @@ test('fresh locks are held and a shorter lease reclaims them', async () => {
 test('adapter failure backs off by 2^attempts capped at 60s, then dead-letters at max attempts', async () => {
   process.env.OUTBOX_MAX_ATTEMPTS = '1';
   await accept('evt_backoff');
-  const key = 'stripe|evt_backoff|grant_credit';
+  const key = stripeKey('evt_backoff', 'grant_credit');
   await drainOnce(crashAfterInvocationAlways(key));
 
   const failed = await getPool().query<{ delta: number; attempts: number; last_error: string }>(
@@ -164,10 +164,10 @@ test('concurrent sibling completions still set processed_at', async () => {
 test('crash after dead_letters insert reclaims without a second open row', async () => {
   process.env.OUTBOX_MAX_ATTEMPTS = '1';
   await accept('evt_dl_crash');
-  const key = 'stripe|evt_dl_crash|grant_credit';
+  const key = stripeKey('evt_dl_crash', 'grant_credit');
   await getPool().query(
     `UPDATE outbox SET completed_at = now(), locked_at = NULL, locked_by = NULL
-     WHERE idempotency_key = 'stripe|evt_dl_crash|send_email'`,
+     WHERE idempotency_key = '${stripeKey('evt_dl_crash', 'send_email')}'`,
   );
   await getPool().query(
     `UPDATE outbox SET attempts = 1, locked_at = NULL, locked_by = NULL, available_at = now()
@@ -203,10 +203,10 @@ test('crash after dead_letters insert reclaims without a second open row', async
 test('replay clears processed_at and the next drain sets it again', async () => {
   process.env.OUTBOX_MAX_ATTEMPTS = '1';
   await accept('evt_replay_processed');
-  const key = 'stripe|evt_replay_processed|grant_credit';
+  const key = stripeKey('evt_replay_processed', 'grant_credit');
   await getPool().query(
     `UPDATE outbox SET completed_at = now(), locked_at = NULL, locked_by = NULL
-     WHERE idempotency_key = 'stripe|evt_replay_processed|send_email'`,
+     WHERE idempotency_key = '${stripeKey('evt_replay_processed', 'send_email')}'`,
   );
   await getPool().query(
     `UPDATE outbox SET attempts = 1, locked_at = NULL, locked_by = NULL, available_at = now()
@@ -302,11 +302,11 @@ test('production drops crash hooks even when chaos inject is armed', async () =>
     assert.equal(deadResponse.status, 200);
     await getPool().query(
       `UPDATE outbox SET completed_at = now(), locked_at = NULL, locked_by = NULL
-       WHERE idempotency_key = 'stripe|evt_prod_dead|send_email'`,
+       WHERE idempotency_key = '${stripeKey('evt_prod_dead', 'send_email')}'`,
     );
     await getPool().query(
       `UPDATE outbox SET attempts = 1, locked_at = NULL, locked_by = NULL, available_at = now()
-       WHERE idempotency_key = 'stripe|evt_prod_dead|grant_credit'`,
+       WHERE idempotency_key = '${stripeKey('evt_prod_dead', 'grant_credit')}'`,
     );
     let deadHookRan = false;
     assert.equal(
@@ -323,7 +323,7 @@ test('production drops crash hooks even when chaos inject is armed', async () =>
       await count(
         `SELECT count(*)::int AS n FROM dead_letters d
          JOIN outbox o ON o.id = d.outbox_id
-         WHERE o.idempotency_key = 'stripe|evt_prod_dead|grant_credit' AND d.replayed_at IS NULL`,
+         WHERE o.idempotency_key = '${stripeKey('evt_prod_dead', 'grant_credit')}' AND d.replayed_at IS NULL`,
       ),
       1,
     );
@@ -339,8 +339,8 @@ test('production drops crash hooks even when chaos inject is armed', async () =>
 test('unknown adapter is poison, not a retry', async () => {
   await accept('evt_poison');
   await getPool().query(
-    `UPDATE outbox SET adapter = 'not_registered', idempotency_key = 'stripe|evt_poison|not_registered'
-     WHERE idempotency_key = 'stripe|evt_poison|grant_credit'`,
+    `UPDATE outbox SET adapter = 'not_registered', idempotency_key = '${stripeKey('evt_poison', 'not_registered')}'
+     WHERE idempotency_key = '${stripeKey('evt_poison', 'grant_credit')}'`,
   );
   assert.equal(await drainOnce(), 2);
   const reasons = await getPool().query<{ reason: string }>(
@@ -367,7 +367,7 @@ test('an event\'s adapters drain in adapter-map order', async () => {
   });
   for (let i = 0; i < 8; i += 1) {
     assert.ok(
-      seen.indexOf(`stripe|evt_order_${i}|grant_credit`) < seen.indexOf(`stripe|evt_order_${i}|send_email`),
+      seen.indexOf(`${stripeKey(`evt_order_${i}`, 'grant_credit')}`) < seen.indexOf(`${stripeKey(`evt_order_${i}`, 'send_email')}`),
       `evt_order_${i}: ${seen.join(', ')}`,
     );
   }

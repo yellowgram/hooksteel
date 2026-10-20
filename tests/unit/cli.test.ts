@@ -3,13 +3,13 @@ import { mkdtempSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
-import { drainLoop, loadAdapters } from '../../src/cli.js';
+import { drainLoop, loadAdapters, runCli } from '../../src/cli.js';
 import { registerAdapter, resetAdapters } from '../../src/adapters/registry.js';
 import { getPool } from '../../src/db/pool.js';
 import { drainOnce } from '../../src/outbox/drain.js';
 import { MIGRATIONS_DIR, migrate } from '../../src/db/migrate.js';
 import { handle } from '../../src/webhooks/stripe/handler.js';
-import { checkoutBody, signBody } from '../fixtures/stripe/sign.js';
+import { checkoutBody, signBody, stripeKey } from '../fixtures/stripe/sign.js';
 import { count, installDbHooks, withTimeout } from '../setup/harness.js';
 
 installDbHooks();
@@ -69,7 +69,7 @@ test('outside tests the built-in example adapters refuse, and a registered adapt
     assert.deepEqual(await loadAdapters(file), ['grant_credit', 'send_email']);
     await getPool().query('UPDATE outbox SET available_at = now()');
     await drainOnce();
-    assert.deepEqual(ran.sort(), ['grant_credit:stripe|evt_example_refused|grant_credit', 'send_email:stripe|evt_example_refused|send_email']);
+    assert.deepEqual(ran.sort(), [`grant_credit:${stripeKey('evt_example_refused', 'grant_credit')}`, `send_email:${stripeKey('evt_example_refused', 'send_email')}`]);
     assert.equal(await count('SELECT count(*)::int AS n FROM outbox WHERE completed_at IS NULL'), 0);
   } finally {
     process.env.NODE_ENV = previous;
@@ -80,4 +80,20 @@ test('outside tests the built-in example adapters refuse, and a registered adapt
 test('registerAdapter rejects malformed adapters', () => {
   assert.throws(() => registerAdapter({ name: '', execute: async () => undefined }), TypeError);
   assert.throws(() => registerAdapter({ name: 'x' } as never), TypeError);
+});
+
+test('--help prints usage and exits 0; an unknown command still exits 1', async () => {
+  const log = console.log;
+  const err = console.error;
+  const out: string[] = [];
+  console.log = (...a: unknown[]) => void out.push(a.join(' '));
+  console.error = () => {};
+  try {
+    for (const flag of ['--help', '-h', 'help']) assert.equal(await runCli([flag]), 0, flag);
+    assert.equal(await runCli(['nope']), 1);
+  } finally {
+    console.log = log;
+    console.error = err;
+  }
+  assert.match(out[0] ?? '', /^usage:/);
 });

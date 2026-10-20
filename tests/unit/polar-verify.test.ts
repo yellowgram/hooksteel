@@ -10,7 +10,7 @@ import {
 import { handlePolar, type PolarHandleInput } from '../../src/webhooks/polar/handler.js';
 import { buildPolarOutboxPayload } from '../../src/webhooks/polar/payload.js';
 import { strictBase64 } from '../../src/webhooks/polar/verify.js';
-import { orderPaidBody, signPolar, type PolarSignScheme } from '../fixtures/polar/sign.js';
+import { orderPaidBody, signPolar, type PolarSignScheme, polarKey } from '../fixtures/polar/sign.js';
 import { POLAR_TEST_WEBHOOK_SECRET } from '../fixtures/polar/secrets.js';
 import { count, drainUntilIdle, installDbHooks } from '../setup/harness.js';
 
@@ -296,14 +296,14 @@ test('order.paid outboxes normalized amount_total including subscription_cycle a
   assert.equal(accepted.body.outcome, 'outboxed');
   const payload = await getPool().query<{
     payload: { amount_total: number; customer: string; order_id: string; billing_reason: string };
-  }>(`SELECT payload FROM outbox WHERE idempotency_key = 'polar|msg_paid_norm|grant_credit'`);
+  }>(`SELECT payload FROM outbox WHERE idempotency_key = '${polarKey('ord_paid_norm', 'grant_credit')}'`);
   assert.equal(payload.rows[0]?.payload.amount_total, 8900);
   assert.equal(payload.rows[0]?.payload.order_id, 'ord_paid_norm');
   assert.equal(payload.rows[0]?.payload.customer, '8f1c2a10-0000-4000-8000-000000000001');
   assert.equal(payload.rows[0]?.payload.billing_reason, 'purchase');
   assert.equal(
     await count('SELECT count(*)::int AS n FROM outbox WHERE idempotency_key = $1', [
-      'polar|msg_paid_norm|send_email',
+      polarKey('ord_paid_norm', 'send_email'),
     ]),
     1,
   );
@@ -322,7 +322,7 @@ test('order.paid outboxes normalized amount_total including subscription_cycle a
   );
   assert.equal(renewalResult.body.outcome, 'outboxed');
   const cycle = await getPool().query<{ payload: { billing_reason: string; amount_total: number } }>(
-    `SELECT payload FROM outbox WHERE idempotency_key = 'polar|msg_cycle|grant_credit'`,
+    `SELECT payload FROM outbox WHERE idempotency_key = '${polarKey('ord_cycle', 'grant_credit')}'`,
   );
   assert.equal(cycle.rows[0]?.payload.billing_reason, 'subscription_cycle');
   assert.equal(cycle.rows[0]?.payload.amount_total, 8900);
@@ -333,7 +333,7 @@ test('order.paid outboxes normalized amount_total including subscription_cycle a
   await drainUntilIdle();
   assert.equal(
     await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
-      'polar|msg_free|grant_credit',
+      polarKey('ord_free', 'grant_credit'),
     ]),
     1,
   );
@@ -361,13 +361,13 @@ test('null customer email skips send_email and still grants credit once', async 
   await drainUntilIdle();
 
   const email = await getPool().query<{ last_error: string | null; completed_at: Date | null }>(
-    `SELECT last_error, completed_at FROM outbox WHERE idempotency_key = 'polar|msg_no_email|send_email'`,
+    `SELECT last_error, completed_at FROM outbox WHERE idempotency_key = '${polarKey('ord_no_email', 'send_email')}'`,
   );
   assert.equal(email.rows[0]?.last_error, 'skipped_no_email');
   assert.ok(email.rows[0]?.completed_at);
   assert.equal(
     await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
-      'polar|msg_no_email|grant_credit',
+      polarKey('ord_no_email', 'grant_credit'),
     ]),
     1,
   );
@@ -452,7 +452,7 @@ test('checkout opt-in payload and other types expose object_id only', async () =
   const { body } = await post(delivery(rawBody, { webhookId: 'msg_chk_opt', scheme: 'standard_webhooks' }));
   assert.equal(body.outcome, 'outboxed');
   const stored = await getPool().query<{ payload: { checkout_id: string; amount_total: number } }>(
-    `SELECT payload FROM outbox WHERE idempotency_key = 'polar|msg_chk_opt|grant_credit'`,
+    `SELECT payload FROM outbox WHERE idempotency_key = '${polarKey('chk_opt', 'grant_credit', 'checkout.updated')}'`,
   );
   assert.equal(stored.rows[0]?.payload.checkout_id, 'chk_opt');
   assert.equal(stored.rows[0]?.payload.amount_total, 500);

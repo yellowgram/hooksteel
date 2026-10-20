@@ -3,8 +3,8 @@ import { test } from 'node:test';
 import { abortBeforeCommitOnce } from '../../src/chaos/inject.js';
 import { handlePolar } from '../../src/webhooks/polar/handler.js';
 import { handle } from '../../src/webhooks/stripe/handler.js';
-import { orderPaidBody, polarHandleInput } from '../fixtures/polar/sign.js';
-import { checkoutBody, signBody } from '../fixtures/stripe/sign.js';
+import { orderPaidBody, polarHandleInput, polarKey } from '../fixtures/polar/sign.js';
+import { checkoutBody, signBody, stripeKey } from '../fixtures/stripe/sign.js';
 import { count, drainUntilIdle, idleInTransaction, installDbHooks, withTimeout } from '../setup/harness.js';
 
 installDbHooks();
@@ -39,13 +39,13 @@ test('abort before commit rolls back, leaves no idle transaction, and retry inse
   await drainUntilIdle();
   assert.equal(
     await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
-      'stripe|evt_abort_1|grant_credit',
+      stripeKey('evt_abort_1', 'grant_credit'),
     ]),
     1,
   );
   assert.equal(
     await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
-      'stripe|evt_abort_1|send_email',
+      stripeKey('evt_abort_1', 'send_email'),
     ]),
     1,
   );
@@ -83,13 +83,13 @@ test('polar abort before commit rolls back, leaves no idle transaction, and retr
   await drainUntilIdle();
   assert.equal(
     await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
-      'polar|msg_polar_abort_1|grant_credit',
+      polarKey('ord_polar_abort', 'grant_credit'),
     ]),
     1,
   );
   assert.equal(
     await count('SELECT count(*)::int AS n FROM adapter_invocations WHERE idempotency_key = $1', [
-      'polar|msg_polar_abort_1|send_email',
+      polarKey('ord_polar_abort', 'send_email'),
     ]),
     1,
   );

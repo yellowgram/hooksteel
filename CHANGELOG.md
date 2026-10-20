@@ -4,6 +4,11 @@
 
 ### Fixed
 
+- `hooksteel --help` (also `-h`, `help`) prints usage and exits 0; before, it exited 1.
+- **Two events for one order fulfilled it twice.** The idempotency key was per event id, and Stripe can send two different events for one change. The key is now `stripe|<event type>|<data.object.id>|<adapter>` (Polar: `polar|<event type>|<data.id>|<adapter>`), and a second event for the same object queues nothing. Existing outbox rows keep their old keys.
+- `OUTBOX_LEASE_MS` under 1000 is a configuration error (it was accepted down to 0, which caused duplicate runs).
+- The default `OUTBOX_WORKER_ID` is unique per process (was `local-dev-1` for every replica).
+- Adapters get `signal`, aborted when the worker loses the row's lease.
 - **A worker that lost its lease could overwrite the next worker's result.** If an adapter outlived `OUTBOX_LEASE_MS`, a second worker reclaimed the row. The first worker's late completion, backoff or dead-letter then landed anyway and could mark the row done, push it back, or dead-letter work the second worker had finished. Those writes are now fenced on the claim's `(locked_by, locked_at)` token. A stale worker changes nothing and logs `lease_lost`. No migration is needed.
 - **Slow adapters no longer lose their lease.** While an adapter runs, the worker renews the lease every third of `OUTBOX_LEASE_MS`, so only a stalled or dead worker's row is reclaimed.
 - A fenced-off dead letter no longer writes a `dead_letters` row.

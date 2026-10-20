@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import { getPool } from '../../src/db/pool.js';
 import { migrate } from '../../src/db/migrate.js';
 import { handle } from '../../src/webhooks/stripe/handler.js';
-import { checkoutBody, signBody } from '../fixtures/stripe/sign.js';
+import { checkoutBody, signBody, stripeKey } from '../fixtures/stripe/sign.js';
 import { count, installDbHooks } from '../setup/harness.js';
 
 installDbHooks();
@@ -72,7 +72,7 @@ test('second migrate is a no-op and schema reserves polar without lease_expires_
       `INSERT INTO outbox (billing_event_id, adapter, payload, idempotency_key)
        VALUES ($1, $2, '{}'::jsonb, $3)
        RETURNING id`,
-      [billingEventId, adapter, `stripe|evt_reserved_reasons|${adapter}`],
+      [billingEventId, adapter, `${stripeKey('evt_reserved_reasons', adapter)}`],
     );
     await getPool().query(
       `INSERT INTO dead_letters (outbox_id, billing_event_id, reason, payload_snapshot)

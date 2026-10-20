@@ -62,9 +62,8 @@ test('historical release zips are unchanged', () => {
 
 test('demo script stays on the two chaos files', () => {
   const pkg = JSON.parse(readFileSync('package.json', 'utf8')) as { scripts: Record<string, string> };
-  assert.equal(pkg.scripts.demo, 'npm run demo:60s');
   assert.equal(
-    pkg.scripts['demo:60s'],
+    pkg.scripts.demo,
     'tsx --test --test-concurrency=1 tests/chaos/01-duplicate-delivery.test.ts tests/chaos/05-db-rollback-mid-fulfillment.test.ts',
   );
   assert.equal(pkg.scripts['replay:list'], 'tsx scripts/replay-cli.ts list');

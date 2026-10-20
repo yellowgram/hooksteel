@@ -1,375 +1,139 @@
 # HookSteel
 
-**Billing Event Reliability Kit** — owned code for Stripe and Polar webhooks. The same billing event, delivered again, keeps one outbox row per adapter. Side effects run after that transaction commits. Pass the idempotency key through to any external API. Replay can run an adapter again on purpose.
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-| | |
-|---|---|
-| Repo | https://github.com/yellowgram/hooksteel |
-| npm | `hooksteel` |
-| License | MIT ([LICENSE](LICENSE)) |
-| Contact | hello@yellowgram.dev |
+HookSteel makes Stripe and Polar payment webhooks safe to act on. Each verified event is stored once, and the work it triggers (grant credits, send the receipt email, invite to GitHub) is queued in the same Postgres transaction. A worker then runs that work after the commit, with retries, a dead-letter queue and a replay command.
 
-Not a hosted gateway. Stripe and Polar webhooks both verify into the same outbox. `billing_events.provider` already allows `'polar'`. HookSteel is MIT-licensed open source and is no longer sold. Releases before 0.2.0 (tags `v0.1.0`, `v0.1.1` and the zips in `release/`) were published under the previous license.
+The problem it solves: providers deliver webhooks at least once, sometimes out of order, and your handler can crash halfway. Without care that means double-granted credits, or a credit granted for a transaction that rolled back. HookSteel is the small piece of code, living in your app and your database, that makes those cases boring.
 
-## What HookSteel guarantees
+- Verifies Stripe signatures with the official SDK, and Polar (Standard Webhooks) signatures with `node:crypto`.
+- One row per `(provider, event id)`. A duplicate delivery gets HTTP 200 and creates nothing new.
+- A transactional outbox: side effects run only after the event's transaction commits.
+- A worker with leases, lease renewal, fencing, exponential backoff and dead letters.
+- A replay command for dead letters that re-runs one adapter, on purpose.
+- Five chaos tests on real Postgres: duplicate delivery, reordering, bad signature, handler timeout, and a crash mid-fulfilment.
 
-- One row per `(provider, provider_event_id)`.
-- When the event maps to adapters, those `outbox` rows are inserted in the **same transaction** as `billing_events`.
-- Adapter side effects run in the drain **after** that transaction commits.
-- Duplicate deliveries ACK with HTTP 200 and do not enqueue a second outbox row.
+## Five-minute quickstart
 
-Outbox proves side-effect-after-commit and idempotency keys. It does not certify PCI, charge correctness, or tax.
-
-## Quickstart
+Needs Node 20+ and Docker (or any Postgres 13+).
 
 ```bash
-docker compose up -d
+git clone https://github.com/yellowgram/hooksteel && cd hooksteel
+docker compose up -d          # Postgres 16 on localhost:5432
 cp .env.example .env
-# set STRIPE_WEBHOOK_SECRET to the whsec_ from `stripe listen` or your Dashboard endpoint
-# Polar: set POLAR_WEBHOOK_SECRET to the endpoint whsec_ (polar_whs_ is rejected)
 npm ci
-npm run build
 npm run migrate
-npm run demo
-npm test
-npm run outbox:drain -- --once
+npm run demo                  # duplicate delivery and crash-mid-fulfilment, on fixtures
 ```
 
-`npm run demo` is the sealed fixture smoke, the same command as `npm run demo:60s` (chaos 01 and 05). Fixture-only (no live Stripe/Polar keys). [Watch demo](https://x.com/yellowgram/status/2104030413622816842).
+The demo needs no Stripe or Polar account; it signs fixture events itself. `npm test` runs everything.
 
-`npm test` does not boot Next.js. Next 15 is an example under `examples/next` only. The root package does not depend on `next`. `npm run build` writes `dist/` (plain Node). Migrate and the drain script run the TypeScript sources with `tsx` and do not need that build. The Next example imports the built package; see `examples/next/README.md` for its own `.env.local` (`next dev` does not read the repo-root `.env`).
-
-Pass the **raw body string**. Do not `JSON.parse` before `handle`.
-
-Fetch / Hono (`Request`):
+To use it in your app (`npm install hooksteel`), hand it the **raw** request body. Parsing the JSON first changes the bytes and the signature check fails.
 
 ```ts
-import { handle } from 'hooksteel';
+import { handle, handlePolar } from 'hooksteel';
 
-app.post('/api/webhooks/stripe', async (c) => {
-  const rawBody = await c.req.text();
-  const signature = c.req.header('stripe-signature') ?? null;
-  return handle({ rawBody, signature });
-});
-```
-
-Express. This is not the Fetch API. `req.text()` and `req.headers.get` do not exist on Express. Use `express.raw` so the bytes `constructEvent` checks are the bytes Stripe signed. See Troubleshooting below if verification returns 400.
-
-```ts
-import express from 'express';
-import { handle } from 'hooksteel';
-
-const app = express();
-
-app.post(
-  '/api/webhooks/stripe',
-  express.raw({ type: 'application/json' }),
-  async (req, res) => {
-    const rawBody = Buffer.isBuffer(req.body) ? req.body.toString('utf8') : '';
-    const signatureHeader = req.headers['stripe-signature'];
-    const signature = typeof signatureHeader === 'string' ? signatureHeader : null;
-    const response = await handle({ rawBody, signature });
-    res.status(response.status).type(response.headers.get('content-type') ?? 'application/json');
-    res.send(await response.text());
-  },
+// Fetch, Hono or Next.js route handlers
+app.post('/api/webhooks/stripe', async (c) =>
+  handle({ rawBody: await c.req.text(), signature: c.req.header('stripe-signature') ?? null }),
 );
-```
 
-Do not mount `express.json()` on this route. The Next route under `examples/next` is the Fetch version: `request.text()` only.
-
-## HTTP status contract
-
-| Condition | Status | Persist event? | Outbox? |
-| --- | --- | --- | --- |
-| Missing / placeholder / non-`whsec_` webhook secret | **400** | No | No |
-| Signature verification fail (tamper / wrong secret) | **400** | No | No |
-| Livemode mismatch | **400** | No | No |
-| First successful verify + insert + outbox enqueue | **200** | Yes (`outboxed`) | Yes (same txn) |
-| Verified event with an **empty** adapter map | **200** | Yes (`ignored`) | Zero |
-| Duplicate `provider_event_id` already stored | **200** | No new row | No new rows |
-| DB unavailable / txn failure / unexpected error after verify | **500** | No (rolled back) | No |
-
-Placeholder secrets: `whsec_replace_me`, `replace_me`, `changeme`, `test`, empty, or any value that does not start with `whsec_`. The secret value is never logged.
-
-`failed` and `dead` are reserved parent statuses. v0.1 does not write them. Adapter failure goes to `dead_letters`.
-
-## Livemode and the webhook secret
-
-Verification uses the official Stripe SDK: `stripe.webhooks.constructEvent`. Do not replace it with a hand-rolled HMAC.
-
-`STRIPE_EXPECT_LIVEMODE` defaults to **false** when unset (test-mode kit). The kit does not infer livemode from an `sk_` prefix. `STRIPE_SECRET_KEY` is optional and is not used to verify webhooks.
-
-The Stripe CLI `whsec_` and the Dashboard endpoint `whsec_` are different secrets. Use the one that matches how the event is forwarded.
-
-## Chaos suite (ship gate)
-
-Exactly five scenarios, all on Postgres. CI is `.github/workflows/chaos-postgres.yml` (`postgres:16`, Node 20): `npm ci && npm run migrate && npm test`. Signatures are minted at runtime with `stripe.webhooks.generateTestHeaderString`. No live Stripe API.
-
-| # | Scenario | Pass criterion |
-| --- | --- | --- |
-| 1 | Duplicate delivery | Same signed event 4× concurrent → one `billing_events` row and one `adapter_invocations` row per mapped adapter |
-| 2 | Out-of-order + concurrent | Distinct events delivered B then A, plus concurrent duplicates → two event rows, correct outbox counts, zero deadlocks, one invocation per adapter per event. This is uniqueness under reorder, **not** a global total order |
-| 3 | Signature fail | One tampered byte → 400, zero `billing_events`, zero outbox |
-| 4 | Handler timeout | Abort after verify and before commit → zero committed rows, no idle-in-transaction, retry inserts once, one invocation after drain |
-| 5 | DB rollback mid-fulfillment | Invocation row commits on a separate connection, then the drain throws before `completed_at`. Re-drain keeps `adapter_invocations` count at 1 |
-
-Exactly five chaos files. Polar is covered inside those files: each one also runs the same theme for an `order.paid` signed with the post-cutoff `standard_webhooks` key. The pre-2026-09-08 `polar_hmac` key is proven in `tests/unit/polar-verify.test.ts`, not by a sixth file.
-
-`adapter_invocations` is created by the test setup only. It is not part of `npm run migrate`. Stubs write that table only when `NODE_ENV=test` or `HOOKSTEEL_RECORD_INVOCATIONS=true`. Unset, `development`, and `production` do not open a connection for it.
-
-`src/chaos` is imported only from tests. It returns option objects you pass into `handle` or `drainOnce`. Nothing in `src/index.ts` exports it, and production modules do not keep env-armed hook slots. `NODE_ENV=production` makes those helpers throw. `ALLOW_CHAOS_INJECT` defaults to false.
-
-Local Postgres (compose file in this repo):
-
-```bash
-export DATABASE_URL=postgres://postgres:postgres@localhost:5432/hooksteel
-npm ci
-npm run migrate
-npm test
-```
-
-## Default adapter map
-
-| Event type | Adapters |
-| --- | --- |
-| `checkout.session.completed` | `grant_credit`, `send_email` |
-| `checkout.session.async_payment_succeeded` | `grant_credit`, `send_email` |
-| `invoice.paid` | `[]` (persisted as `ignored`) |
-| `customer.subscription.deleted` | `[]` (persisted as `ignored`) |
-
-`invite_github` ships as a stub and is **opt-in**. `invoice.paid → [grant_credit]` is also **opt-in** (same checkout pack plus invoice grants will double-fulfill). Demo story is Checkout.
-
-```ts
-import { DEFAULT_ADAPTER_MAP, configureAdapterMap } from 'hooksteel';
-
-configureAdapterMap({
-  ...DEFAULT_ADAPTER_MAP,
-  'invoice.paid': ['grant_credit'],
-  'checkout.session.completed': ['grant_credit', 'send_email', 'invite_github'],
-});
-```
-
-Outbox idempotency key: `provider|provider_event_id|adapter`.
-
-`send_email` with no `customer_email` completes as a no-op: `completed_at` set and `last_error = skipped_no_email`. It does not throw, retry, or dead-letter.
-
-Session payload: `{session_id, customer, customer_email, amount_total, currency, payment_status, mode, account}`. Opt-in invoice payload: `{invoice_id, customer, customer_email, amount_paid, currency, account}`. `account` is the Stripe Connect account on the event, or null. `grant_credit` reads `amount_total` or `amount_paid`, plus `currency` and `customer`.
-
-## Drain
-
-```bash
-npm run outbox:drain -- --once
-```
-
-`--once` claims up to `OUTBOX_BATCH_SIZE` rows (default 10), **one after another**, then exits. Claim sets `locked_at`, `locked_by`, and `attempts = attempts + 1` with `FOR UPDATE SKIP LOCKED`. A lock older than `OUTBOX_LEASE_MS` (default 30000) can be reclaimed. There is no `lease_expires_at` column and no lease heartbeat. An adapter that runs longer than `OUTBOX_LEASE_MS` can be claimed by a second worker. Finish within the lease, or make the adapter idempotent under that overlap.
-
-Every claim increments `attempts`, including reclaim of a stale lock. A crash after claim and before complete or backoff therefore burns an extra attempt when the lease expires. That matches the frozen claim rule. It can reach `dead_letters` sooner on a flaky host.
-
-On adapter throw, `available_at = now() + 2^attempts seconds`, capped at 60. When `attempts` exceeds `OUTBOX_MAX_ATTEMPTS` (default 5), the row is copied to `dead_letters` (`reason = max_attempts`), `outbox.completed_at` is set, and `last_error = dead_lettered`. An adapter name that is not registered is `reason = poison` on the first claim (no retry). `timeout` and `adapter_error` stay in the check constraint for a later slice. This drain does not write them: throws still backoff until max attempts, and a slow adapter is not dead-lettered for lease timeout. One open dead letter per outbox row (`replayed_at` null). A crash after the insert and before `completed_at` does not insert a second open row. The parent `billing_events.status` stays `outboxed` or `ignored`.
-
-When every child outbox row is complete, drain locks the billing event row and then sets `processed_at`, so two workers finishing sibling adapters cannot both miss it. An empty adapter map is `ignored` and `processed_at` is set in the handler, because drain never visits a row with zero children.
-
-## Replay
-
-```bash
-npm run replay:list
-npm run replay:dry-run -- <dead_letter_id>
-npm run replay:execute -- <dead_letter_id>
-npm run outbox:drain -- --once
-```
-
-**Replay** re-opens one dead-lettered outbox row so the drain can run that adapter again. Replay does not move money. `order.refunded` stays ignored and does not claw back credit. The terms are separated in [docs/REFUND_GLOSSARY.md](./docs/REFUND_GLOSSARY.md).
-
-**Inspect** is `replay:list`. Read `reason`, `adapter`, and `replayed_at`. `replayed_at: null` is open. Rows that already have `replayed_at` set stay in the list. v0.1 drain writes `max_attempts` and `poison`. `timeout` and `adapter_error` are reserved and this drain does not write them.
-
-Fix the adapter or the payload **before** execute. Replay does not repair a throw. For `poison`, register the adapter first or the next claim writes a new poison row.
-
-**Dry-run one id** copied from that list. The id is `dead_letters.id`, not an outbox id and not a provider event id. Dry-run writes nothing. Read `adapter`, `outboxId`, and `deadLetterId`. The statements stay parameterized.
-
-**Execute that one id.** It reopens that one outbox row, clears `processed_at` on the billing event, and sets `replayed_at`. It does not call the adapter. It does not run the other adapters on that event. A second execute of the same id is refused. There is no `--force`.
-
-**Drain runs the adapter.** A `npm run outbox:drain` loop that is already up may claim the row (`available_at` is now). When nothing is looping, run `npm run outbox:drain -- --once`. Do not stop a healthy worker as a prerequisite. The CLI will not start or stop one.
-
-One operator, one id per command. Two ids in one invocation is a usage error and writes nothing.
-
-The idempotency key does not change. Pass it through to the external API. Replay without that discipline can double-send.
-
-Nobody is on-call for your dead-letter queue but you. Whoever holds `DATABASE_URL` can run these commands. There is no audit column.
-
-## Migrations
-
-Postgres **13+** (`gen_random_uuid()` is built in). Docker Compose and CI use Postgres 16. Older servers need `pgcrypto` and are not the ship target.
-
-`npm run migrate` applies `migrations/*.sql` in lexicographic order, one transaction per file, and records the filename in `hooksteel_schema_migrations`. Files use plain `CREATE` (no `IF NOT EXISTS`) so a half-applied file is visible.
-
-If migrate fails, fix the database and re-run. Do not hand-edit a file that only partly applied; the transaction rolls back, but a database you changed by hand outside the migrator will not match the filename ledger.
-
-## Hookdeck
-
-1. What Hookdeck is good at — hosted ingress, fan-out, rate limiting, observability, retries at the *edge*.
-2. What HookSteel owns — in-app unique event id + transactional outbox + side-effect-after-commit + chaos proofs on *your* Postgres.
-3. Use Hookdeck when — you need multi-destination routing, team dashboard, or do not want to run an outbox worker.
-4. Use HookSteel when — double-fulfillment after rolled-back txns is the fear; you want owned code on Stripe **and** Polar.
-5. Use both when — Hookdeck in front, HookSteel inside (optional; document; do not require).
-6. Do not use HookSteel if — you want someone else to host your webhooks.
-
-
-## Known limits
-
-- The full Stripe event is stored as JSONB and can contain **PII**. The kit has no purger. You own retention.
-- **Connect:** event ids are globally unique, so the uniqueness key still holds. The outbox payload includes `account` (or null). The full event JSONB also keeps `event.account`. There is no `stripe_account` column in v0.1.
-- Verify plus the database transaction should finish in **under 2 seconds**. A cold remote database that blows that budget should return **500** so Stripe retries. That is the correct outcome.
-- Chaos scenario 2 proves uniqueness and no deadlocks under reordering and concurrency. It does **not** promise a global total order.
-- Adapters that call Resend, GitHub, or Stripe should pass `idempotencyKey` through when the vendor supports it. The outbox unique key does not make those APIs idempotent by itself.
-- A live Polar endpoint pointed at a process with `POLAR_EXPECT_LIVEMODE` unset or false still verifies when the secret matches and stores `livemode=false`. Polar does not sign that bit. Do not invent a livemode field. Do not add `livemode_mismatch` 400 on this path. Sandbox and production are different organizations.
-- Polar disables an endpoint after 10 consecutive non-2xx responses. 400 does not mean Polar stops. Ten strikes disable the endpoint.
-- Every `order.paid` grants, including `billing_reason=subscription_cycle`. Integrators who do not want a credit on every renewal replace the `order.paid` row. v0.1 does not special-case `billing_reason`.
-- Exactly five chaos files. Polar is covered inside them.
-- The full Polar event JSONB may include customer email, billing address, and tax id. The kit has no purger. You own retention.
-- Replay dry-run prints three `UPDATE` statements that each use `$1`. Those placeholders are not the same row. `outboxId` and `deadLetterId` are separate JSON fields. The billing-event id is not a field on the dry-run object. Do not paste the statements into a SQL client with one bind value. The CLI is the writer. Labeling the three `$1`s inside `replay.ts` is deferred (CR2-A-P2-002).
-
-## Troubleshooting
-
-**Signatures fail on events you just forwarded.** The route must verify the raw body. Fetch and Next use `request.text()`. Express uses `express.raw({ type: 'application/json' })` and `req.body` as a Buffer — not `req.text()`, not `req.headers.get`, and not `express.json()`. `request.json()` or a JSON body parser changes bytes and `constructEvent` returns 400. Also check CLI `whsec_` vs Dashboard `whsec_`: they are not interchangeable. For the Next example, put `DATABASE_URL`, `STRIPE_WEBHOOK_SECRET`, and `STRIPE_EXPECT_LIVEMODE` in `examples/next/.env.local`. `next dev` does not load the repo-root `.env`.
-
-**Polar signatures fail.**
-
-- Placeholder secret (`whsec_replace_me`, `replace_me`, `changeme`, `test`, or empty) or any secret that does not start with `whsec_` returns 400 `invalid_webhook_secret` and stores nothing.
-- `polar_whs_` is rejected. Rotate the endpoint secret in the Polar dashboard until it is a `whsec_…` value.
-- Raw body re-parsed: `request.json()`, `JSON.parse` then `JSON.stringify`, or `express.json()` changes bytes and the HMAC fails. Use `request.text()`, or `express.raw({ type: 'application/json' })` and `Buffer.toString('utf8')`. Do not mount `express.json()` on the Polar route.
-- Wrong key era: secrets generated before 2026-09-08 00:00 UTC and secrets generated on or after that instant use different HMAC keys. The kit tries both. A verifier that only uses one era fails the other.
-- The endpoint is disabled after 10 consecutive non-2xx responses. 400 does not mean Polar stops. Ten strikes disable the endpoint. Do not return 200 for a bad signature to avoid that disable.
-- Mapping both `order.updated` and `order.paid` to the same adapters grants twice.
-
-For the Next example, put `POLAR_WEBHOOK_SECRET` and `POLAR_EXPECT_LIVEMODE` in `examples/next/.env.local` as well.
-
-## Polar
-
-Polar verify is stdlib HMAC (`node:crypto`): two key eras, the exact raw body, and the headers `webhook-id`, `webhook-timestamp`, and `webhook-signature`. There is no `@polar-sh/sdk`, no `standardwebhooks`, no `svix`, and no Polar access token. A 300 second window applies in both directions. Comparison uses `timingSafeEqual` on digest bytes. Only `v1` tokens are accepted.
-
-Secrets generated before 2026-09-08 00:00 UTC use the UTF-8 bytes of the full `whsec_…` string as the HMAC key. Secrets generated on or after that instant use Standard Webhooks: strip `whsec_` and base64-decode the remainder. The secret string does not say which era it is, so the kit tries both. `polar_whs_` and any other prefix are rejected.
-
-Dashboard delivery format must be **Raw** JSON. Slack and Discord bodies are not parsed. The secret is the endpoint `whsec_`.
-
-`provider_event_id` is the `webhook-id` header. It is not `data.id`. `order.created` and `order.paid` share an order id and are different events.
-
-`POLAR_EXPECT_LIVEMODE` is an operator declaration written to `billing_events.livemode`. Unset means false (sandbox). Polar does not send a livemode field. A production Polar endpoint must set this true. It is not inferred from the secret. There is no `livemode_mismatch` 400 on this path.
-
-Polar publishes a webhook IP list on the [delivery page](https://polar.sh/docs/integrate/webhooks/delivery). The kit does not allowlist those IPs. They change, and they are not authentication.
-
-The stored JSONB may include customer email, billing address, and tax id. You own retention.
-
-Fetch / Hono (`Request`):
-
-```ts
-import { handlePolar } from 'hooksteel';
-
-app.post('/api/webhooks/polar', async (c) => {
-  const rawBody = await c.req.text();
-  return handlePolar({
-    rawBody,
+app.post('/api/webhooks/polar', async (c) =>
+  handlePolar({
+    rawBody: await c.req.text(),
     webhookId: c.req.header('webhook-id') ?? null,
     webhookTimestamp: c.req.header('webhook-timestamp') ?? null,
     webhookSignature: c.req.header('webhook-signature') ?? null,
-  });
-});
-```
-
-Express. Use `express.raw` so the bytes that are signed are the bytes you verify. `req.body` is a Buffer. Call `Buffer.toString('utf8')`.
-
-```ts
-import express from 'express';
-import { handlePolar } from 'hooksteel';
-
-const app = express();
-
-app.post(
-  '/api/webhooks/polar',
-  express.raw({ type: 'application/json' }),
-  async (req, res) => {
-    const rawBody = Buffer.isBuffer(req.body) ? req.body.toString('utf8') : '';
-    const header = (name: string) => {
-      const value = req.headers[name];
-      return typeof value === 'string' ? value : null;
-    };
-    const response = await handlePolar({
-      rawBody,
-      webhookId: header('webhook-id'),
-      webhookTimestamp: header('webhook-timestamp'),
-      webhookSignature: header('webhook-signature'),
-    });
-    res.status(response.status).type(response.headers.get('content-type') ?? 'application/json');
-    res.send(await response.text());
-  },
+  }),
 );
 ```
 
-Do not mount `express.json()` on this route. The Next route under `examples/next` is `request.text()` plus the three headers.
+With Express, use `express.raw({ type: 'application/json' })` on that route (never `express.json()`), pass `req.body.toString('utf8')` as `rawBody`, and copy the returned `Response` status and body to `res`. A full Next.js example is in [examples/next](examples/next).
 
-| Condition | Status | Persist? | Outbox? |
-| --- | --- | --- | --- |
-| Missing / placeholder / non-`whsec_` secret | **400** `invalid_webhook_secret` | No | No |
-| Missing header, bad timestamp, tamper, wrong key, no `v1` match | **400** `invalid_signature` | No | No |
-| Signature ok, body not a JSON object with string `type` | **400** `invalid_payload` | No | No |
-| First accept + mapped adapters | **200** `outboxed` | Yes | Yes, same txn |
-| First accept + empty map | **200** `ignored` | Yes (`processed_at` set) | Zero |
-| Duplicate `webhook-id` already stored | **200** `duplicate` | No new row | No |
-| DB unavailable / txn failure / unexpected error after verify | **500** `transient` | No (rolled back) | No |
+Set `STRIPE_WEBHOOK_SECRET` and/or `POLAR_WEBHOOK_SECRET` (the endpoint's `whsec_…` secret), then run the worker:
 
-Polar retries non-2xx (up to 10, exponential backoff) and disables the endpoint after 10 consecutive non-2xx responses. 400 does not mean Polar stops. Poison stays 400. A database blip stays 500. Returning 200 for a bad signature would ACK poison.
-
-### Default Polar adapter map
-
-| Event type | Adapters |
-| --- | --- |
-| `order.paid` | `grant_credit`, `send_email` |
-| `order.created` | `[]` (persisted as `ignored`) |
-| `order.updated` | `[]` (persisted as `ignored`) |
-| `order.refunded` | `[]` (persisted as `ignored`; no credit clawback) |
-| `checkout.created` / `checkout.updated` / `checkout.expired` | `[]` |
-| `subscription.canceled` / `subscription.revoked` | `[]` |
-| Any other verified type | `[]` |
-
-`invite_github` is **opt-in**. It is not in the default Polar map.
-
-Every `order.paid` grants, including `billing_reason=subscription_cycle`. Each delivery has its own `webhook-id`. That is a new payment. v0.1 does not special-case `billing_reason`. Integrators with subscriptions and do not want a credit on every renewal replace the `order.paid` row.
-
-`order.updated` is not an opt-in grant alongside `order.paid`. Polar also sends `order.updated` when the order becomes paid. Mapping both `order.updated` and `order.paid` to the same adapters grants twice.
-
-`checkout.updated → [grant_credit, send_email]` only if you also filter `data.status === 'succeeded'` and remove `order.paid` from those same adapters. The kit does not ship that filter. `checkout.updated` fires for `open`, `expired`, `confirmed`, `succeeded`, and `failed`.
-
-```ts
-import { DEFAULT_POLAR_ADAPTER_MAP, configurePolarAdapterMap } from 'hooksteel';
-
-configurePolarAdapterMap({
-  ...DEFAULT_POLAR_ADAPTER_MAP,
-  'order.paid': ['grant_credit', 'send_email', 'invite_github'],
-});
+```bash
+npm run outbox:drain -- --once      # or run it in a loop / on a schedule
 ```
 
-`order.paid` outbox payload: `{order_id, customer, customer_email, amount_total, currency, status, paid, billing_reason}`. `customer` is `data.customer_id`. `amount_total` is `data.total_amount` in cents (0 is a real amount). `customer_email` null completes `send_email` as `skipped_no_email`. Checkout opt-in payload: `{checkout_id, customer, customer_email, amount_total, currency, status}`. Any other opted-in type is `{object_id}` only.
+## How it works
 
-## Support
+1. **Verify.** A bad or missing signature, or a placeholder secret, gets 400 and nothing is stored.
+2. **Store and enqueue, in one transaction.** The event goes into `billing_events`; one `outbox` row per adapter goes in with it. The adapter map decides which adapters an event type triggers (for example `checkout.session.completed` → `grant_credit`, `send_email`). An unmapped type is stored as `ignored`. A database error gets 500, so the provider retries.
+3. **Drain.** The worker claims due rows with `FOR UPDATE SKIP LOCKED` and runs the adapter. Each outbox row has an idempotency key, `provider|event id|adapter`. Pass it to any external API you call (Stripe, Resend, GitHub), so a retry cannot double-send there either.
+4. **Retry or dead-letter.** If an adapter throws, the row is retried after 2^attempts seconds, at most 60. After `OUTBOX_MAX_ATTEMPTS` (default 5) it moves to `dead_letters`. An adapter name that isn't registered dead-letters at once as `poison`.
+5. **Replay.** Fix the cause, then re-open one dead letter so the worker runs that adapter again:
 
-There is no support contract and no SLA. Open a GitHub Issue with a failing chaos test name or a test-mode event id. Do not paste live secrets. See [SUPPORT.md](./SUPPORT.md).
+   ```bash
+   npm run replay:list
+   npm run replay:dry-run -- <dead_letter_id>    # shows each statement with its bind value; writes nothing
+   npm run replay:execute -- <dead_letter_id>    # re-opens the row; the worker does the work
+   ```
+
+   Replay never moves money. It is unrelated to a customer refund ([docs/REFUND_GLOSSARY.md](docs/REFUND_GLOSSARY.md)).
+
+### Leases
+
+A claim takes a lease for `OUTBOX_LEASE_MS` (default 30 s). While the adapter runs, the worker renews the lease every third of that time. A slow adapter that is still working therefore keeps its row. Only a worker that has stalled or died loses it.
+
+If a lease does expire and another worker takes the row, the first worker's late writes are fenced off. Completion, backoff and dead-lettering all check the claim's `(locked_by, locked_at)` token, and the first worker logs `lease_lost` and steps aside. Every claim counts as an attempt, including a reclaim after a crash.
+
+## Guarantees and limits
+
+What HookSteel guarantees:
+
+- One `billing_events` row per provider event id, under any amount of concurrent duplicate delivery.
+- Outbox rows exist if and only if their event's transaction committed.
+- An adapter never runs for an event that rolled back.
+- A worker that lost its lease cannot overwrite the new holder's result.
+
+What it does not:
+
+- **Exactly-once side effects.** Delivery to your adapters is at least once. A worker can crash after the side effect and before it records completion, and the next worker will run the adapter again with the same idempotency key. Make adapters idempotent on that key (the chaos test for this is `05-db-rollback-mid-fulfillment`).
+- **Ordering.** Events are deduplicated, not ordered. Two different events can be processed in either order.
+- **Hosting, routing or dashboards.** HookSteel is a library plus a worker inside your app. If you want hosted ingress with fan-out and a UI, use a service like Hookdeck. You can also put one in front of HookSteel.
+- **Data retention.** The full provider event is stored as JSON and can contain personal data (email, address, tax id). Nothing purges it; that's your call.
+- **Business rules.** Refunds and subscription renewals are not special-cased. Polar's `order.refunded` is stored and ignored. Every `order.paid`, including renewals, grants by default. Change the adapter map if that's wrong for you; the [reference](docs/REFERENCE.md) and [Polar notes](docs/POLAR.md) list the traps, for example mapping both `order.updated` and `order.paid` grants twice.
+- **Access control.** Anyone with `DATABASE_URL` can replay dead letters. There is no audit column.
+- **Keep the handler fast.** Verify plus the insert should finish in under about 2 seconds. A slow remote database should return 500 and let the provider retry.
+
+## Configuration
+
+| Env | Default | Meaning |
+| --- | --- | --- |
+| `DATABASE_URL` | — | Postgres 13+ |
+| `STRIPE_WEBHOOK_SECRET` | — | Endpoint `whsec_…` (the Stripe CLI and the Dashboard use different secrets) |
+| `STRIPE_EXPECT_LIVEMODE` | `false` | Reject events whose `livemode` doesn't match |
+| `POLAR_WEBHOOK_SECRET` | — | Endpoint `whsec_…` (`polar_whs_` is rejected; rotate it) |
+| `POLAR_EXPECT_LIVEMODE` | `false` | Recorded on each Polar event; Polar does not sign a livemode flag |
+| `OUTBOX_WORKER_ID` | `local-dev-1` | Written to `locked_by`; give each worker its own |
+| `OUTBOX_LEASE_MS` | `30000` | Lease length; renewed while the adapter runs |
+| `OUTBOX_MAX_ATTEMPTS` | `5` | Attempts before a dead letter |
+| `OUTBOX_BATCH_SIZE` | `10` | Rows per `--once` run, handled one after another |
+
+Test hooks (`ALLOW_CHAOS_INJECT`, `HOOKSTEEL_RECORD_INVOCATIONS`) are off by default and always off with `NODE_ENV=production`.
+
+## More
+
+- [docs/REFERENCE.md](docs/REFERENCE.md): HTTP status table, livemode, default adapter maps and payloads, migrations
+- [docs/POLAR.md](docs/POLAR.md): Polar verification, statuses, adapter map and traps
+- [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md): signature failures and other common problems
+- [SUPPORT.md](SUPPORT.md): what to put in an issue. [SECURITY.md](SECURITY.md): private reports.
+
+## Development
+
+```bash
+export DATABASE_URL=postgres://postgres:postgres@localhost:5432/hooksteel
+npm ci && npm run migrate && npm test
+```
+
+CI runs the same against Postgres 16 on Node 20. The chaos suite is kept to the five files in `tests/chaos/`; Polar cases run inside them.
+
+Releases before 0.2.0 (tags `v0.1.0`, `v0.1.1`) were published under a different license; 0.2.0 and later are MIT. There is no paid support.
 
 ## License
 
-MIT. See [LICENSE](LICENSE). Releases before 0.2.0 were published under the previous license.
-
-## Docs
-
-- [START_HERE](./START_HERE.md) — quickstart
-- [SUPPORT](./SUPPORT.md) — how to file a useful Issue
-- [SECURITY](./SECURITY.md) — private vulnerability reports
-- [60s demo script](./docs/DEMO_60S.md) — script for `npm run demo:60s`
-- [Refund glossary](./docs/REFUND_GLOSSARY.md) — replay CLI versus `order.refunded`
-- [Changelog](./CHANGELOG.md) · [Checksums (historical releases)](./docs/CHECKSUMS.md)
-- [STATUS](./docs/STATUS.md)
-
-Earlier design and review documents are in the git history.
+MIT. See [LICENSE](LICENSE).
 
 ---
 

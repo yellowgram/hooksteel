@@ -28,10 +28,10 @@ Do not paste `STRIPE_WEBHOOK_SECRET`, `POLAR_WEBHOOK_SECRET`, `STRIPE_SECRET_KEY
 - `crash after adapter_invocations write and before completed_at re-drains to count 1`
 - `polar crash after adapter_invocations write and before completed_at re-drains to count 1`
 
-There are five chaos files. Polar cases live inside those files. A request to add a sixth scenario or a fuzz suite is out of scope.
+There are five chaos files; Polar cases run inside them.
 
 ## Out of scope
 
-A hosted gateway or yellowgram-operated ingress; Hookdeck feature parity as a service; implementation services; debugging live keys; expanding the chaos suite or adding fuzzing.
+A hosted gateway or ingress service, implementation help, and debugging live keys.
 
 `order.refunded` does not claw back credit, and replay does not move money. See `docs/REFUND_GLOSSARY.md`.

@@ -19,7 +19,7 @@ Replay re-opens one dead-lettered outbox row so the drain can run that adapter a
 
 A Polar **webhook type** about your own customer's order.
 
-v0.1 stores `order.refunded` as `ignored` (empty adapter map). It does not claw back credit. It does not invoke the replay CLI.
+HookSteel stores `order.refunded` as `ignored` (empty adapter map). It does not claw back credit. It does not invoke the replay CLI.
 
 `order.paid` and `order.refunded` are different events. They do not share a `webhook-id`.
 
@@ -28,4 +28,4 @@ v0.1 stores `order.refunded` as `ignored` (empty adapter map). It does not claw 
 | What the person said | What it is |
 | --- | --- |
 | "Replay this dead letter" / `npm run replay:execute` | Replay CLI. No money moves. |
-| "The customer's order was refunded" / Polar sends `order.refunded` | Provider webhook. Ignored in v0.1. No credit clawback. |
+| "The customer's order was refunded" / Polar sends `order.refunded` | Provider webhook. Ignored by default. No credit clawback. |

@@ -71,8 +71,8 @@ export const adapters = [
     name: 'grant_credit',
     async execute({ payload, idempotencyKey }) {
       // Make this idempotent on idempotencyKey: it can run more than once.
-      // The key is per order (event type + the provider's object id + adapter), not per
-      // event, so two different events for one checkout share it.
+      // The key is per payment (PaymentIntent, invoice or Checkout Session id) and adapter,
+      // not per event, so every event about one payment shares it.
       await credits.grant(payload.customer, payload.amount_total, { idempotencyKey });
     },
   },
@@ -98,7 +98,7 @@ Or, inside your app, `registerAdapter(adapter)` for each one and call `drainOnce
 
 1. **Verify.** A bad or missing signature, or a placeholder secret, gets 400 and nothing is stored.
 2. **Store and enqueue, in one transaction.** The event goes into `billing_events`; one `outbox` row per adapter goes in with it. The adapter map decides which adapters an event type triggers (for example `checkout.session.completed` → `grant_credit`, `send_email`). An unmapped type is stored as `ignored`. A database error gets 500, so the provider retries.
-3. **Drain.** The worker claims due rows with `FOR UPDATE SKIP LOCKED` and runs the adapter. Each outbox row has an idempotency key, `provider|event type|object id|adapter` (the object is the checkout session or order), so it is the same for every event about one order. Pass it to any external API you call (Stripe, Resend, GitHub), so a retry cannot double-send there either.
+3. **Drain.** The worker claims due rows with `FOR UPDATE SKIP LOCKED` and runs the adapter. Each outbox row has an idempotency key. For events that report a successful payment it is `provider|pay:<payment id>|adapter`, where the payment id is the PaymentIntent, then the invoice, then the Checkout Session (Polar: the order), so it is the same for every event about one payment. Other events use `provider|event type|object id|adapter`. Pass it to any external API you call (Stripe, Resend, GitHub), so a retry cannot double-send there either.
 4. **Retry or dead-letter.** If an adapter throws, the row is retried after 2^attempts seconds, at most 60. After `OUTBOX_MAX_ATTEMPTS` (default 5) it moves to `dead_letters`. An adapter name that isn't registered dead-letters at once as `poison`.
 5. **Replay.** Fix the cause, then re-open one dead letter so the worker runs that adapter again:
 
@@ -121,7 +121,9 @@ If a lease does expire and another worker takes the row, the first worker's late
 What HookSteel guarantees:
 
 - One `billing_events` row per provider event id, under any amount of concurrent duplicate delivery.
-- One outbox row per (event type, billed object, adapter). Stripe sometimes sends two different events for one change; the second one is recorded but queues nothing (it logs `duplicate_object`). If you map an event type that fires repeatedly for one object (for example `customer.subscription.updated`), only the first one for that object runs your adapter.
+- One fulfilment per payment and adapter. `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `payment_intent.succeeded`, `invoice.paid`, `invoice.payment_succeeded` and `charge.succeeded` (Polar: `order.created`, `order.paid`) are keyed on the payment: the PaymentIntent, else the invoice, else the Checkout Session. So a delayed payment, Checkout plus `payment_intent.succeeded`, or a subscription Checkout plus its first `invoice.paid` runs each adapter once. A second event for the same payment is recorded but queues nothing (it logs `duplicate_payment_or_object` with the provider event id). For a subscription, map either `invoice.paid` or `payment_intent.succeeded` to an adapter, not both: an invoice and its PaymentIntent have different ids.
+- Nothing is queued while a payment is unpaid: a Checkout Session with `payment_status: "unpaid"` (ACH, SEPA and other delayed methods) is recorded with outcome `awaiting_payment`, and `checkout.session.async_payment_succeeded` fulfils it. A Polar order that is not paid is skipped the same way.
+- Other mapped events get one outbox row per (event type, object, adapter). If you map an event type that fires repeatedly for one object (for example `customer.subscription.updated`), only the first one for that object runs your adapter.
 - Outbox rows exist if and only if their event's transaction committed.
 - An adapter never runs for an event that rolled back.
 - A worker that lost its lease cannot overwrite the new holder's result.

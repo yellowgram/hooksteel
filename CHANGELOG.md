@@ -5,7 +5,9 @@
 ### Fixed
 
 - `hooksteel --help` (also `-h`, `help`) prints usage and exits 0; before, it exited 1.
-- **Two events for one order fulfilled it twice.** The idempotency key was per event id, and Stripe can send two different events for one change. The key is now `stripe|<event type>|<data.object.id>|<adapter>` (Polar: `polar|<event type>|<data.id>|<adapter>`), and a second event for the same object queues nothing. Existing outbox rows keep their old keys.
+- **One payment fulfilled twice.** The idempotency key was per event id, and one payment can arrive as several events: Stripe can send two Event objects for one change, a delayed payment sends `checkout.session.completed` and then `checkout.session.async_payment_succeeded`, and Checkout is followed by `payment_intent.succeeded` or the first `invoice.paid`. Payment-success events are now keyed on the payment, `stripe|pay:<PaymentIntent, else invoice, else session id>|<adapter>` (Polar: `polar|pay:<order id>|<adapter>` for `order.created`/`order.paid`); other events use `provider|<event type>|<object id>|<adapter>`. A second event for the same payment queues nothing.
+- **No fulfilment before payment.** A Checkout Session completed with `payment_status: "unpaid"` used to queue `grant_credit` before the money arrived. It now queues nothing (outcome `awaiting_payment`); `async_payment_succeeded` fulfils it. Unpaid Polar orders are skipped the same way.
+- **Upgrading:** rows queued by 0.2.x use the old per-event keys and will not dedupe against a later event for the same payment. Drain the outbox (`hooksteel drain --once` until idle) before upgrading.
 - `OUTBOX_LEASE_MS` under 1000 is a configuration error (it was accepted down to 0, which caused duplicate runs).
 - The default `OUTBOX_WORKER_ID` is unique per process (was `local-dev-1` for every replica).
 - Adapters get `signal`, aborted when the worker loses the row's lease.

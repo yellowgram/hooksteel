@@ -1,6 +1,6 @@
 import type pg from 'pg';
 import { getPool } from '../../db/pool.js';
-import { enqueueOutbox, idempotencyKey, objectIdOf } from '../../outbox/enqueue.js';
+import { awaitingPayment, enqueueOutbox, idempotencyKey } from '../../outbox/enqueue.js';
 import { mapPolarAdapters } from './mapAdapters.js';
 import { buildPolarOutboxPayload } from './payload.js';
 import { verifyPolarWebhook, PolarWebhookRejected } from './verify.js';
@@ -79,7 +79,9 @@ export async function handlePolar(input: PolarHandleInput, options?: PolarHandle
     }
 
     const billingEventId = inserted.rows[0].id;
-    const adapters = mapPolarAdapters(verified.event.type);
+    // An unpaid Checkout (or unpaid order) queues nothing: the payment-succeeded event fulfils it.
+    const awaiting = awaitingPayment('polar', verified.event.type, verified.event.data);
+    const adapters = awaiting ? [] : mapPolarAdapters(verified.event.type);
     if (adapters.length === 0) {
       await client.query(
         `UPDATE billing_events SET status = 'ignored', processed_at = now() WHERE id = $1`,
@@ -87,14 +89,15 @@ export async function handlePolar(input: PolarHandleInput, options?: PolarHandle
       );
     } else {
       const payload = buildPolarOutboxPayload(verified.event);
-      const objectId = objectIdOf(verified.event.data) ?? verified.webhookId;
+      // (keys: see idempotencyKey in outbox/enqueue.ts)
       let queued = 0;
       for (const adapter of adapters) {
         const added = await enqueueOutbox(client, {
           billingEventId,
           adapter,
           payload,
-          idempotencyKey: idempotencyKey('polar', verified.event.type, objectId, adapter),
+          idempotencyKey: idempotencyKey('polar', verified.event.type, verified.event.data, verified.webhookId, adapter),
+          providerEventId: verified.webhookId,
         });
         if (added) queued += 1;
       }
@@ -113,7 +116,7 @@ export async function handlePolar(input: PolarHandleInput, options?: PolarHandle
     committed = true;
     return json(200, {
       ok: true,
-      outcome: adapters.length === 0 ? 'ignored' : 'outboxed',
+      outcome: awaiting ? 'awaiting_payment' : adapters.length === 0 ? 'ignored' : 'outboxed',
     });
   } catch (err) {
     console.error('hooksteel polar webhook transaction failed', safeLog(err));

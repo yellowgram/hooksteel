@@ -30,7 +30,13 @@ export interface FixtureOverrides {
 
 /** The outbox idempotency key HookSteel derives for a fixture event (see src/outbox/enqueue.ts). */
 export function stripeKey(eventId: string, adapter: string, type = 'checkout.session.completed', sessionId?: string): string {
-  return `stripe|${type}|${sessionId ?? `cs_for_${eventId}`}|${adapter}`;
+  const session = sessionId ?? `cs_for_${eventId}`;
+  // Payment-success events are keyed on the payment. The fixture session has no payment_intent
+  // or invoice, so its id is the payment id; for invoice/payment_intent events pass the object id.
+  if (['checkout.session.completed', 'checkout.session.async_payment_succeeded', 'payment_intent.succeeded', 'invoice.paid', 'invoice.payment_succeeded'].includes(type)) {
+    return `stripe|pay:${session}|${adapter}`;
+  }
+  return `stripe|${type}|${session}|${adapter}`;
 }
 
 export function checkoutBody(overrides: FixtureOverrides = {}): string {

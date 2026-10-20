@@ -1,7 +1,7 @@
 import type pg from 'pg';
 import type Stripe from 'stripe';
 import { getPool } from '../../db/pool.js';
-import { enqueueOutbox, idempotencyKey, objectIdOf } from '../../outbox/enqueue.js';
+import { awaitingPayment, enqueueOutbox, idempotencyKey } from '../../outbox/enqueue.js';
 import { mapAdapters } from './mapAdapters.js';
 import { buildOutboxPayload } from './payload.js';
 import { verifyStripeEvent, WebhookRejected } from './verify.js';
@@ -77,7 +77,9 @@ export async function handle(input: HandleInput, options?: HandleOptions): Promi
     }
 
     const billingEventId = inserted.rows[0].id;
-    const adapters = mapAdapters(event.type);
+    // An unpaid Checkout (or unpaid order) queues nothing: the payment-succeeded event fulfils it.
+    const awaiting = awaitingPayment('stripe', event.type, event.data?.object);
+    const adapters = awaiting ? [] : mapAdapters(event.type);
     if (adapters.length === 0) {
       // Drain never visits a row with zero children, so mark it processed here.
       await client.query(
@@ -86,14 +88,15 @@ export async function handle(input: HandleInput, options?: HandleOptions): Promi
       );
     } else {
       const payload = buildOutboxPayload(event);
-      const objectId = objectIdOf(event.data?.object) ?? event.id;
+      // (keys: see idempotencyKey in outbox/enqueue.ts)
       let queued = 0;
       for (const adapter of adapters) {
         const added = await enqueueOutbox(client, {
           billingEventId,
           adapter,
           payload,
-          idempotencyKey: idempotencyKey('stripe', event.type, objectId, adapter),
+          idempotencyKey: idempotencyKey('stripe', event.type, event.data?.object, event.id, adapter),
+          providerEventId: event.id,
         });
         if (added) queued += 1;
       }
@@ -112,7 +115,7 @@ export async function handle(input: HandleInput, options?: HandleOptions): Promi
     committed = true;
     return json(200, {
       ok: true,
-      outcome: adapters.length === 0 ? 'ignored' : 'outboxed',
+      outcome: awaiting ? 'awaiting_payment' : adapters.length === 0 ? 'ignored' : 'outboxed',
     });
   } catch (err) {
     console.error('hooksteel webhook transaction failed', safeLog(err));

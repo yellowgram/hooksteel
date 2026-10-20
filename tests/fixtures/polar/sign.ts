@@ -110,6 +110,7 @@ export function signPolar(options: {
 
 /** The outbox idempotency key HookSteel derives for a fixture order (see src/outbox/enqueue.ts). */
 export function polarKey(orderId: string, adapter: string, type = 'order.paid'): string {
+  if (type === 'order.paid' || type === 'order.created') return `polar|pay:${orderId}|${adapter}`;
   return `polar|${type}|${orderId}|${adapter}`;
 }
 

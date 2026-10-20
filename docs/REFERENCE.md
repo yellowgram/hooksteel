@@ -47,7 +47,7 @@ configureAdapterMap({
 });
 ```
 
-Outbox idempotency key: `provider|event_type|object_id|adapter`, where `object_id` is Stripe's `data.object.id` or Polar's `data.id` (the event id if the event has none). A second event with the same key queues nothing.
+Outbox idempotency key: for payment-success events (Stripe `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `payment_intent.succeeded`, `invoice.paid`, `invoice.payment_succeeded`, `charge.succeeded`; Polar `order.created`, `order.paid`) it is `provider|pay:<payment_id>|adapter`, where `payment_id` is the PaymentIntent id, else the invoice id, else the object id. Other events use `provider|event_type|object_id|adapter`, where `object_id` is Stripe's `data.object.id` or Polar's `data.id` (the event id if the event has none). A second event with the same key queues nothing. A Checkout Session with `payment_status: "unpaid"`, or a Polar order that is not paid, queues nothing (outcome `awaiting_payment`).
 
 `send_email` with no `customer_email` completes as a no-op: `completed_at` set and `last_error = skipped_no_email`. It does not throw, retry, or dead-letter.
 

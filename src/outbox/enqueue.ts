@@ -82,17 +82,26 @@ export function idempotencyKey(
 }
 
 /**
- * True when an adapter mapped to `payment_intent.succeeded` (or `charge.succeeded`) should skip
- * a paid subscription Checkout Session. The session has no PaymentIntent of its own; its first
- * invoice is paid by a PaymentIntent whose own `payment_intent.succeeded` event fulfils it,
- * under a key the session cannot know. A free session (`no_payment_required`) is not skipped:
- * no PaymentIntent event will come for it.
+ * True when an adapter that is also mapped to another payment event must skip this
+ * subscription-mode Checkout Session and leave the grant to that event, because the session
+ * cannot carry the id that event will be keyed by:
+ * - mapped to `payment_intent.succeeded` / `charge.succeeded`: a subscription session never has
+ *   a PaymentIntent of its own (Stripe sets `payment_intent` only in payment mode), so it always
+ *   skips; each charged invoice arrives as `payment_intent.succeeded`.
+ * - mapped to `invoice.paid` / `invoice.payment_succeeded`: a session with no `invoice` id (Stripe
+ *   sets it only "if it exists", for example not yet for a billing-cycle anchor) skips; the first
+ *   invoice arrives as `invoice.paid`. With an invoice id the session is keyed by it instead.
+ * Keying by the subscription id is not safe: `invoice.paid` carries the invoice id, and where an
+ * invoice names its subscription differs by API version.
  */
-export function paidByLaterPaymentIntent(provider: string, eventType: string, obj: unknown, family?: PaymentFamily | null): boolean {
-  if (provider !== 'stripe' || family !== 'payment_intent' || !eventType.startsWith('checkout.session.')) return false;
+export function fulfilledByLaterEvent(provider: string, eventType: string, obj: unknown, family?: PaymentFamily | null): boolean {
+  if (provider !== 'stripe' || !family || !eventType.startsWith('checkout.session.')) return false;
   if (!obj || typeof obj !== 'object') return false;
   const o = obj as Record<string, unknown>;
-  return idOf(o.payment_intent) === null && idOf(o.invoice) !== null && o.payment_status === 'paid';
+  const subscription = o.mode === 'subscription' || idOf(o.subscription) !== null;
+  if (!subscription) return false;
+  if (family === 'payment_intent') return idOf(o.payment_intent) === null;
+  return idOf(o.invoice) === null;
 }
 
 export async function enqueueOutbox(

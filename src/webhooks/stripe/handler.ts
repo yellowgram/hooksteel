@@ -1,7 +1,7 @@
 import type pg from 'pg';
 import type Stripe from 'stripe';
 import { getPool } from '../../db/pool.js';
-import { awaitingPayment, enqueueOutbox, idempotencyKey, paidByLaterPaymentIntent } from '../../outbox/enqueue.js';
+import { awaitingPayment, enqueueOutbox, idempotencyKey, fulfilledByLaterEvent } from '../../outbox/enqueue.js';
 import { mapAdapters, paymentFamilyOf } from './mapAdapters.js';
 import { buildOutboxPayload } from './payload.js';
 import { verifyStripeEvent, WebhookRejected } from './verify.js';
@@ -92,7 +92,7 @@ export async function handle(input: HandleInput, options?: HandleOptions): Promi
       let queued = 0;
       for (const adapter of adapters) {
         const family = paymentFamilyOf(adapter);
-        if (paidByLaterPaymentIntent('stripe', event.type, event.data?.object, family)) continue;
+        if (fulfilledByLaterEvent('stripe', event.type, event.data?.object, family)) continue;
         const added = await enqueueOutbox(client, {
           billingEventId,
           adapter,

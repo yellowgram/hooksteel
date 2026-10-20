@@ -47,7 +47,8 @@ export function validateAdapterMap(map: Readonly<Record<string, readonly string[
 
 export function configureAdapterMap(map: Readonly<Record<string, readonly string[]>>): void {
   validateAdapterMap(map);
-  adapterMap = map;
+  // A frozen copy: mutating the caller's object afterwards can't bypass the check above.
+  adapterMap = Object.freeze(Object.fromEntries(Object.entries(map).map(([k, v]) => [k, Object.freeze([...v])])));
 }
 
 /**

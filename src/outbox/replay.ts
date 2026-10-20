@@ -16,11 +16,20 @@ interface DeadLetterRow {
   event_id: string | null;
 }
 
+export interface ReplayStep {
+  /** Parameterized SQL. The id is in `params`, never interpolated. */
+  sql: string;
+  params: [string];
+}
+
 export interface ReplayDryRun {
   deadLetterId: string;
   adapter: string;
   outboxId: string;
-  /** Bound SQL. Ids are returned separately and are not interpolated into these strings. */
+  billingEventId: string;
+  /** Exactly what execute runs, in order, each with its own bind value. */
+  steps: ReplayStep[];
+  /** The SQL of `steps`, for older callers. Each `$1` binds a different id; see `steps`. */
   statements: string[];
 }
 
@@ -42,11 +51,15 @@ async function lockDeadLetter(client: import('pg').PoolClient, deadLetterId: str
   return refuseUnlessReplayable(result.rows[0]);
 }
 
-function statementsFor(): string[] {
+/** The replay, as data. Dry-run prints it and execute runs it, so they cannot drift apart. */
+function replaySteps(row: DeadLetterRow): ReplayStep[] {
   return [
-    'UPDATE outbox SET completed_at = NULL, last_error = NULL, available_at = now(), locked_at = NULL, locked_by = NULL, attempts = 0 WHERE id = $1',
-    'UPDATE billing_events SET processed_at = NULL WHERE id = $1',
-    'UPDATE dead_letters SET replayed_at = now() WHERE id = $1 AND replayed_at IS NULL',
+    {
+      sql: 'UPDATE outbox SET completed_at = NULL, last_error = NULL, available_at = now(), locked_at = NULL, locked_by = NULL, attempts = 0 WHERE id = $1',
+      params: [row.outbox_id as string],
+    },
+    { sql: 'UPDATE billing_events SET processed_at = NULL WHERE id = $1', params: [row.billing_event_id as string] },
+    { sql: 'UPDATE dead_letters SET replayed_at = now() WHERE id = $1 AND replayed_at IS NULL', params: [row.id] },
   ];
 }
 
@@ -80,11 +93,14 @@ function refuseUnlessReplayable(row: DeadLetterRow | undefined): DeadLetterRow {
 /** Print the intended replay mutation. Does not write. */
 export async function replayDryRun(deadLetterId: string): Promise<ReplayDryRun> {
   const row = await readDeadLetter(deadLetterId);
+  const steps = replaySteps(row);
   return {
     deadLetterId: row.id,
     adapter: row.adapter as string,
     outboxId: row.outbox_id as string,
-    statements: statementsFor(),
+    billingEventId: row.billing_event_id as string,
+    steps,
+    statements: steps.map((step) => step.sql),
   };
 }
 
@@ -98,27 +114,8 @@ export async function replayExecute(deadLetterId: string): Promise<{ outboxId: s
   try {
     await client.query('BEGIN');
     const row = await lockDeadLetter(client, deadLetterId);
-    await client.query(
-      `UPDATE outbox
-       SET completed_at = NULL,
-           last_error = NULL,
-           available_at = now(),
-           locked_at = NULL,
-           locked_by = NULL,
-           attempts = 0
-       WHERE id = $1`,
-      [row.outbox_id],
-    );
-    await client.query(`UPDATE billing_events SET processed_at = NULL WHERE id = $1`, [
-      row.billing_event_id,
-    ]);
-    const updated = await client.query(
-      `UPDATE dead_letters
-       SET replayed_at = now()
-       WHERE id = $1
-         AND replayed_at IS NULL`,
-      [row.id],
-    );
+    let updated: { rowCount: number | null } = { rowCount: 0 };
+    for (const step of replaySteps(row)) updated = await client.query(step.sql, step.params);
     if (updated.rowCount !== 1) throw new ReplayRefusedError('dead letter already replayed');
     await client.query('COMMIT');
     committed = true;

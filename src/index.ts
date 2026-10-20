@@ -8,7 +8,7 @@ export { sendEmailAdapter } from './adapters/send_email.js';
 export { idempotencyKey, enqueueOutbox } from './outbox/enqueue.js';
 export { drainOnce, drainOne } from './outbox/drain.js';
 export { listDeadLetters, replayDryRun, replayExecute, ReplayRefusedError } from './outbox/replay.js';
-export type { ReplayDryRun } from './outbox/replay.js';
+export type { ReplayDryRun, ReplayStep } from './outbox/replay.js';
 export { handle, type HandleInput } from './webhooks/stripe/handler.js';
 export {
   DEFAULT_ADAPTER_MAP,

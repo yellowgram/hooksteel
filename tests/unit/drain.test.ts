@@ -99,6 +99,11 @@ test('adapter failure backs off by 2^attempts capped at 60s, then dead-letters a
   assert.match(dry.statements[0] ?? '', /\$1/);
   assert.equal(dry.statements.some((sql) => sql.includes(deadId)), false);
   assert.equal(dry.statements.some((sql) => sql.includes(dry.outboxId)), false);
+  assert.deepEqual(
+    dry.steps.map((step) => step.params[0]),
+    [dry.outboxId, dry.billingEventId, deadId],
+    'each statement carries its own bind value',
+  );
   const afterDry = await getPool().query<{ replayed_at: Date | null }>(
     `SELECT replayed_at FROM dead_letters WHERE id = $1`,
     [deadId],

@@ -352,3 +352,23 @@ test('unknown adapter is poison, not a retry', async () => {
   );
   assert.equal(await count('SELECT count(*)::int AS n FROM outbox WHERE completed_at IS NULL'), 0);
 });
+
+test('an event\'s adapters drain in adapter-map order', async () => {
+  for (let i = 0; i < 8; i += 1) {
+    const rawBody = checkoutBody({ id: `evt_order_${i}` });
+    assert.equal((await handle({ rawBody, signature: signBody(rawBody) })).status, 200);
+  }
+  const seen: string[] = [];
+  await drainOnce({
+    limit: 16,
+    afterInvocation: async (key) => {
+      seen.push(key);
+    },
+  });
+  for (let i = 0; i < 8; i += 1) {
+    assert.ok(
+      seen.indexOf(`stripe|evt_order_${i}|grant_credit`) < seen.indexOf(`stripe|evt_order_${i}|send_email`),
+      `evt_order_${i}: ${seen.join(', ')}`,
+    );
+  }
+});

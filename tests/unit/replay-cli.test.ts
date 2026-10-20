@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { parseReplayArgs } from '../../scripts/replay-cli.js';
 
-const usage = 'usage: replay-cli.ts list | dry-run <dead_letter_id> | execute <dead_letter_id>';
+const usage = 'usage: hooksteel replay list | dry-run <dead_letter_id> | execute <dead_letter_id>';
 
 test('parseReplayArgs accepts list, dry-run, and execute', () => {
   assert.deepEqual(parseReplayArgs(['list']), { ok: true, command: 'list' });

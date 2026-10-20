@@ -28,7 +28,15 @@ npm run demo                  # duplicate delivery and crash-mid-fulfilment, on 
 
 The demo needs no Stripe or Polar account; it signs fixture events itself. `npm test` runs everything.
 
-To use it in your app (`npm install hooksteel`), hand it the **raw** request body. Parsing the JSON first changes the bytes and the signature check fails.
+### In your app
+
+```bash
+npm install hooksteel
+export DATABASE_URL=postgres://…
+npx hooksteel migrate        # creates billing_events, outbox, dead_letters (and its own migrations table)
+```
+
+Hand the handler the **raw** request body. Parsing the JSON first changes the bytes and the signature check fails.
 
 ```ts
 import { handle, handlePolar } from 'hooksteel';
@@ -50,11 +58,14 @@ app.post('/api/webhooks/polar', async (c) =>
 
 With Express, use `express.raw({ type: 'application/json' })` on that route (never `express.json()`), pass `req.body.toString('utf8')` as `rawBody`, and copy the returned `Response` status and body to `res`. A full Next.js example is in [examples/next](examples/next).
 
-Set `STRIPE_WEBHOOK_SECRET` and/or `POLAR_WEBHOOK_SECRET` (the endpoint's `whsec_…` secret), then run the worker:
+Set `STRIPE_WEBHOOK_SECRET` and/or `POLAR_WEBHOOK_SECRET` (the endpoint's `whsec_…` secret), then run the worker as its own process:
 
 ```bash
-npm run outbox:drain -- --once      # or run it in a loop / on a schedule
+npx hooksteel drain            # loops; on SIGTERM it finishes the row in hand and exits
+npx hooksteel drain --once     # one batch, then exit (for cron or a scheduled job)
 ```
+
+Or call `drainOnce()` from your own scheduler. Inside this repo, `npm run migrate`, `npm run outbox:drain` and `npm run replay:*` run the same commands from source.
 
 ## How it works
 
@@ -65,9 +76,9 @@ npm run outbox:drain -- --once      # or run it in a loop / on a schedule
 5. **Replay.** Fix the cause, then re-open one dead letter so the worker runs that adapter again:
 
    ```bash
-   npm run replay:list
-   npm run replay:dry-run -- <dead_letter_id>    # shows each statement with its bind value; writes nothing
-   npm run replay:execute -- <dead_letter_id>    # re-opens the row; the worker does the work
+   npx hooksteel replay list
+   npx hooksteel replay dry-run <dead_letter_id>    # shows each statement with its bind value; writes nothing
+   npx hooksteel replay execute <dead_letter_id>    # re-opens the row; the worker does the work
    ```
 
    Replay never moves money. It is unrelated to a customer refund ([docs/REFUND_GLOSSARY.md](docs/REFUND_GLOSSARY.md)).

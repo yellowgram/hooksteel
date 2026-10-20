@@ -5,6 +5,9 @@ export interface ClaimedOutbox {
   payload: unknown;
   idempotency_key: string;
   attempts: number;
+  /** Lease token: the claim's locked_by and locked_at. Every later write must match both. */
+  locked_by: string;
+  locked_at: string;
 }
 
 export type DeadLetterReason = 'timeout' | 'adapter_error' | 'poison' | 'max_attempts';

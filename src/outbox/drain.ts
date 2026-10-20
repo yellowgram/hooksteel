@@ -29,7 +29,7 @@ WHERE o.id = (
   FOR UPDATE SKIP LOCKED
   LIMIT 1
 )
-RETURNING o.id, o.billing_event_id, o.adapter, o.payload, o.idempotency_key, o.attempts
+RETURNING o.id, o.billing_event_id, o.adapter, o.payload, o.idempotency_key, o.attempts, o.locked_by, o.locked_at::text AS locked_at
 `;
 
 function workerId(): string {
@@ -107,37 +107,56 @@ async function lookupProviderEventId(billingEventId: string): Promise<string> {
   return result.rows[0]?.provider_event_id ?? '';
 }
 
+/**
+ * Every write after the claim is fenced on the lease token (locked_by, locked_at).
+ * If the lease expired and another worker reclaimed the row, the token no longer
+ * matches, the write changes nothing, and this worker steps aside: the new holder
+ * owns the row now. Returns false in that case.
+ */
+// locked_at travels as text: a JS Date would drop Postgres's microseconds and never match.
+const FENCE = `id = $1 AND locked_by = $2 AND locked_at = $3::timestamptz AND completed_at IS NULL`;
+
+function leaseLost(row: ClaimedOutbox, step: string): false {
+  console.warn(
+    JSON.stringify({ event: 'lease_lost', step, outbox_id: row.id, idempotency_key: row.idempotency_key, worker: row.locked_by }),
+  );
+  return false;
+}
+
 async function complete(
   row: ClaimedOutbox,
   lastError: string | null,
   options?: DrainOptions,
-): Promise<void> {
-  await withTransaction(async (client) => {
-    await client.query(
+): Promise<boolean> {
+  return withTransaction(async (client) => {
+    const updated = await client.query(
       `UPDATE outbox
        SET completed_at = now(),
            locked_at = NULL,
            locked_by = NULL,
-           last_error = $2
-       WHERE id = $1`,
-      [row.id, lastError],
+           last_error = $4
+       WHERE ${FENCE}`,
+      [row.id, row.locked_by, row.locked_at, lastError],
     );
+    if (updated.rowCount === 0) return leaseLost(row, 'complete');
     if (honorChaosHooks() && options?.beforeMarkProcessed) await options.beforeMarkProcessed();
     await markProcessed(client, row.billing_event_id);
+    return true;
   });
 }
 
-async function backoff(row: ClaimedOutbox, message: string): Promise<void> {
-  await withTransaction(async (client) => {
-    await client.query(
+async function backoff(row: ClaimedOutbox, message: string): Promise<boolean> {
+  return withTransaction(async (client) => {
+    const updated = await client.query(
       `UPDATE outbox
        SET available_at = now() + (interval '1 second' * LEAST(60, power(2, attempts))),
-           last_error = $2,
+           last_error = $4,
            locked_at = NULL,
            locked_by = NULL
-       WHERE id = $1`,
-      [row.id, message],
+       WHERE ${FENCE}`,
+      [row.id, row.locked_by, row.locked_at, message],
     );
+    return updated.rowCount === 0 ? leaseLost(row, 'backoff') : true;
   });
 }
 
@@ -145,8 +164,18 @@ async function deadLetter(
   row: ClaimedOutbox,
   reason: DeadLetterReason,
   options?: DrainOptions,
-): Promise<void> {
-  await withTransaction(async (client) => {
+): Promise<boolean> {
+  return withTransaction(async (client) => {
+    const updated = await client.query(
+      `UPDATE outbox
+       SET completed_at = now(),
+           last_error = 'dead_lettered',
+           locked_at = NULL,
+           locked_by = NULL
+       WHERE ${FENCE}`,
+      [row.id, row.locked_by, row.locked_at],
+    );
+    if (updated.rowCount === 0) return leaseLost(row, 'dead_letter');
     await client.query(
       `INSERT INTO dead_letters (outbox_id, billing_event_id, reason, payload_snapshot)
        VALUES ($1, $2, $3, $4::jsonb)
@@ -154,18 +183,42 @@ async function deadLetter(
        DO NOTHING`,
       [row.id, row.billing_event_id, reason, JSON.stringify(row.payload ?? {})],
     );
-    await client.query(
-      `UPDATE outbox
-       SET completed_at = now(),
-           last_error = 'dead_lettered',
-           locked_at = NULL,
-           locked_by = NULL
-       WHERE id = $1`,
-      [row.id],
-    );
     if (honorChaosHooks() && options?.beforeMarkProcessed) await options.beforeMarkProcessed();
     await markProcessed(client, row.billing_event_id);
+    return true;
   });
+}
+
+/**
+ * While the adapter runs, renew the lease every third of OUTBOX_LEASE_MS so a slow
+ * but healthy adapter is not reclaimed. Each renewal is fenced and moves the token
+ * forward. Stop it (and await the last renewal) before any final write.
+ */
+function startHeartbeat(row: ClaimedOutbox): { stop: () => Promise<void> } {
+  const everyMs = Math.max(50, (leaseSeconds() * 1000) / 3);
+  let inFlight: Promise<void> = Promise.resolve();
+  let stopped = false;
+  const timer = setInterval(() => {
+    inFlight = inFlight.then(async () => {
+      if (stopped) return;
+      const renewed = await getPool().query<{ locked_at: string }>(
+        `UPDATE outbox SET locked_at = clock_timestamp() WHERE ${FENCE} RETURNING locked_at::text AS locked_at`,
+        [row.id, row.locked_by, row.locked_at],
+      );
+      if (renewed.rows[0]) row.locked_at = renewed.rows[0].locked_at;
+      else stopped = true;
+    }).catch(() => {
+      // A failed renewal is not fatal: the final write is still fenced.
+    });
+  }, everyMs);
+  timer.unref();
+  return {
+    stop: async () => {
+      stopped = true;
+      clearInterval(timer);
+      await inFlight;
+    },
+  };
 }
 
 /** Production always wins, even when ALLOW_CHAOS_INJECT is set. */
@@ -180,9 +233,11 @@ function skipped(result: AdapterResult): boolean {
 
 /**
  * Claim and handle a single due outbox row. Returns false when the queue is idle.
- * Every claim, including lease reclaim, increments attempts. There is no heartbeat:
- * an adapter that runs longer than OUTBOX_LEASE_MS can be claimed again and must be
- * idempotent under that overlap.
+ * Every claim, including lease reclaim, increments attempts. The lease is renewed
+ * while the adapter runs, so only a stalled or crashed worker loses its row. If that
+ * happens, the old worker's late writes are fenced off and the new holder wins.
+ * Adapters must still be idempotent: a worker can crash after the side effect and
+ * before its completion commits.
  */
 export async function drainOne(options?: DrainOptions): Promise<boolean> {
   const claimed = await withTransaction(async (client) => {
@@ -205,6 +260,7 @@ export async function drainOne(options?: DrainOptions): Promise<boolean> {
     return true;
   }
 
+  const heartbeat = startHeartbeat(claimed);
   try {
     const result = await adapter.execute({
       billingEventId: claimed.billing_event_id,
@@ -215,8 +271,10 @@ export async function drainOne(options?: DrainOptions): Promise<boolean> {
     if (honorChaosHooks() && options?.afterInvocation) {
       await options.afterInvocation(claimed.idempotency_key);
     }
+    await heartbeat.stop();
     await complete(claimed, skipped(result) ? 'skipped_no_email' : null, options);
   } catch (err) {
+    await heartbeat.stop();
     await backoff(claimed, errorMessage(err));
   }
   return true;

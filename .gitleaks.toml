@@ -1,0 +1,7 @@
+# Fixed test-only webhook secret used to sign fixture events in the test suite.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "test fixtures"
+paths = ['''tests/fixtures/polar/secrets\.ts''']

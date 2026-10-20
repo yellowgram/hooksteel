@@ -1,53 +1,42 @@
 # Changelog
 
+## 0.3.0 — 2026-10-19
+
+### Fixed
+
+- **A worker that lost its lease could overwrite the next worker's result.** If an adapter outlived `OUTBOX_LEASE_MS`, a second worker reclaimed the row. The first worker's late completion, backoff or dead-letter then landed anyway and could mark the row done, push it back, or dead-letter work the second worker had finished. Those writes are now fenced on the claim's `(locked_by, locked_at)` token. A stale worker changes nothing and logs `lease_lost`. No migration is needed.
+- **Slow adapters no longer lose their lease.** While an adapter runs, the worker renews the lease every third of `OUTBOX_LEASE_MS`, so only a stalled or dead worker's row is reclaimed.
+- A fenced-off dead letter no longer writes a `dead_letters` row.
+- An event's adapters now drain in adapter-map order (for example `grant_credit` before `send_email`). Before, rows from one event had the same `created_at` and their order was random.
+
+### Added
+
+- **Your own adapters.** `registerAdapter({ name, execute })`, and `hooksteel drain --adapters <module>` for the CLI worker. Before, the only adapters were the built-in examples, which do nothing, and there was no supported way to replace them.
+- A `hooksteel` command in the npm package: `hooksteel migrate`, `hooksteel drain [--once]` and `hooksteel replay list | dry-run <id> | execute <id>`. Before, the worker and replay tools were repo scripts that weren't shipped, so npm users had no worker. `drain` exits cleanly on SIGTERM/SIGINT after finishing the row in hand.
+
+### Fixed (packaging)
+
+- `migrate()` applies the migrations shipped with the package. Before, it read `./migrations` from the caller's working directory, which from an installed package meant the app's own folder, or nothing.
+- `migrate()` no longer loads `.env` as a side effect of importing `hooksteel`; only the CLI does.
+- `npm pack` / `npm publish` now build first (`prepack`), so a stale `dist/` cannot ship.
+
+### Changed
+
+- **The built-in example adapters no longer run outside tests.** They only validate the payload, so in a real deployment they marked orders fulfilled without doing anything. Now, unless `NODE_ENV=test` or `HOOKSTEEL_EXAMPLE_ADAPTERS=true`, they throw a message saying to register your own adapter. The row retries, then dead-letters, and can be replayed once your adapter is in place.
+
+- `replayDryRun` also returns `billingEventId` and `steps: [{ sql, params }]`. Each statement now shows the id it binds; before, three statements each said `$1` without saying which row. `execute` runs exactly these steps. `statements` is kept for older callers.
+- `npm run demo` now runs the two chaos files directly (the `demo:60s` script is gone).
+- README rewritten as a quickstart plus a guarantees-and-limits section. The reference material moved to `docs/REFERENCE.md`, `docs/POLAR.md` and `docs/TROUBLESHOOTING.md`. The internal status, start-here and demo-script docs are removed.
+
 ## 0.2.0 — 2026-10-19
 
-- Relicensed to MIT; no longer sold. `LICENSE` is the MIT License (Copyright (c) 2026 yellowgram). The commercial grant, commercial lock, Polar listing packet, landing copy, pricing and purchase-refund copy, support-window copy, the release pack script, and internal design/review documents were removed from the tree (they remain in git history). `BUYER_START_HERE.md` is now `START_HERE.md`.
-- package.json: `license` MIT, no longer `private`, adds `repository`, `homepage`, `bugs`, `author`, and `files` for npm.
-- Tests: the PolyForm license-fence and sales-copy tests are replaced by MIT license tests. Sealed `release/hooksteel-0.1.0.zip` and `release/hooksteel-0.1.1.zip` are still checked byte-for-byte. No runtime behavior change.
-- Releases before 0.2.0 were published under the previous license.
+- Relicensed to MIT. Sales, pricing and internal review documents were removed from the tree. `package.json` is publishable (`files`, `repository`, `homepage`). No runtime behavior change.
 
 ## 0.1.1 — 2026-09-27
 
-License fence patch. No product behavior change. Not a hosted gateway. Soft-WTP stays off. No Lock. No Audit. No coupon.
-
-### License
-
-- Public license is the PolyForm Noncommercial License 1.0.0 in `LICENSE` (yellowgram header, then the official text unchanged). Source-available. Not an OSI-approved open source license. Not MIT.
-- Paid commercial production use is the HookSteel commercial grant in `docs/COMMERCIAL_GRANT.md`: one organization, the purchased named tag, perpetual for that tag. Prior Single-app kit language folds into that one-organization grant.
-- Price and refund lock is `docs/COMMERCIAL_LOCK.md`. Founding $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Purchase-refund window is 14 days.
-- The fence does not claw back rights on already-distributed `hooksteel-0.1.0.zip` copies. That zip is not rewritten. Tag `v0.1.0` is not moved.
-- The Polar listing is live as of 2026-09-27 and sells `hooksteel-0.1.1.zip`. SHA-256 `e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9`. GitHub Release `v0.1.1` is published. Delivery is the public source-available repository plus that zip. The license-fence commit did not itself change Polar product settings. Soft-WTP stays off.
-
-### Break notes
-
-None for runtime behavior. Buyers of the 0.1.1 tag pin `hooksteel-0.1.1.zip` and the SHA-256 in `docs/CHECKSUMS.md`.
+- License-only patch under the previous license. No runtime behavior change.
 
 ## 0.1.0 — 2026-09-26
 
-First baseline of the Billing Event Reliability Kit. `package.json` version is `0.1.0`. The GitHub Release tag `v0.1.0` is a CoS step (`docs/POLAR_DELIVERABLES.md`); this file does not mean the tag already exists. There is no older release to upgrade from.
-
-### Included
-
-- Stripe signed webhooks (`handle`) into `billing_events`, with outbox rows in the same transaction
-- Polar signed webhooks (`handlePolar`): two HMAC key eras, no Polar SDK
-- Outbox drain (`npm run outbox:drain`)
-- Replay CLI (`npm run replay:list`, `replay:dry-run`, `replay:execute`) — not a purchase refund
-- Exactly five Postgres chaos scenarios: duplicate delivery, out-of-order, signature fail, handler timeout, DB rollback mid-fulfillment. Polar cases live in those five files
-- Adapter stubs: `grant_credit`, `send_email`, `invite_github` (`invite_github` is opt-in)
-
-### Known limits
-
-- No hosted gateway. Soft-WTP is off. No Lock. No Audit.
-- At the 0.1.0 baseline the Polar listing was still dark. Go-live is recorded under 0.1.1.
-- Purchase-refund window is 14 days (founder lock 2026-09-26). That is not the replay CLI.
-- Founding price is $89 for the first 10 licenses OR 30 days after go-live, whichever comes first; then $129. One SKU. Do not run two Polar products. Soft-WTP is off. At 0.1.0 the listing was still dark, pending the founder-approved clip, the distribution post, and go-live. That gate closed when the listing went live on 0.1.1.
-- `order.refunded` is stored as `ignored` and does not claw back credit.
-- The chaos set stays at five files. No fuzzing.
-- 0.1.0 shipped a Single-app commercial kit license inside that sealed zip (not MIT). From 0.1.1 the public license is PolyForm Noncommercial 1.0.0 and paid commercial use is the HookSteel commercial grant. The 0.1.0 zip is unchanged.
-- The outbox does not certify PCI, charge correctness, or tax.
-- README "Known limits" still holds for Connect, stored PII, the Polar livemode declaration, and replay dry-run `$1` labels (CR2-A-P2-002 deferred).
-
-### Break notes
-
-None. First baseline. Buyers pin the zip named `hooksteel-0.1.0.zip` and the SHA-256 in `docs/CHECKSUMS.md`.
+- First release: Stripe (`handle`) and Polar (`handlePolar`) signed webhooks into `billing_events`, the outbox in the same transaction, the drain worker, the replay CLI, the five Postgres chaos tests, and the `grant_credit`, `send_email` and `invite_github` adapter stubs.
+- Releases before 0.2.0 were published under a different license.

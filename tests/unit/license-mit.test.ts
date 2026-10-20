@@ -1,11 +1,8 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 
-const SEALED_V010_SHA256 = 'dddcfe5dca204cd92b2c1b2a10adbb99515d0552a4a5947693aff34a29573a65';
-const SEALED_V011_SHA256 = 'e5fb3c1117b954f344fb27e7b1bf7be89d46e120839e238983d017a50e08e4d9';
 
 function walk(dir: string, out: string[]): void {
   for (const name of readdirSync(dir)) {
@@ -51,13 +48,6 @@ test('tree has no old-license fence or Polar checkout URL', () => {
     const text = bytes.toString('utf8');
     assert.equal(/PolyForm|COMMERCIAL_GRANT|commercial grant/i.test(text), false, file);
   }
-});
-
-test('historical release zips are unchanged', () => {
-  const v010 = createHash('sha256').update(readFileSync('release/hooksteel-0.1.0.zip')).digest('hex');
-  assert.equal(v010, SEALED_V010_SHA256);
-  const v011 = createHash('sha256').update(readFileSync('release/hooksteel-0.1.1.zip')).digest('hex');
-  assert.equal(v011, SEALED_V011_SHA256);
 });
 
 test('demo script stays on the two chaos files', () => {

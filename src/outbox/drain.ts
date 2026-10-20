@@ -1,4 +1,4 @@
-import { getAdapter } from '../adapters/registry.js';
+import { exampleAdaptersAllowed, getAdapter, isExampleAdapter } from '../adapters/registry.js';
 import type { AdapterResult } from '../adapters/types.js';
 import { getPool } from '../db/pool.js';
 import type { ClaimedOutbox, DeadLetterReason } from './types.js';
@@ -262,6 +262,12 @@ export async function drainOne(options?: DrainOptions): Promise<boolean> {
 
   const heartbeat = startHeartbeat(claimed);
   try {
+    if (isExampleAdapter(claimed.adapter) && !exampleAdaptersAllowed()) {
+      throw new Error(
+        `${claimed.adapter} is HookSteel's built-in example and does nothing. Register your own with registerAdapter() ` +
+          '(or hooksteel drain --adapters <module>), then replay any dead letters.',
+      );
+    }
     const result = await adapter.execute({
       billingEventId: claimed.billing_event_id,
       providerEventId: await lookupProviderEventId(claimed.billing_event_id),

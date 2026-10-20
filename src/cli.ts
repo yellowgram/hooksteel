@@ -10,13 +10,17 @@ import { pathToFileURL } from 'node:url';
 import dotenv from 'dotenv';
 import { closePool } from './db/pool.js';
 import { migrate } from './db/migrate.js';
+import { registerAdapter } from './adapters/registry.js';
+import type { FulfillmentAdapter } from './adapters/types.js';
 import { drainOnce } from './outbox/drain.js';
 import { listDeadLetters, replayDryRun, replayExecute } from './outbox/replay.js';
 
 export const REPLAY_USAGE = 'usage: hooksteel replay list | dry-run <dead_letter_id> | execute <dead_letter_id>';
 const USAGE = `usage:
   hooksteel migrate                       apply HookSteel's migrations
-  hooksteel drain [--once]                run the outbox worker (--once: one batch, then exit)
+  hooksteel drain [--once] [--adapters <module>]
+                                          run the outbox worker with your adapters
+                                          (--once: one batch, then exit)
   hooksteel replay list                   list dead letters not yet replayed
   hooksteel replay dry-run <id>           show what execute would run; writes nothing
   hooksteel replay execute <id>           re-open one dead letter for the worker`;
@@ -88,9 +92,32 @@ export async function drainLoop(signal: AbortSignal, idleMs = 1000): Promise<voi
   }
 }
 
+export async function loadAdapters(modulePath: string): Promise<string[]> {
+  const mod = (await import(pathToFileURL(path.resolve(modulePath)).href)) as {
+    default?: unknown;
+    adapters?: unknown;
+  };
+  const list = mod.adapters ?? mod.default;
+  if (!Array.isArray(list) || list.length === 0) {
+    throw new Error(`${modulePath} must export an array of adapters as \`adapters\` or default`);
+  }
+  for (const adapter of list as FulfillmentAdapter[]) registerAdapter(adapter);
+  return (list as FulfillmentAdapter[]).map((adapter) => adapter.name);
+}
+
 async function drain(argv: string[]): Promise<number> {
-  const unknown = argv.filter((arg) => arg !== '--once');
-  if (unknown.length > 0) {
+  const rest = [...argv];
+  const at = rest.indexOf('--adapters');
+  if (at !== -1) {
+    const modulePath = rest[at + 1];
+    if (!modulePath || modulePath.startsWith('-')) {
+      console.error(USAGE);
+      return 1;
+    }
+    rest.splice(at, 2);
+    console.log(`outbox drain: adapters ${(await loadAdapters(modulePath)).join(', ')}`);
+  }
+  if (rest.some((arg) => arg !== '--once')) {
     console.error(USAGE);
     return 1;
   }

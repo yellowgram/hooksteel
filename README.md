@@ -58,14 +58,39 @@ app.post('/api/webhooks/polar', async (c) =>
 
 With Express, use `express.raw({ type: 'application/json' })` on that route (never `express.json()`), pass `req.body.toString('utf8')` as `rawBody`, and copy the returned `Response` status and body to `res`. A full Next.js example is in [examples/next](examples/next).
 
-Set `STRIPE_WEBHOOK_SECRET` and/or `POLAR_WEBHOOK_SECRET` (the endpoint's `whsec_…` secret), then run the worker as its own process:
+Set `STRIPE_WEBHOOK_SECRET` and/or `POLAR_WEBHOOK_SECRET` (the endpoint's `whsec_…` secret).
 
-```bash
-npx hooksteel drain            # loops; on SIGTERM it finishes the row in hand and exits
-npx hooksteel drain --once     # one batch, then exit (for cron or a scheduled job)
+### Your adapters
+
+An adapter is the code that actually fulfils an order. The built-in `grant_credit`, `send_email` and `invite_github` are **examples**: they check the payload and do nothing else. Outside tests they refuse to run (the row retries and then dead-letters with a message saying so), so an order is never marked fulfilled by a stub. Write your own under the same names, or under new names and point the adapter map at them with `configureAdapterMap` / `configurePolarAdapterMap`:
+
+```js
+// adapters.mjs
+export const adapters = [
+  {
+    name: 'grant_credit',
+    async execute({ payload, idempotencyKey }) {
+      // Make this idempotent on idempotencyKey: it can run more than once.
+      await credits.grant(payload.customer, payload.amount_total, { idempotencyKey });
+    },
+  },
+  {
+    name: 'send_email',
+    async execute({ payload, idempotencyKey }) {
+      await resend.emails.send({ to: payload.customer_email, /* … */ }, { idempotencyKey });
+    },
+  },
+];
 ```
 
-Or call `drainOnce()` from your own scheduler. Inside this repo, `npm run migrate`, `npm run outbox:drain` and `npm run replay:*` run the same commands from source.
+Then run the worker as its own process:
+
+```bash
+npx hooksteel drain --adapters ./adapters.mjs          # loops; on SIGTERM it finishes the row in hand and exits
+npx hooksteel drain --adapters ./adapters.mjs --once   # one batch, then exit (cron, scheduled job)
+```
+
+Or, inside your app, `registerAdapter(adapter)` for each one and call `drainOnce()` (or `drainLoop(abortSignal)`) yourself. If rows dead-lettered before your adapters were in place, replay them (below). Inside this repo, `npm run migrate`, `npm run outbox:drain` and `npm run replay:*` run the same commands from source.
 
 ## How it works
 
@@ -122,7 +147,7 @@ What it does not:
 | `OUTBOX_MAX_ATTEMPTS` | `5` | Attempts before a dead letter |
 | `OUTBOX_BATCH_SIZE` | `10` | Rows per `--once` run, handled one after another |
 
-Test hooks (`ALLOW_CHAOS_INJECT`, `HOOKSTEEL_RECORD_INVOCATIONS`) are off by default and always off with `NODE_ENV=production`.
+`HOOKSTEEL_EXAMPLE_ADAPTERS=true` lets the built-in example adapters run outside tests (for a local trial only). Test hooks (`ALLOW_CHAOS_INJECT`, `HOOKSTEEL_RECORD_INVOCATIONS`) are off by default and always off with `NODE_ENV=production`.
 
 ## More
 

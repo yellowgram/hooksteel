@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { registerAdapter, resetAdapters } from '../../src/adapters/registry.js';
 import { crashAfterInvocationAlways } from '../../src/chaos/inject.js';
 import { getPool } from '../../src/db/pool.js';
 import { drainOnce, drainOne } from '../../src/outbox/drain.js';
@@ -250,6 +251,8 @@ test('production drops crash hooks even when chaos inject is armed', async () =>
   const previousChaos = process.env.ALLOW_CHAOS_INJECT;
   process.env.NODE_ENV = 'production';
   process.env.ALLOW_CHAOS_INJECT = 'true';
+  // In production the built-in examples refuse to run; register stand-ins like a real app would.
+  for (const name of ['grant_credit', 'send_email']) registerAdapter({ name, execute: async () => undefined });
   try {
     const rawBody = checkoutBody({ id: 'evt_prod_hook' });
     let beforeCommitRan = false;
@@ -325,6 +328,7 @@ test('production drops crash hooks even when chaos inject is armed', async () =>
       1,
     );
   } finally {
+    resetAdapters();
     if (previousNode === undefined) delete process.env.NODE_ENV;
     else process.env.NODE_ENV = previousNode;
     if (previousChaos === undefined) delete process.env.ALLOW_CHAOS_INJECT;

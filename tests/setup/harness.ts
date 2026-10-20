@@ -74,7 +74,9 @@ export async function drainUntilIdle(): Promise<void> {
 
 export async function count(sql: string, params: unknown[] = []): Promise<number> {
   const result = await getPool().query<{ n: number }>(sql, params);
-  return Number(result.rows[0]?.n ?? 0);
+  const row = result.rows[0];
+  if (!row || !('n' in row)) throw new Error('count() needs a query that returns one row with a column named n');
+  return Number(row.n);
 }
 
 export async function idleInTransaction(): Promise<number> {
